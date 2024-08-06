@@ -3,6 +3,13 @@ package sg.backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+//
+// api_test / hyeon
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+//
+//
+
 @SpringBootApplication
 public class BackendApplication {
 
@@ -11,3 +18,15 @@ public class BackendApplication {
 	}
 
 }
+
+//
+// api_test / hyeon
+@RestController
+class ApiController {
+	@GetMapping("/api_test")
+	public String api_test() {
+		return "test complete";
+	}
+}
+//
+//

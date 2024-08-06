@@ -14,3 +14,13 @@ Todo :
 4. 8/4 ~ : 이미지화 한 각 이미지들을 nginx를 추가한 뒤, docker-compose를 이용하여 내부망 접속 확인
 
 5. 8/4 ~ : 해당 과정 자동화
+
+
+## rests
+
+
+```
+docker buildx build -t [image_name] [dockerfile_directory]
+```
+options : --momory=4g --network host
+(안되면 네트워크 옵션 제거)
