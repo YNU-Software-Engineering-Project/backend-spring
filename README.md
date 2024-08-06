@@ -20,7 +20,7 @@ Todo :
 
 
 ```
-docker buildx build -t [image_name] [dockerfile_directory]
+docker build -t [image_name] [dockerfile_directory]
 ```
 options : --momory=4g --network host
 (안되면 네트워크 옵션 제거)
