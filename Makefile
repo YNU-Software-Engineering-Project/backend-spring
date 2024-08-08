@@ -40,6 +40,11 @@ build:
 	@echo "Building containers..."
 	$(COMPOSE) build
 
+.PHONY: test # Run backend tests
+test:
+	@echo "Running backend tests..."
+	$(COMPOSE) exec backend ./gradlew test
+
 .PHONY: help
 help:
 	@echo "Usage: make [target]"

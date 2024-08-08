@@ -17,11 +17,25 @@ services:
     ports:
       - "8080:8080"
     environment: # db가 의존성에 포함되어 있어서 임시로 제작. .env 파일로 변경 예정
-      - DB_URL=jdbc:h2:mem:testdb
-      - DB_USERNAME=sa
+      - DB_URL=jdbc:mysql://db:3306/testdb
+      - DB_USERNAME=root
       - DB_PASSWORD=password
+    depends_on:
+      - db
     networks:
       - demo-network
+
+  db:
+    build: ./db
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: testdb
+    volumes:
+      - db_test:/var/lib/mysql
+    networks:
+      - demo-network
+
 
   nginx:
     build: ./nginx
@@ -40,3 +54,6 @@ services:
 networks:
   demo-network:
     driver: bridge
+
+volumes:
+  db_test:
