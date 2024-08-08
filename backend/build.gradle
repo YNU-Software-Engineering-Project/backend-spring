@@ -7,6 +7,12 @@ plugins {
 group = 'sg'
 version = '0.0.1-SNAPSHOT'
 
+//
+//	Java 17로 - hyeon
+//
+sourceCompatibility = '17'
+
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
@@ -23,6 +29,9 @@ repositories {
 	mavenCentral()
 }
 
+//
+// 사용 안하는 dependency는 가급적 제거해주세요 - hyeon
+//
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
