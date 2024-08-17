@@ -10,13 +10,11 @@ version = '0.0.1-SNAPSHOT'
 //
 //	Java 17로 - hyeon
 //
-sourceCompatibility = '17'
-
-
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
+	sourceCompatibility = '17'
 }
 
 configurations {
