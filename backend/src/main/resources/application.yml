@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db:3306/testdb
+    url: jdbc:mysql://db:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: password
 
@@ -13,7 +13,7 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 logging:
   level:
