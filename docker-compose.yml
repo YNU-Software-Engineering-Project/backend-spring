@@ -1,15 +1,13 @@
 version: '3'
 
 services:
-#  frontend:
-#    image: nginx:alpine
-#    container_name: frontend
-#    volumes:
-#      - ./frontend:/usr/share/nginx/html
-#    ports:
-#      - "3000:80"
-#    networks:
-#      - demo-network
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - demo-network
 
   backend:
     build: ./backend
@@ -42,13 +40,12 @@ services:
     container_name: nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./frontend:/usr/share/nginx/html
     ports:
       - "80:80"
     networks:
       - demo-network
     depends_on:
-      #- frontend
+      - frontend
       - backend
 
 networks:
