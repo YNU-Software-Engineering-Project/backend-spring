@@ -9,7 +9,7 @@ public interface ResponseCode {
     String VALUDATION_FAILED = "VF";
     String DUPLICATE_EMAIL = "DE";
     String DUPLICATE_NICKNAME = "DN";
-    String NOT_EXISTED_USER = "NE";
+    String NOT_EXISTED_USER = "NU";
     String NOT_EXISTED_BOARD = "NB";
 
     // HTTP Status 401
