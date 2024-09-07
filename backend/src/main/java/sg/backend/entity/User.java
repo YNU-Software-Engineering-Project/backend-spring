@@ -1,4 +1,4 @@
-package sg.backend.domain;
+package sg.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

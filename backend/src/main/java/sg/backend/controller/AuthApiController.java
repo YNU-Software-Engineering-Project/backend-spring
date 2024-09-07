@@ -1,4 +1,4 @@
-package sg.backend.api;
+package sg.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
