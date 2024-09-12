@@ -14,11 +14,9 @@ import java.util.List;
 @Getter
 public class User {
 
-    public enum Role { USER, ADMIN }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
     private String email;
 
@@ -45,10 +43,9 @@ public class User {
 
     private String profileImage;
 
-    @Column(name = "created_at") // 칼럼명을 명시적으로 설정
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Funding> fundingList;
 
     @OneToMany(mappedBy = "user")

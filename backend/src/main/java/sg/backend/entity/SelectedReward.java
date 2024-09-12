@@ -17,14 +17,15 @@ public class SelectedReward {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long selreward_id;
+    private Long selRewardId;
 
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funder_id")
     private Funder funder;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reward_id")
     private Reward reward;
 }

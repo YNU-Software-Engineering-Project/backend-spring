@@ -15,11 +15,11 @@ public class IntroImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long introimg_id;
+    private Long introImgId;
 
-    private String intorimg_path;
+    private String introImgPath;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
 }

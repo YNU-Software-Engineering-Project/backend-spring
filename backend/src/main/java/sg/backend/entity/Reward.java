@@ -17,17 +17,17 @@ public class Reward {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reward_id;
+    private Long rewardId;
 
     private Integer amount;
 
-    private String reward_name;
+    private String rewardName;
 
-    private String reward_description;
+    private String rewardDescription;
 
     private Integer quantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
 

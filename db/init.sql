@@ -7,15 +7,15 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     nickname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('USER', 'ADMIN') NOT NULL,
-    phoneNumber VARCHAR(20),
-    schoolEmail VARCHAR(255),
-    schoolEmailVerified BOOLEAN,
-    postalCode VARCHAR(10),
-    roadAddress VARCHAR(255),
-    landLotAddress VARCHAR(255),
-    detailAddress VARCHAR(255),
-    profileImage VARCHAR(255),
+    role ENUM('ADMIN', 'USER', 'SUSPENDED') NOT NULL,
+    phone_number VARCHAR(20),
+    school_email VARCHAR(255),
+    school_email_verified BOOLEAN,
+    postal_code VARCHAR(10),
+    road_address VARCHAR(255),
+    land_lot_address VARCHAR(255),
+    detail_address VARCHAR(255),
+    profile_image VARCHAR(255),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -24,7 +24,7 @@ VALUES ('test@example.com', 'test_user', 'password123', 'USER', '2024-09-10 00:0
 
 CREATE TABLE IF NOT EXISTS funding (
     funding_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    current ENUM('작성중', '심사중', '심사완료', '진행중') NOT NULL,
+    current ENUM('작성중', '심사중', '심사완료', '펀딩진행중', '펀딩종료') NOT NULL,
     category ENUM('캐릭터_굿즈', '홈_리빙', '사진', '게임', '키즈', '도서_전자책', '여행', '만화_웹툰',
                   '스포츠_아웃도어', '테크_가전', '자동차', '패션', '아트', '소셜', '영화_음악', '반려동물', '디자인') NOT NULL,
     organizer_name VARCHAR(255) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS funding (
     today_visitors INT DEFAULT 0,
     today_amount INT DEFAULT 0,
     current_amount INT DEFAULT 0,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     user_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );

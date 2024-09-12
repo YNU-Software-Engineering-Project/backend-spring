@@ -18,18 +18,19 @@ public class Funder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long funder_id;
+    private Long funderId;
 
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")  //닉네임, 전화번호, 주소,
     private User user;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
 
 
-    @OneToMany(mappedBy = "funder")
+    @OneToMany(mappedBy = "funder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectedReward> selrewardList;
 }
