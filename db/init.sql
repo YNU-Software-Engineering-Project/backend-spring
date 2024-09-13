@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     nickname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('ADMIN', 'USER', 'SUSPENDED') NOT NULL,
-    phone_number VARCHAR(20),
+    phone_number VARCHAR(20) NOT NULL,
     school_email VARCHAR(255),
     school_email_verified BOOLEAN,
     postal_code VARCHAR(10),
