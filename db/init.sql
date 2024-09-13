@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-INSERT INTO users (email, nickname, password, role, created_at)
-VALUES ('test@example.com', 'test_user', 'password123', 'USER', '2024-09-10 00:00:00');
+INSERT INTO users (email, nickname, password, role, phone_number, created_at)
+VALUES ('test@example.com', 'test_user', 'password123', 'USER', '010-1234-5678', '2024-09-10 00:00:00');
 
 CREATE TABLE IF NOT EXISTS funding (
     funding_id BIGINT AUTO_INCREMENT PRIMARY KEY,
