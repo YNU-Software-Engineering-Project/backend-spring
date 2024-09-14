@@ -1,4 +1,4 @@
-package sg.backend.service;
+/* package sg.backend.service;
 
 import org.springframework.http.ResponseEntity;
 import sg.backend.dto.request.auth.SignUpRequestDto;
@@ -8,3 +8,4 @@ public interface AuthService {
 
     ResponseEntity<? super SignUpResponseDto> signUp(SignUpRequestDto dto);
 }
+*/

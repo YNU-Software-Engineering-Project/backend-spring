@@ -1,4 +1,4 @@
-package sg.backend.controller;
+/* package sg.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,3 +26,4 @@ public class AuthApiController {
         return response;
     }
 }
+*/

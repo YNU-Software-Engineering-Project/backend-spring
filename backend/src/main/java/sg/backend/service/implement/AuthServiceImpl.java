@@ -1,4 +1,4 @@
-package sg.backend.service.implement;
+/* package sg.backend.service.implement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,3 +46,4 @@ public class AuthServiceImpl implements AuthService {
         return SignUpResponseDto.success();
     }
 }
+*/
