@@ -1,13 +1,13 @@
 version: '3'
 
 services:
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    networks:
-      - demo-network
+  #frontend:
+  #  build: ./frontend
+  #  container_name: frontend
+  #  ports:
+  #    - "3000:3000"
+  #  networks:
+  #    - demo-network
 
   backend:
     build: ./backend
@@ -45,7 +45,7 @@ services:
     networks:
       - demo-network
     depends_on:
-      - frontend
+  #    - frontend
       - backend
 
 networks:
