@@ -152,3 +152,11 @@ CREATE TABLE IF NOT EXISTS comment (
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS email_token (
+    email_token_id VARCHAR(36) PRIMARY KEY,
+    expiration_date TIMESTAMP NOT NULL,
+    expired BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL,
+    email VARCHAR(255)
+);

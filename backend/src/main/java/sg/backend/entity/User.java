@@ -50,4 +50,12 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Funder> funderList;
+
+    public void setSchoolEmail(String email) {
+        this.schoolEmail = email;
+    }
+
+    public void setSchoolEmailVerified(boolean b) {
+        schoolEmailVerified = b;
+    }
 }
