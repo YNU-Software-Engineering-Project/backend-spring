@@ -4,23 +4,23 @@ import lombok.Getter;
 
 @Getter
 public enum Category {
-    CHARACTER_GOODS("캐릭터_굿즈"),
-    HOME_LIVING("홈_리빙"),
-    PHOTOGRAPHY("사진"),
-    GAMES("게임"),
-    KIDS("키즈"),
-    BOOKS_EBOOKS("도서_전자책"),
-    TRAVEL("여행"),
-    COMICS_WEBTOONS("만화_웹툰"),
-    SPORTS_OUTDOOR("스포츠_아웃도어"),
-    TECH_ELECTRONICS("테크_가전"),
-    AUTOMOTIVE("자동차"),
-    FASHION("패션"),
-    ART("아트"),
-    SOCIAL("소셜"),
-    MOVIES_MUSIC("영화_음악"),
-    PETS("반려동물"),
-    DESIGN("디자인");
+    A0010("캐릭터·굿즈"),
+    A0020("홈·리빙"),
+    A0030("사진"),
+    A0040("게임"),
+    A0050("키즈"),
+    A0060("도서·전자책"),
+    A0070("여행"),
+    A0080("만화·웹툰"),
+    A0090("스포츠·아웃도어"),
+    A0100("테크·가전"),
+    A0110("자동차"),
+    A0120("패션"),
+    A0130("아트"),
+    A0140("소셜"),
+    A0150("영화·음악"),
+    A0160("반려동물"),
+    A0170("디자인");
 
     private final String message;
 

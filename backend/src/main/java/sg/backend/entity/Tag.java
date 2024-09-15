@@ -19,9 +19,11 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;
 
-    private Category largeCategory;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
-    private Category smallCategory;
+    @Enumerated(EnumType.STRING)
+    private SubCategory subCategory;
 
     private String tagName;
 

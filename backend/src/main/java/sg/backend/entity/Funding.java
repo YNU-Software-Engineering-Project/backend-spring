@@ -24,9 +24,14 @@ public class Funding {
     private Long fundingId;
 
     //게시물 정보
+    @Enumerated(EnumType.STRING)
     private State current;
 
+    @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private SubCategory subCategory;
 
     @NotBlank //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
     private String organizerName;

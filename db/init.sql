@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS funding (
     current ENUM('작성중', '심사중', '심사완료', '펀딩진행중', '펀딩종료') NOT NULL,
     category ENUM('캐릭터_굿즈', '홈_리빙', '사진', '게임', '키즈', '도서_전자책', '여행', '만화_웹툰',
                   '스포츠_아웃도어', '테크_가전', '자동차', '패션', '아트', '소셜', '영화_음악', '반려동물', '디자인') NOT NULL,
+    sub_category VARCHAR(255),
     organizer_name VARCHAR(255) NOT NULL,
     organizer_email VARCHAR(255) NOT NULL,
     tax_email VARCHAR(255) NOT NULL,
@@ -65,8 +66,9 @@ CREATE TABLE IF NOT EXISTS notification (
 CREATE TABLE IF NOT EXISTS tag (
     tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     tag_name VARCHAR(255) NOT NULL,
-    large_category VARCHAR(255) NOT NULL,
-    small_category VARCHAR(255) NOT NULL
+    category ENUM('캐릭터_굿즈', '홈_리빙', '사진', '게임', '키즈', '도서_전자책', '여행', '만화_웹툰',
+                  '스포츠_아웃도어', '테크_가전', '자동차', '패션', '아트', '소셜', '영화_음악', '반려동물', '디자인') NOT NULL,
+    sub_category VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS funding_tag (
