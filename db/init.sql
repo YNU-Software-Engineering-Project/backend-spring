@@ -56,7 +56,7 @@ VALUES ('작성중', '게임', '홍길동', 'honggildong@example.com', 'tax@exam
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     type ENUM('ALERT', 'MESSAGE', 'REMINDER') NOT NULL,
-    read BOOLEAN DEFAULT FALSE,
+    is_read BOOLEAN DEFAULT FALSE,
     user_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
