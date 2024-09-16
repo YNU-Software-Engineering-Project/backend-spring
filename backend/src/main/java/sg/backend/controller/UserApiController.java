@@ -29,7 +29,7 @@ public class UserApiController {
     @Operation(
             summary = "이메일 인증 토큰 요청",
             description = "사용자가 이메일 인증 토큰을 요청합니다.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            security = @SecurityRequirement(name = "bearerToken")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 토큰 발송 성공",
