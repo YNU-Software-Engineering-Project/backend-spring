@@ -23,4 +23,9 @@ public class EmailSendTokenResponseDto extends ResponseDto {
         ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
+
+    public static ResponseEntity<ResponseDto> invalidUniversityEmail() {
+        ResponseDto result = new ResponseDto(ResponseCode.INVALID_UNIVERSITY_EMAIL, ResponseMessage.INVALID_UNIVERSITY_EMAIL);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
 }

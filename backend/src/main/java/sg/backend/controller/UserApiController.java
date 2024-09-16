@@ -34,8 +34,8 @@ public class UserApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 토큰 발송 성공",
                     content = @Content(schema = @Schema(implementation = EmailSendTokenResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
-                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 대학교 이메일 형식이 아닌 경우",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @PostMapping("/email-verification")
     public ResponseEntity<? super EmailSendTokenResponseDto> sendEmailToken(
