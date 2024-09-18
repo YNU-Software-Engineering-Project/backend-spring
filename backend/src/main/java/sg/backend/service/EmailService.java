@@ -9,7 +9,7 @@ import sg.backend.entity.EmailToken;
 
 public interface EmailService {
     void sendEmail(MimeMessage email);
-    ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String emailTokenId);
+    ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, Long userId);
     EmailToken findByEmailTokenIdAndExpirationDateAfterAndExpired(String emailTokenId);
     ResponseEntity<? super EmailVerificationResponseDto> verifyEmail(String token);
 

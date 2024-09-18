@@ -36,12 +36,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String email) {
+    public ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, Long userId) {
 
         User user = null;
 
         try {
-            user = userRepository.findByEmail(email);
+            user = userRepository.findByUserId(userId);
             if(user == null) return EmailSendTokenResponseDto.noExistUser();
 
             String receiverEmail = dto.getEmail();

@@ -28,21 +28,24 @@ public class UserApiController {
 
     @Operation(
             summary = "이메일 인증 토큰 요청",
-            description = "사용자가 이메일 인증 토큰을 요청합니다.",
             security = @SecurityRequirement(name = "bearerToken")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 토큰 발송 성공",
                     content = @Content(schema = @Schema(implementation = EmailSendTokenResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 대학교 이메일 형식이 아닌 경우",
+            @ApiResponse(responseCode = "400", description = """
+                    잘못된 요청
+                    - 존재하지 않는 사용자
+                    - 대학교 메일 주소가 아닌 경우 
+                    """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @PostMapping("/email-verification")
     public ResponseEntity<? super EmailSendTokenResponseDto> sendEmailToken(
             @RequestBody @Valid EmailSendTokenRequestDto requestBody,
-            @AuthenticationPrincipal String email
+            @AuthenticationPrincipal Long userId
     ) {
-        ResponseEntity<? super EmailSendTokenResponseDto> response = emailService.createEmailToken(requestBody, email);
+        ResponseEntity<? super EmailSendTokenResponseDto> response = emailService.createEmailToken(requestBody, userId);
         return response;
     }
 }

@@ -23,11 +23,15 @@ public class EmailApiController {
 
     private final EmailService emailService;
 
-    @Operation(summary = "이메일 인증 확인", description = "토큰을 사용해 이메일 인증을 확인합니다.")
+    @Operation(summary = "이메일 인증 확인")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 성공",
                     content = @Content(schema = @Schema(implementation = EmailVerificationResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 토큰 또는 존재하지 않는 사용자",
+            @ApiResponse(responseCode = "400", description = """
+                    잘못된 요청
+                    - 존재하지 않는 사용자
+                    - 유효하지 않은 토큰 
+                    """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/confirm-email")
