@@ -56,12 +56,13 @@ VALUES ('DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@
 
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    type ENUM('ALERT', 'MESSAGE', 'REMINDER') NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
     user_id BIGINT,
+    message VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+INSERT INTO notification (message, user_id) VALUES ('새로운 프로젝트를 시작해보세요.', 1);
 
 CREATE TABLE IF NOT EXISTS tag (
     tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
