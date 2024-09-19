@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PatchPhoneNumberRequestDto {
 
-    @NotBlank
-    @Pattern(regexp = "^[0-9]{11,13}$")
+    @NotBlank(message = "휴대폰 번호는 010으로 시작하는 11자리 숫자와 '-'로 구성되어야 합니다.")
+    @Pattern(regexp = "^010-\\d{3,4}-\\d{4}$")
     private String phoneNumber;
 }
