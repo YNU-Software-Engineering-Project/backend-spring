@@ -57,12 +57,12 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo(receiverEmail);
-            helper.setSubject("SparkSeed 대학 이메일 인증");
+            helper.setSubject("SparkSeed 대학교 메일 인증");
 
             String body = "<div>"
                     + "<h1> 안녕하세요. SparkSeed 입니다</h1>"
                     + "<br>"
-                    + "<p>아래 링크를 클릭하면 대학 이메일 인증이 완료됩니다.<p>"
+                    + "<p>아래 링크를 클릭하면 대학교 메일 인증이 완료됩니다.<p>"
                     + "<a href='http://localhost:8080/confirm-email?token=" + emailToken.getEmailTokenId() + "'>인증 링크</a>"
                     + "</div>";
 

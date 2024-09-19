@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EmailSendTokenRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "이메일 주소를 입력해주세요.")
     @Email
     private String email;
 }
