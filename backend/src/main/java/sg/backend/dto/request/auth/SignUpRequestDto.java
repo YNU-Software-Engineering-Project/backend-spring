@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SignUpRequestDto {
+public class SignUpRequestDto{
 
     @NotBlank
     @Email
@@ -21,4 +21,7 @@ public class SignUpRequestDto {
 
     @NotBlank @Size(min=8, max=20)
     private String password;
+    private String passwordConfirm;
+
+    private String poneNumber;
 }
