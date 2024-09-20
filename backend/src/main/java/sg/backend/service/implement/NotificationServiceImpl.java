@@ -1,7 +1,11 @@
 package sg.backend.service.implement;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.notification.DeleteNotificationsResponseDto;
@@ -12,8 +16,6 @@ import sg.backend.repository.NotificationRepository;
 import sg.backend.repository.UserRepository;
 import sg.backend.service.NotificationService;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
@@ -22,16 +24,18 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
-    public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(Long userId) {
+    public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(Long userId, int page, int size) {
 
         User user = null;
-        List<Notification> notificationList;
+        Page<Notification> notificationList;
 
         try {
+            userId = 1L;
             user = userRepository.findByUserId(userId);
             if(user == null) return GetNotificationsResponseDto.noExistUser();
 
-            notificationList = notificationRepository.findByUser(user);
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            notificationList = notificationRepository.findByUser(user, pageRequest);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,6 +51,7 @@ public class NotificationServiceImpl implements NotificationService {
         User user = null;
 
         try {
+            userId = 1L;
             user = userRepository.findByUserId(userId);
             if(user == null) return DeleteNotificationsResponseDto.noExistUser();
 
