@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetUserWishListResponseDto;
-import sg.backend.service.FundingService;
+import sg.backend.service.UserService;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
-public class FundingApiController {
+public class UserApiController {
 
-    private final FundingService fundingService;
+    private final UserService userService;
 
     @Operation(
             summary = "위시리스트 조회",
@@ -40,7 +40,7 @@ public class FundingApiController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetUserWishListResponseDto> response = fundingService.getWishList(userId, page, size);
+        ResponseEntity<? super GetUserWishListResponseDto> response = userService.getWishList(userId, page, size);
         return response;
     }
 

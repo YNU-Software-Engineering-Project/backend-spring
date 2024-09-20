@@ -15,14 +15,14 @@ import sg.backend.entity.User;
 import sg.backend.repository.FundingLikeRepository;
 import sg.backend.repository.FundingTagRepository;
 import sg.backend.repository.UserRepository;
-import sg.backend.service.FundingService;
+import sg.backend.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FundingServiceImpl implements FundingService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FundingLikeRepository fundingLikeRepository;
@@ -35,11 +35,12 @@ public class FundingServiceImpl implements FundingService {
         List<FundingDataDto> data = new ArrayList<>();
 
         try {
+            userId = 1L;
             user = userRepository.findByUserId(userId);
             if(user == null) return GetUserWishListResponseDto.noExistUser();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Page<Funding> fundingList = fundingLikeRepository.findFundingLikedByUser(user, pageRequest);
+            Page<Funding> fundingList = fundingLikeRepository.findFundingLikedByUserId(userId, pageRequest);
 
             for(Funding f : fundingList) {
                 FundingDataDto dto = new FundingDataDto();
