@@ -15,6 +15,6 @@ public class FundingDataDto {
     private String subCategory;
     private List<String> tag;
     private int achievementRate;
-    private boolean like;
+    private boolean isLike;
     private String state;
 }

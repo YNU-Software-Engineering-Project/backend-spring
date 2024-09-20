@@ -136,6 +136,9 @@ CREATE TABLE IF NOT EXISTS funder (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+INSERT INTO funder (funding_id, user_id)
+VALUES (1, 1);
+
 CREATE TABLE IF NOT EXISTS selected_reward (
     selreward_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     funder_id BIGINT,

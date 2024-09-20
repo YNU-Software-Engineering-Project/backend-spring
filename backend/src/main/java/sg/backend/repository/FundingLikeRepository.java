@@ -11,6 +11,8 @@ import sg.backend.entity.User;
 
 public interface FundingLikeRepository extends JpaRepository<FundingLike, Long> {
 
+    boolean existsByUserAndFunding(User user, Funding funding);
+
     @Query("SELECT fl.funding FROM FundingLike fl WHERE fl.user.userId = :userId")
     Page<Funding> findFundingLikedByUserId(@Param("userId") Long userId, Pageable pageable);
 }

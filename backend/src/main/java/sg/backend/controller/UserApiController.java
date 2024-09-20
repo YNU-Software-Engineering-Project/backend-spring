@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.funding.GetUserWishListResponseDto;
+import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.service.UserService;
 
 @RestController
@@ -30,18 +30,37 @@ public class UserApiController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "위시리스트 조회 성공",
-                    content = @Content(schema = @Schema(implementation = GetUserWishListResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = GetFundingListResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
-    @GetMapping("wishlist")
-    public ResponseEntity<? super GetUserWishListResponseDto> getNotifications(
+    @GetMapping("/wishlist")
+    public ResponseEntity<? super GetFundingListResponseDto> getWishList(
             @AuthenticationPrincipal Long userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetUserWishListResponseDto> response = userService.getWishList(userId, page, size);
+        ResponseEntity<? super GetFundingListResponseDto> response = userService.getWishList(userId, page, size);
         return response;
     }
 
+    @Operation(
+            summary = "참여한 펀딩 리스트 조회",
+            security = @SecurityRequirement(name = "bearerToken")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "참여한 펀딩 리스트 조회 성공",
+                    content = @Content(schema = @Schema(implementation = GetFundingListResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @GetMapping("/pledges")
+    public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        ResponseEntity<? super GetFundingListResponseDto> response = userService.getPledgeList(userId, page, size);
+        return response;
+    }
 }

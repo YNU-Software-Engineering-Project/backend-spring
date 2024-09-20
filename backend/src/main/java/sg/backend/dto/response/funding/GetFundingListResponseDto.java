@@ -11,17 +11,17 @@ import sg.backend.dto.response.ResponseDto;
 import java.util.List;
 
 @Getter
-public class GetUserWishListResponseDto extends ResponseDto {
+public class GetFundingListResponseDto extends ResponseDto {
 
     private List<FundingDataDto> data;
 
-    private GetUserWishListResponseDto(List<FundingDataDto> data) {
+    private GetFundingListResponseDto(List<FundingDataDto> data) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.data = data;
     }
 
-    public static ResponseEntity<GetUserWishListResponseDto> success(List<FundingDataDto> data) {
-        GetUserWishListResponseDto result = new GetUserWishListResponseDto(data);
+    public static ResponseEntity<GetFundingListResponseDto> success(List<FundingDataDto> data) {
+        GetFundingListResponseDto result = new GetFundingListResponseDto(data);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

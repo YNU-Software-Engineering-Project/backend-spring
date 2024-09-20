@@ -8,10 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.object.FundingDataDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.funding.GetUserWishListResponseDto;
+import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.entity.Funding;
 import sg.backend.entity.Tag;
 import sg.backend.entity.User;
+import sg.backend.repository.FunderRepository;
 import sg.backend.repository.FundingLikeRepository;
 import sg.backend.repository.FundingTagRepository;
 import sg.backend.repository.UserRepository;
@@ -27,17 +28,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FundingLikeRepository fundingLikeRepository;
     private final FundingTagRepository fundingTagRepository;
+    private final FunderRepository funderRepository;
 
     @Override
-    public ResponseEntity<? super GetUserWishListResponseDto> getWishList(Long userId, int page, int size) {
+    public ResponseEntity<? super GetFundingListResponseDto> getWishList(Long userId, int page, int size) {
 
         User user = null;
         List<FundingDataDto> data = new ArrayList<>();
 
         try {
-            userId = 1L;
             user = userRepository.findByUserId(userId);
-            if(user == null) return GetUserWishListResponseDto.noExistUser();
+            if(user == null) return GetFundingListResponseDto.noExistUser();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
             Page<Funding> fundingList = fundingLikeRepository.findFundingLikedByUserId(userId, pageRequest);
@@ -74,6 +75,54 @@ public class UserServiceImpl implements UserService {
             return ResponseDto.databaseError();
         }
 
-        return GetUserWishListResponseDto.success(data);
+        return GetFundingListResponseDto.success(data);
+    }
+
+    @Override
+    public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(Long userId, int page, int size) {
+        User user = null;
+        List<FundingDataDto> data = new ArrayList<>();
+
+        try {
+            user = userRepository.findByUserId(userId);
+            if(user == null) return GetFundingListResponseDto.noExistUser();
+
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<Funding> fundingList = funderRepository.findFundingByUserId(userId, pageRequest);
+
+            for(Funding f : fundingList) {
+                FundingDataDto dto = new FundingDataDto();
+                dto.setTitle(f.getTitle());
+                dto.setMainImage(f.getMainImage());
+                dto.setProjectSummary(f.getProjectSummary());
+                dto.setCategory(String.valueOf(f.getCategory()));
+                dto.setSubCategory(String.valueOf(f.getSubCategory()));
+
+                List<Tag> tagList = fundingTagRepository.findTagByFundingId(f.getFundingId());
+                List<String> tag = new ArrayList<>();
+                for(Tag t : tagList) {
+                    tag.add(t.getTagName());
+                }
+                dto.setTag(tag);
+
+                int targetAmount = f.getTargetAmount();
+                int currentAmount = f.getCurrentAmount();
+                int achievementRate;
+                if(currentAmount == 0) achievementRate = 0;
+                else achievementRate = (int) (((double) currentAmount / targetAmount) * 100);
+                dto.setAchievementRate(achievementRate);
+
+                boolean isLike = fundingLikeRepository.existsByUserAndFunding(user, f);
+                dto.setLike(isLike);
+                dto.setState(String.valueOf(f.getCurrent()));
+                data.add(dto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetFundingListResponseDto.success(data);
     }
 }
