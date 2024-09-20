@@ -7,15 +7,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.object.FundingDataDto;
+import sg.backend.dto.object.MyFundingDataDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.entity.Funding;
 import sg.backend.entity.Tag;
 import sg.backend.entity.User;
-import sg.backend.repository.FunderRepository;
-import sg.backend.repository.FundingLikeRepository;
-import sg.backend.repository.FundingTagRepository;
-import sg.backend.repository.UserRepository;
+import sg.backend.repository.*;
 import sg.backend.service.UserService;
 
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final FundingLikeRepository fundingLikeRepository;
     private final FundingTagRepository fundingTagRepository;
     private final FunderRepository funderRepository;
+    private final FundingRepository fundingRepository;
 
     @Override
     public ResponseEntity<? super GetFundingListResponseDto> getWishList(Long userId, int page, int size) {
@@ -80,6 +80,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(Long userId, int page, int size) {
+
         User user = null;
         List<FundingDataDto> data = new ArrayList<>();
 
@@ -124,5 +125,40 @@ public class UserServiceImpl implements UserService {
         }
 
         return GetFundingListResponseDto.success(data);
+    }
+
+    @Override
+    public ResponseEntity<? super GetMyFundingListResponseDto> getMyFundingList(Long userId, int page, int size) {
+
+        User user = null;
+        List<MyFundingDataDto> data = new ArrayList<>();
+        int todayAmount = 0;
+        int todayLikes = 0;
+
+        try {
+            userId = 1L;
+            user = userRepository.findByUserId(userId);
+            if(user == null) return GetMyFundingListResponseDto.noExistUser();
+
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<Funding> fundingList = fundingRepository.findByUserUserId(userId, pageRequest);
+
+            for(Funding f : fundingList) {
+                MyFundingDataDto dto = new MyFundingDataDto();
+                dto.setTitle(f.getTitle());
+                dto.setMainImage(f.getMainImage());
+                dto.setState(String.valueOf(f.getCurrent()));
+
+                todayAmount += f.getTodayAmount();
+                todayLikes += f.getTodayLikes();
+                data.add(dto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetMyFundingListResponseDto.success(data, todayAmount, todayLikes);
     }
 }

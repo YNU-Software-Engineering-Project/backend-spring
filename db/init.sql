@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS funding (
     product_info TEXT,
     refund_policy TEXT,
     total_likes INT DEFAULT 0,
+    today_likes INT DEFAULT 0,
     total_visitors INT DEFAULT 0,
     today_visitors INT DEFAULT 0,
     today_amount INT DEFAULT 0,

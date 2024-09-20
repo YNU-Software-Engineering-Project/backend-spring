@@ -69,6 +69,8 @@ public class Funding {
     //상황판
     private Integer totalLikes;
 
+    private Integer todayLikes;
+
     private Integer totalVisitors;
 
     private Integer todayVisitors;
