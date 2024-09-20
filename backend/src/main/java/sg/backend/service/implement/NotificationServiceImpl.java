@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.response.ResponseDto;
+import sg.backend.dto.response.notification.DeleteNotificationResponseDto;
 import sg.backend.dto.response.notification.DeleteNotificationsResponseDto;
 import sg.backend.dto.response.notification.GetNotificationsResponseDto;
 import sg.backend.entity.Notification;
@@ -15,6 +16,8 @@ import sg.backend.entity.User;
 import sg.backend.repository.NotificationRepository;
 import sg.backend.repository.UserRepository;
 import sg.backend.service.NotificationService;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,6 @@ public class NotificationServiceImpl implements NotificationService {
         Page<Notification> notificationList;
 
         try {
-            userId = 1L;
             user = userRepository.findByUserId(userId);
             if(user == null) return GetNotificationsResponseDto.noExistUser();
 
@@ -51,7 +53,6 @@ public class NotificationServiceImpl implements NotificationService {
         User user = null;
 
         try {
-            userId = 1L;
             user = userRepository.findByUserId(userId);
             if(user == null) return DeleteNotificationsResponseDto.noExistUser();
 
@@ -63,5 +64,28 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         return DeleteNotificationsResponseDto.success();
+    }
+
+    @Override
+    public ResponseEntity<? super DeleteNotificationResponseDto> deleteNotification(Long userId, Long notificationId) {
+
+        User user = null;
+
+        try {
+            user = userRepository.findByUserId(userId);
+            if(user == null) return DeleteNotificationResponseDto.noExistUser();
+
+            Optional<Notification> notification = notificationRepository.findById(notificationId);
+            if(!notification.isPresent())
+                return DeleteNotificationResponseDto.noExistNotification();
+
+            notificationRepository.deleteById(notificationId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return DeleteNotificationResponseDto.success();
     }
 }

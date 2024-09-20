@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
+import sg.backend.dto.response.notification.DeleteNotificationResponseDto;
 import sg.backend.dto.response.notification.DeleteNotificationsResponseDto;
 import sg.backend.dto.response.notification.GetNotificationsResponseDto;
 import sg.backend.service.NotificationService;
@@ -34,9 +35,11 @@ public class NotificationApiController {
     })
     @GetMapping("")
     public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(
-            @AuthenticationPrincipal Long userId
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetNotificationsResponseDto> response = notificationService.getNotifications(userId);
+        ResponseEntity<? super GetNotificationsResponseDto> response = notificationService.getNotifications(userId, page, size);
         return response;
     }
 
@@ -55,6 +58,29 @@ public class NotificationApiController {
             @AuthenticationPrincipal Long userId
     ) {
         ResponseEntity<? super DeleteNotificationsResponseDto> response = notificationService.deleteNotifications(userId);
+        return response;
+    }
+
+    @Operation(
+            summary = "특정 알림 삭제",
+            security = @SecurityRequirement(name = "bearerToken")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
+                    content = @Content(schema = @Schema(implementation = DeleteNotificationResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = """
+                    잘못된 요청
+                    - 존재하지 않는 사용자
+                    - 존재하지 않는 알림
+                    """,
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+    })
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<? super DeleteNotificationResponseDto> deleteNotification(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long notificationId
+    ) {
+        ResponseEntity<? super DeleteNotificationResponseDto> response = notificationService.deleteNotification(userId, notificationId);
         return response;
     }
 }
