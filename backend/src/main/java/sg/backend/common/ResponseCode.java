@@ -12,7 +12,6 @@ public interface ResponseCode {
     String NOT_EXISTED_USER = "NU";
     String NOT_EXISTED_BOARD = "NB";
     String EMAIL_TOKEN_NOT_FOUND = "ETNF";
-    String INVALID_UNIVERSITY_EMAIL = "IUE";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";

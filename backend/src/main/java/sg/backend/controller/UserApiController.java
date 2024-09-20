@@ -36,7 +36,7 @@ public class UserApiController {
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청
                     - 존재하지 않는 사용자
-                    - 대학교 메일 주소가 아닌 경우 
+                    - 대학교 메일 주소가 아닌 경우(ac.kr)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })

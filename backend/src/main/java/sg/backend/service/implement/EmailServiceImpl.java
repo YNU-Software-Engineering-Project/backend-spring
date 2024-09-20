@@ -47,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
             String receiverEmail = dto.getEmail();
             int index = receiverEmail.indexOf("@");
             String domain = receiverEmail.substring(index+1);
-            if(!domain.contains("ac.kr")) return EmailSendTokenResponseDto.invalidUniversityEmail();
+            if(!domain.contains("ac.kr")) return EmailSendTokenResponseDto.validationFailed();
 
             EmailToken emailToken = EmailToken.createEmailToken(user.getUserId());
             emailToken.setEmail(receiverEmail);

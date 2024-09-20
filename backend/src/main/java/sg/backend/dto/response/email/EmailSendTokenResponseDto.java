@@ -24,8 +24,8 @@ public class EmailSendTokenResponseDto extends ResponseDto {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
-    public static ResponseEntity<ResponseDto> invalidUniversityEmail() {
-        ResponseDto result = new ResponseDto(ResponseCode.INVALID_UNIVERSITY_EMAIL, ResponseMessage.INVALID_UNIVERSITY_EMAIL);
+    public static ResponseEntity<ResponseDto> validationFailed() {
+        ResponseDto result = new ResponseDto(ResponseCode.VALUDATION_FAILED, ResponseMessage.VALUDATION_FAILED);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 }
