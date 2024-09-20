@@ -64,6 +64,7 @@ public class FundingServiceImpl implements FundingService {
                 dto.setAchievementRate(achievementRate);
 
                 dto.setLike(true);
+                dto.setState(String.valueOf(f.getCurrent()));
                 data.add(dto);
             }
 
