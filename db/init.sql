@@ -19,8 +19,11 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-INSERT INTO users (email, nickname, password, role, phone_number, created_at)
-VALUES ('test@example.com', 'test_user', 'password123', 'USER', '010-1234-5678', '2024-09-10 00:00:00');
+INSERT INTO users (email, nickname, password, role, phone_number)
+VALUES ('test@example.com', 'test_user', 'password123', 'USER', '010-1234-5678');
+
+INSERT INTO users (email, nickname, password, role, phone_number)
+VALUES ('test2@example.com', 'test_user2', 'password123', 'USER', '010-1111-2222');
 
 CREATE TABLE IF NOT EXISTS funding (
     funding_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -55,7 +58,16 @@ INSERT INTO funding (current_amount, target_amount, current, category, sub_categ
 VALUES (75000, 100000, 'DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
 
 INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
-VALUES (75000, 100000, 'DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
+VALUES (25000, 100000, 'REVIEW', 'A0010', 'B0170', 'testuser', 'test@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
+
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (80000, 100000, 'REVIEW_COMPLETED', 'A0020', 'B0160', 'testuser2', 'test2@example.com', 'tax@example.com', '/path/to/id_card.jpg', 2);
+
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (30000, 100000, 'ONGOING', 'A0050', 'B0150', 'testuser3', 'test3@example.com', 'tax@example.com', '/path/to/id_card.jpg', 2);
+
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (50000, 100000, 'CLOSED', 'A0060', 'B0140', 'testuser4', 'test4@example.com', 'tax@example.com', '/path/to/id_card.jpg', 2);
 
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -102,7 +114,10 @@ CREATE TABLE IF NOT EXISTS funding_like (
 );
 
 INSERT INTO funding_like (user_id, funding_id)
-VALUES (1, 1);
+VALUES (1, 3);
+
+INSERT INTO funding_like (user_id, funding_id)
+VALUES (1, 4);
 
 CREATE TABLE IF NOT EXISTS approval_document (
     document_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -138,7 +153,10 @@ CREATE TABLE IF NOT EXISTS funder (
 );
 
 INSERT INTO funder (funding_id, user_id)
-VALUES (1, 1);
+VALUES (5, 1);
+
+INSERT INTO funder (funding_id, user_id)
+VALUES (4, 1);
 
 CREATE TABLE IF NOT EXISTS selected_reward (
     selreward_id BIGINT AUTO_INCREMENT PRIMARY KEY,
