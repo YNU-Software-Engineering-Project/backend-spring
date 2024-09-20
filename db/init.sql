@@ -50,9 +50,11 @@ CREATE TABLE IF NOT EXISTS funding (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
-INSERT INTO funding (current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
-VALUES ('DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (75000, 100000, 'DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
 
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (75000, 100000, 'DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
 
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -67,9 +69,14 @@ CREATE TABLE IF NOT EXISTS tag (
     tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     tag_name VARCHAR(255) NOT NULL,
     category ENUM('A0010', 'A0020', 'A0030', 'A0040', 'A0050', 'A0060', 'A0070', 'A0080',
-                  'A0090', 'A0100', 'A0110', 'A0120', 'A0130', 'A0140', 'A0150', 'A0160', 'A0170') NOT NULL,
-    sub_category VARCHAR(255) NOT NULL
+                  'A0090', 'A0100', 'A0110', 'A0120', 'A0130', 'A0140', 'A0150', 'A0160', 'A0170'),
+    sub_category VARCHAR(255)
 );
+INSERT INTO tag (tag_name)
+VALUES ('태그1');
+
+INSERT INTO tag (tag_name)
+VALUES ('태그2');
 
 CREATE TABLE IF NOT EXISTS funding_tag (
     funding_tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -78,6 +85,11 @@ CREATE TABLE IF NOT EXISTS funding_tag (
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
     FOREIGN KEY (tag_id) REFERENCES tag(tag_id)
 );
+INSERT INTO funding_tag (tag_id, funding_id)
+VALUES (1, 1);
+
+INSERT INTO funding_tag (tag_id, funding_id)
+VALUES (2, 1);
 
 CREATE TABLE IF NOT EXISTS funding_like (
     funding_like_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -87,6 +99,9 @@ CREATE TABLE IF NOT EXISTS funding_like (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id)
 );
+
+INSERT INTO funding_like (user_id, funding_id)
+VALUES (1, 1);
 
 CREATE TABLE IF NOT EXISTS approval_document (
     document_id BIGINT AUTO_INCREMENT PRIMARY KEY,
