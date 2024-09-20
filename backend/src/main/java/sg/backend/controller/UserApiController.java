@@ -71,7 +71,7 @@ public class UserApiController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "내 펀딩 리스트 조회 성공",
-                    content = @Content(schema = @Schema(implementation = GetFundingListResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = GetMyFundingListResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })

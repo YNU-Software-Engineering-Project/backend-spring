@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
             user = userRepository.findByUserId(userId);
             if(user == null) return GetFundingListResponseDto.noExistUser();
 
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Page<Funding> fundingList = fundingLikeRepository.findFundingLikedByUserId(userId, pageRequest);
+            PageRequest pageRequest = PageRequest.of(page, size);
+            Page<Funding> fundingList = fundingLikeRepository.findFundingLikedByUserIdOrderByLikeCreatedAt(userId, pageRequest);
 
             for(Funding f : fundingList) {
                 FundingDataDto dto = new FundingDataDto();
@@ -88,8 +88,8 @@ public class UserServiceImpl implements UserService {
             user = userRepository.findByUserId(userId);
             if(user == null) return GetFundingListResponseDto.noExistUser();
 
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Page<Funding> fundingList = funderRepository.findFundingByUserId(userId, pageRequest);
+            PageRequest pageRequest = PageRequest.of(page, size);
+            Page<Funding> fundingList = funderRepository.findFundingByUserIdOrderByFunderCreatedAt(userId, pageRequest);
 
             for(Funding f : fundingList) {
                 FundingDataDto dto = new FundingDataDto();
@@ -136,7 +136,6 @@ public class UserServiceImpl implements UserService {
         int todayLikes = 0;
 
         try {
-            userId = 1L;
             user = userRepository.findByUserId(userId);
             if(user == null) return GetMyFundingListResponseDto.noExistUser();
 
