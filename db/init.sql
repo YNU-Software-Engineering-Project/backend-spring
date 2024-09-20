@@ -152,3 +152,9 @@ CREATE TABLE IF NOT EXISTS comment (
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+CREATE TABLE refresh_token (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    refresh_token VARCHAR(255) NOT NULL
+);

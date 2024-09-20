@@ -18,3 +18,7 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
+
+jwt:
+  issuer: "SpeedSpark"
+  secretKey: "F2C45E466AD5CD862BF16FDA25B64"
