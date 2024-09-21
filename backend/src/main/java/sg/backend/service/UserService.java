@@ -1,6 +1,9 @@
 package sg.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import sg.backend.dto.request.auth.LoginRequestDto;
+import sg.backend.dto.request.auth.SignUpRequestDto;
+import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.entity.User;
 import sg.backend.repository.UserRepository;
@@ -26,7 +29,6 @@ import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
 import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.entity.User;
 import sg.backend.repository.UserRepository;
-
 import java.io.File;
 import java.util.UUID;
 import java.time.Duration;
@@ -52,6 +54,7 @@ public class UserService{
 
         if (!signupRequestDto.getPassword().equals(signupRequestDto.getPasswordConfirm())) {
             return ResponseEntity.badRequest()
+
                     .body(new ResponseDto(ResponseCode.VALIDATION_FAILED, ResponseMessage.VALIDATION_FAILED));
         }
 
@@ -61,6 +64,18 @@ public class UserService{
 
         String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
         return SignUpResponseDto.success(accessToken);
+    }
+  
+    public ResponseEntity<?> login(LoginRequestDto loginRequestDto){
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            return LoginResponseDto.failure();
+        }
+
+        String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
+        return LoginResponseDto.success(accessToken);
     }
 
     public User findById(Long id){

@@ -41,3 +41,4 @@ jwt:
 
 file.path: /app/files/
 file.url: http://localhost:8080/file/
+
