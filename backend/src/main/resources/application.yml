@@ -37,7 +37,7 @@ logging:
 
 jwt:
   issuer: "SpeedSpark"
-  secretKey: "{.env}"
+  secretKey: ${SECRETKEY}
 
 file.path: /app/files/
 file.url: http://localhost:8080/file/
