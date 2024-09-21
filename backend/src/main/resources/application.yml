@@ -2,6 +2,22 @@ server:
   port: 8080
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL}
+    password: ${PW}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://db:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false
@@ -18,3 +34,11 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
+
+jwt:
+  issuer: "SpeedSpark"
+  secretKey: "F2C45E466AD5CD862BF16FDA25B64dfdgsegewgewegwdggsagr"
+
+file.path: /app/files/
+file.url: http://localhost:8080/file/
+

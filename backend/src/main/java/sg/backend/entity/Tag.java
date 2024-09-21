@@ -26,8 +26,4 @@ public class Tag {
     private SubCategory subCategory;
 
     private String tagName;
-
-    @ManyToMany(mappedBy = "tagList")
-    private List<Funding> fundingList;
-
 }
