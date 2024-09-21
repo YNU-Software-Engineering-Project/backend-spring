@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @SecurityScheme(
-        name = "bearerToken",
+        name = "Bearer 토큰 값",
         type = SecuritySchemeType.HTTP,
         scheme = "bearer",
         bearerFormat = "JWT"

@@ -17,7 +17,7 @@ public class FileController {
     private final FileService fileService;
 
     @Operation(
-            summary = "파일 가져오기"
+            summary = "이미지 불러오기"
     )
     @GetMapping(value = "/{fileName}")
     public Resource getImage(

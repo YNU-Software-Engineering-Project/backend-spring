@@ -12,6 +12,7 @@ import sg.backend.dto.request.email.EmailSendTokenRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.email.EmailSendTokenResponseDto;
 import sg.backend.dto.response.user.EmailVerificationResponseDto;
+import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.entity.EmailToken;
 import sg.backend.entity.User;
 import sg.backend.repository.EmailTokenRepository;
@@ -33,13 +34,14 @@ public class EmailService {
         javaMailSender.send(email);
     }
 
-    public ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, Long userId) {
+    public ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String email) {
 
-        User user = null;
+        User user;
 
         try {
-            user = userRepository.findByUserId(userId);
-            if(user == null) return EmailSendTokenResponseDto.noExistUser();
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            user = optionalUser.get();
 
             String receiverEmail = dto.getEmail();
             int index = receiverEmail.indexOf("@");

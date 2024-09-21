@@ -25,7 +25,7 @@ public class NotificationController {
 
     @Operation(
             summary = "알림 목록 조회",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 목록 조회 성공",
@@ -35,17 +35,17 @@ public class NotificationController {
     })
     @GetMapping("")
     public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetNotificationsResponseDto> response = notificationService.getNotifications(userId, page, size);
+        ResponseEntity<? super GetNotificationsResponseDto> response = notificationService.getNotifications(email, page, size);
         return response;
     }
 
     @Operation(
             summary = "모든 알림 삭제",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
@@ -55,15 +55,15 @@ public class NotificationController {
     })
     @DeleteMapping("")
     public ResponseEntity<? super DeleteNotificationsResponseDto> deleteNotifications(
-            @AuthenticationPrincipal Long userId
+            @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super DeleteNotificationsResponseDto> response = notificationService.deleteNotifications(userId);
+        ResponseEntity<? super DeleteNotificationsResponseDto> response = notificationService.deleteNotifications(email);
         return response;
     }
 
     @Operation(
             summary = "특정 알림 삭제",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
@@ -77,10 +77,10 @@ public class NotificationController {
     })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<? super DeleteNotificationResponseDto> deleteNotification(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long notificationId
     ) {
-        ResponseEntity<? super DeleteNotificationResponseDto> response = notificationService.deleteNotification(userId, notificationId);
+        ResponseEntity<? super DeleteNotificationResponseDto> response = notificationService.deleteNotification(email, notificationId);
         return response;
     }
 }

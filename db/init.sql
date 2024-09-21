@@ -19,8 +19,11 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-INSERT INTO users (email, nickname, password, role, phone_number, created_at)
-VALUES ('test@example.com', 'test_user', 'password123', 'USER', '010-1234-5678', '2024-09-10 00:00:00');
+INSERT INTO users (email, nickname, password, role, phone_number)
+VALUES ('test@example.com', 'test_user', 'password123', 'USER', '010-1234-5678');
+
+INSERT INTO users (email, nickname, password, role, phone_number)
+VALUES ('test2@example.com', 'test_user2', 'password123', 'USER', '010-1111-2222');
 
 CREATE TABLE IF NOT EXISTS funding (
     funding_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -41,6 +44,7 @@ CREATE TABLE IF NOT EXISTS funding (
     product_info TEXT,
     refund_policy TEXT,
     total_likes INT DEFAULT 0,
+    today_likes INT DEFAULT 0,
     total_visitors INT DEFAULT 0,
     today_visitors INT DEFAULT 0,
     today_amount INT DEFAULT 0,
@@ -50,9 +54,20 @@ CREATE TABLE IF NOT EXISTS funding (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
-INSERT INTO funding (current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
-VALUES ('DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (75000, 100000, 'DRAFT', 'A0040', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
 
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (25000, 100000, 'REVIEW', 'A0010', 'B0170', 'testuser', 'test@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
+
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (80000, 100000, 'REVIEW_COMPLETED', 'A0020', 'B0160', 'testuser2', 'test2@example.com', 'tax@example.com', '/path/to/id_card.jpg', 2);
+
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (30000, 100000, 'ONGOING', 'A0050', 'B0150', 'testuser3', 'test3@example.com', 'tax@example.com', '/path/to/id_card.jpg', 2);
+
+INSERT INTO funding (current_amount, target_amount, current, category, sub_category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
+VALUES (50000, 100000, 'CLOSED', 'A0060', 'B0140', 'testuser4', 'test4@example.com', 'tax@example.com', '/path/to/id_card.jpg', 2);
 
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -68,9 +83,14 @@ CREATE TABLE IF NOT EXISTS tag (
     tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     tag_name VARCHAR(255) NOT NULL,
     category ENUM('A0010', 'A0020', 'A0030', 'A0040', 'A0050', 'A0060', 'A0070', 'A0080',
-                  'A0090', 'A0100', 'A0110', 'A0120', 'A0130', 'A0140', 'A0150', 'A0160', 'A0170') NOT NULL,
-    sub_category VARCHAR(255) NOT NULL
+                  'A0090', 'A0100', 'A0110', 'A0120', 'A0130', 'A0140', 'A0150', 'A0160', 'A0170'),
+    sub_category VARCHAR(255)
 );
+INSERT INTO tag (tag_name)
+VALUES ('태그1');
+
+INSERT INTO tag (tag_name)
+VALUES ('태그2');
 
 CREATE TABLE IF NOT EXISTS funding_tag (
     funding_tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -79,6 +99,11 @@ CREATE TABLE IF NOT EXISTS funding_tag (
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
     FOREIGN KEY (tag_id) REFERENCES tag(tag_id)
 );
+INSERT INTO funding_tag (tag_id, funding_id)
+VALUES (1, 1);
+
+INSERT INTO funding_tag (tag_id, funding_id)
+VALUES (2, 1);
 
 CREATE TABLE IF NOT EXISTS funding_like (
     funding_like_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -88,6 +113,12 @@ CREATE TABLE IF NOT EXISTS funding_like (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id)
 );
+
+INSERT INTO funding_like (user_id, funding_id)
+VALUES (1, 3);
+
+INSERT INTO funding_like (user_id, funding_id)
+VALUES (1, 4);
 
 CREATE TABLE IF NOT EXISTS approval_document (
     document_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -121,6 +152,12 @@ CREATE TABLE IF NOT EXISTS funder (
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+INSERT INTO funder (funding_id, user_id)
+VALUES (5, 1);
+
+INSERT INTO funder (funding_id, user_id)
+VALUES (4, 1);
 
 CREATE TABLE IF NOT EXISTS selected_reward (
     selreward_id BIGINT AUTO_INCREMENT PRIMARY KEY,
