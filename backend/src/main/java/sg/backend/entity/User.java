@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,5 +56,27 @@ public class User {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
+    }
+  
+    public void patchUserProfile(PatchUserProfileRequestDto dto, String imageUrl) {
+        this.profileImage = imageUrl;
+        this.nickname = dto.getNickname();
+        this.password = dto.getPassword();
+        this.postalCode = dto.getPostalCode();
+        this.roadAddress = dto.getRoadAddress();
+        this.landLotAddress = dto.getLandLotAddress();
+        this.detailAddress = dto.getDetailAddress();
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setSchoolEmail(String email) {
+        this.schoolEmail = email;
+    }
+
+    public void setSchoolEmailVerified(boolean b) {
+        schoolEmailVerified = b;
     }
 }

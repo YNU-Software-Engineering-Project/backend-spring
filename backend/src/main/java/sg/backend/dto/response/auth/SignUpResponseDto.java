@@ -26,5 +26,5 @@ public class SignUpResponseDto extends ResponseDto {
         ResponseDto result = new ResponseDto(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
-
 }
+

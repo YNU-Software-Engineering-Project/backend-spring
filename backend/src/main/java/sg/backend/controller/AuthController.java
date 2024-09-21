@@ -1,5 +1,4 @@
 package sg.backend.controller;
-
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.service.UserService;
