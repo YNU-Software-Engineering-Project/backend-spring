@@ -45,7 +45,6 @@ public class AuthController{
             @ApiResponse(responseCode = "401", description = "잘못된 이메일 또는 비밀번호",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto){
         return userService.login(loginRequestDto);

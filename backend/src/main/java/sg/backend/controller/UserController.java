@@ -105,8 +105,9 @@ public class UserController {
                     잘못된 요청
                     - 존재하지 않는 사용자
                     - 중복된 닉네임
-                    - 유효성 검사 실패
+                    - 비밀번호 불일치
                     - 새 비밀번호가 현재 비밀번호와 같음 
+                    - 주소란을 다 채우지 않은 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
