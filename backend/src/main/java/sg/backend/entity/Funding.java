@@ -42,7 +42,6 @@ public class Funding {
     @NotBlank
     private String taxEmail;
 
-    @NotBlank
     private String organizerIdCard; //파일 경로 작성
 
     private LocalDate startDate;
