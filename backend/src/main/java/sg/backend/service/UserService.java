@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -192,7 +193,11 @@ public class UserService {
             } else {
                 if(!password.equals(confirmPassword))
                     return PatchUserProfileResponseDto.validationFailed();
-                if(password.length() < 8 || password.length() > 20)
+
+                String regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\\$%\\^&\\*])(?=\\S+$).{8,20}$";
+                Pattern pattern = Pattern.compile(regexp);
+
+                if(!pattern.matcher(password).matches())
                     return PatchUserProfileResponseDto.validationFailed();
                 if(passwordEncoder.matches(password, user.getPassword()))
                     return PatchUserProfileResponseDto.PWSameAsCurrent();
