@@ -5,7 +5,7 @@ USE testdb;
 CREATE TABLE IF NOT EXISTS users (
     user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    nickname VARCHAR(255) NOT NULL,
+    nickname VARCHAR(255) ,
     password VARCHAR(255) NOT NULL,
     role ENUM('ADMIN', 'USER', 'SUSPENDED') NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
