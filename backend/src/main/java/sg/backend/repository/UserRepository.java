@@ -6,4 +6,5 @@ import sg.backend.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     boolean existsByNickname(String nickname);
+    User findByUserId(Long userId);
 }
