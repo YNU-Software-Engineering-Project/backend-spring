@@ -34,3 +34,6 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
+
+file.path: /app/files/
+file.url: http://localhost:8080/file/

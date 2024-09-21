@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
+import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,6 +51,20 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Funder> funderList;
+
+    public void patchUserProfile(PatchUserProfileRequestDto dto, String imageUrl) {
+        this.profileImage = imageUrl;
+        this.nickname = dto.getNickname();
+        this.password = dto.getPassword();
+        this.postalCode = dto.getPostalCode();
+        this.roadAddress = dto.getRoadAddress();
+        this.landLotAddress = dto.getLandLotAddress();
+        this.detailAddress = dto.getDetailAddress();
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public void setSchoolEmail(String email) {
         this.schoolEmail = email;
