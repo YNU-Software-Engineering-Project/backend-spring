@@ -10,22 +10,21 @@ import sg.backend.dto.response.ResponseDto;
 @Getter
 public class SignUpResponseDto extends ResponseDto {
 
-    private SignUpResponseDto() {
+    private String accessToken;
+
+    private SignUpResponseDto(String accessToken){
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
+        this.accessToken = accessToken;
     }
 
-    public static ResponseEntity<SignUpResponseDto> success() {
-        SignUpResponseDto result = new SignUpResponseDto();
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+    public static ResponseEntity<ResponseDto> success(String accessToken){
+        SignUpResponseDto result = new SignUpResponseDto(accessToken);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    public static ResponseEntity<ResponseDto> duplicateEmail() {
+    public static ResponseEntity<ResponseDto> duplicateEmail(){
         ResponseDto result = new ResponseDto(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
-    public static ResponseEntity<ResponseDto> duplicateNickname() {
-        ResponseDto result = new ResponseDto(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-    }
 }

@@ -52,6 +52,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Funder> funderList;
 
+    public User(String email, String password, String phoneNumber){
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
+  
     public void patchUserProfile(PatchUserProfileRequestDto dto, String imageUrl) {
         this.profileImage = imageUrl;
         this.nickname = dto.getNickname();
