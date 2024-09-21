@@ -19,7 +19,7 @@ import sg.backend.service.EmailService;
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
-public class EmailApiController {
+public class EmailController {
 
     private final EmailService emailService;
 
