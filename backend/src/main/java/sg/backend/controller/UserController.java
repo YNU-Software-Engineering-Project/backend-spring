@@ -23,7 +23,7 @@ import sg.backend.service.UserService;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-public class UserApiController {
+public class UserController {
 
     private final UserService userService;
 
