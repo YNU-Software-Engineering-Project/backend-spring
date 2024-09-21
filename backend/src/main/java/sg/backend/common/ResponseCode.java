@@ -11,6 +11,7 @@ public interface ResponseCode {
     String DUPLICATE_NICKNAME = "DN";
     String NOT_EXISTED_USER = "NU";
     String NOT_EXISTED_BOARD = "NB";
+    String NOT_EXISTED_FILE = "NF";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";
@@ -18,6 +19,9 @@ public interface ResponseCode {
 
     // HTTP Status 403
     String NO_PERMISSTION = "NP";
+
+    // HTTP Status 415
+    String UNSUPPORTED_MEDIA_TYPE = "UM";
 
     // HTTP Status 500
     String DATABASE_ERROR = "DBE";

@@ -31,9 +31,9 @@ CREATE TABLE IF NOT EXISTS funding (
     organizer_name VARCHAR(255) NOT NULL,
     organizer_email VARCHAR(255) NOT NULL,
     tax_email VARCHAR(255) NOT NULL,
-    organizer_id_card VARCHAR(255) NOT NULL,
-    start_date DATETIME DEFAULT NULL,
-    end_date DATETIME DEFAULT NULL,
+    organizer_id_card VARCHAR(255),
+    start_date DATE DEFAULT NULL,
+    end_date DATE DEFAULT NULL,
     target_amount INT DEFAULT NULL,
     title VARCHAR(255),
     main_image VARCHAR(255),
@@ -91,14 +91,17 @@ CREATE TABLE IF NOT EXISTS funding_like (
 CREATE TABLE IF NOT EXISTS approval_document (
     document_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     funding_id BIGINT,
-    document_path VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    uuid VARCHAR(255) NOT NULL,
+    fpath VARCHAR(255) NOT NULL,
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id)
 );
 
 CREATE TABLE IF NOT EXISTS intro_image (
-    introimg_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    img_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     funding_id BIGINT,
-    introimg_path VARCHAR(255) NOT NULL,
+    uuid VARCHAR(255) NOT NULL,
+    fpath VARCHAR(255) NOT NULL,
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id)
 );
 

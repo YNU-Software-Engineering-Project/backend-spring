@@ -9,7 +9,7 @@ import lombok.Setter;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -21,7 +21,7 @@ public class Funding {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long fundingId;
+    private Long funding_id;
 
     //게시물 정보
     @Enumerated(EnumType.STRING)
@@ -45,9 +45,9 @@ public class Funding {
     @NotBlank
     private String organizerIdCard; //파일 경로 작성
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     private Integer targetAmount;
 
