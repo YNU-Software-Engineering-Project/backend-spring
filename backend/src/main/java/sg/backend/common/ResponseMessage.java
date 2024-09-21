@@ -10,6 +10,7 @@ public interface ResponseMessage {
     String DUPLICATE_NICKNAME = "Duplicate nickname";
     String NOT_EXISTED_USER = "This user does not exist";
     String NOT_EXISTED_BOARD = "This board does not exist.";
+    String NOT_EXISTED_NOTIFICATION = "This notification does not exist.";
     String PASSWORD_SAME_AS_CURRENT = "New password cannot be the same as the current password.";
     String EMAIL_TOKEN_NOT_FOUND = "Email token not found.";
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sg.backend.service.FileService;
 
 @RestController
-@RequestMapping("/file")
+@RequestMapping("api/file")
 @RequiredArgsConstructor
 public class FileController {
 
