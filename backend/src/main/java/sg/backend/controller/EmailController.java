@@ -17,7 +17,7 @@ import sg.backend.dto.response.user.EmailVerificationResponseDto;
 import sg.backend.service.EmailService;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class EmailController {
 
