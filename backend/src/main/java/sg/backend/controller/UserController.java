@@ -36,7 +36,7 @@ public class UserController {
 
     @Operation(
             summary = "사용자 프로필 조회",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 프로필 조회 성공",
@@ -54,7 +54,7 @@ public class UserController {
 
     @Operation(
             summary = "사용자 전화번호 수정",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전화번호 수정 성공",
@@ -73,7 +73,7 @@ public class UserController {
 
     @Operation(
             summary = "학교 메일 인증 요청",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 토큰 발송 성공",
@@ -96,7 +96,7 @@ public class UserController {
 
     @Operation(
             summary = "사용자 프로필 수정",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 프로필 수정 성공",
@@ -122,7 +122,7 @@ public class UserController {
 
     @Operation(
             summary = "위시리스트 조회",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "위시리스트 조회 성공",
@@ -142,7 +142,7 @@ public class UserController {
 
     @Operation(
             summary = "참여한 펀딩 리스트 조회",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "참여한 펀딩 리스트 조회 성공",
@@ -163,7 +163,7 @@ public class UserController {
 
     @Operation(
             summary = "내 펀딩 리스트 조회",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "내 펀딩 리스트 조회 성공",

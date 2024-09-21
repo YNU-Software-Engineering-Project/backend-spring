@@ -25,7 +25,7 @@ public class NotificationController {
 
     @Operation(
             summary = "알림 목록 조회",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 목록 조회 성공",
@@ -45,7 +45,7 @@ public class NotificationController {
 
     @Operation(
             summary = "모든 알림 삭제",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
@@ -63,7 +63,7 @@ public class NotificationController {
 
     @Operation(
             summary = "특정 알림 삭제",
-            security = @SecurityRequirement(name = "bearerToken")
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
