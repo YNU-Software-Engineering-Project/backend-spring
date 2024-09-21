@@ -12,12 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sg.backend.dto.request.email.EmailSendTokenRequestDto;
 import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 import sg.backend.dto.response.ResponseDto;
+import sg.backend.dto.response.email.EmailSendTokenResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
 import sg.backend.dto.response.user.PatchUserProfileResponseDto;
+import sg.backend.service.EmailService;
 import sg.backend.service.UserService;
 
 @RestController
@@ -26,6 +29,7 @@ import sg.backend.service.UserService;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     @Operation(
             summary = "사용자 프로필 조회",
@@ -87,6 +91,29 @@ public class UserController {
             @AuthenticationPrincipal Long userId
     ) {
         ResponseEntity<? super PatchUserProfileResponseDto> response = userService.modifyProfile(profileImage, userInfo, userId);
+        return response;
+    }
+
+    @Operation(
+            summary = "이메일 인증 토큰 요청",
+            security = @SecurityRequirement(name = "bearerToken")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이메일 인증 토큰 발송 성공",
+                    content = @Content(schema = @Schema(implementation = EmailSendTokenResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = """
+                    잘못된 요청
+                    - 존재하지 않는 사용자
+                    - 대학교 메일 주소가 아닌 경우(ac.kr)
+                    """,
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+    })
+    @PostMapping("/email-verification")
+    public ResponseEntity<? super EmailSendTokenResponseDto> sendEmailToken(
+            @RequestBody @Valid EmailSendTokenRequestDto requestBody,
+            @AuthenticationPrincipal Long userId
+    ) {
+        ResponseEntity<? super EmailSendTokenResponseDto> response = emailService.createEmailToken(requestBody, userId);
         return response;
     }
 }
