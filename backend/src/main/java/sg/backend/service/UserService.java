@@ -45,9 +45,6 @@ public class UserService{
     @Value("${file.url}")
     private String fileUrl;
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     public ResponseEntity<ResponseDto> signup(SignUpRequestDto signupRequestDto) {
         if (userRepository.findByEmail(signupRequestDto.getEmail()).isPresent()) {
             return SignUpResponseDto.duplicateEmail();
@@ -55,7 +52,7 @@ public class UserService{
 
         if (!signupRequestDto.getPassword().equals(signupRequestDto.getPasswordConfirm())) {
             return ResponseEntity.badRequest()
-                    .body(new ResponseDto(ResponseCode.VALUDATION_FAILED, ResponseMessage.VALUDATION_FAILED));
+                    .body(new ResponseDto(ResponseCode.VALIDATION_FAILED, ResponseMessage.VALIDATION_FAILED));
         }
 
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());

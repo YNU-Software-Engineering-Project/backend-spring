@@ -14,11 +14,6 @@ public class EmailVerificationResponseDto extends ResponseDto {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
     }
 
-    public static ResponseEntity<EmailVerificationResponseDto> success() {
-        EmailVerificationResponseDto result = new EmailVerificationResponseDto();
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
     public static ResponseEntity<ResponseDto> invalidToken() {
         ResponseDto result = new ResponseDto(ResponseCode.EMAIL_TOKEN_NOT_FOUND, ResponseMessage.EMAIL_TOKEN_NOT_FOUND);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
