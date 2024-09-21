@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,7 @@ public class AuthController{
     })
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignUpRequestDto signUpRequestDto){
+    public ResponseEntity<?> signup(@RequestBody @Valid SignUpRequestDto signUpRequestDto){
         return userService.signup(signUpRequestDto);
     }
 
@@ -46,7 +47,7 @@ public class AuthController{
     })
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto){
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto){
         return userService.login(loginRequestDto);
     }
 }
