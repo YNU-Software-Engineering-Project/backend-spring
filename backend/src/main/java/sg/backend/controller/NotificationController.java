@@ -19,7 +19,7 @@ import sg.backend.service.NotificationService;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
-public class NotificationApiController {
+public class NotificationController {
 
     private final NotificationService notificationService;
 
