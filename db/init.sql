@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('ADMIN', 'USER', 'SUSPENDED') NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     school_email VARCHAR(255),
-    school_email_verified BOOLEAN,
+    school_email_verified BOOLEAN DEFAULT FALSE,
     postal_code VARCHAR(10),
     road_address VARCHAR(255),
     land_lot_address VARCHAR(255),
@@ -71,12 +71,13 @@ VALUES (50000, 100000, 'CLOSED', 'A0060', 'B0140', 'testuser4', 'test4@example.c
 
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    type ENUM('ALERT', 'MESSAGE', 'REMINDER') NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
     user_id BIGINT,
+    message VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+INSERT INTO notification (message, user_id) VALUES ('새로운 프로젝트를 시작해보세요.', 1);
 
 CREATE TABLE IF NOT EXISTS tag (
     tag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -188,4 +189,12 @@ CREATE TABLE IF NOT EXISTS comment (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS email_token (
+    email_token_id VARCHAR(36) PRIMARY KEY,
+    expiration_date TIMESTAMP NOT NULL,
+    expired BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL,
+    email VARCHAR(255)
 );
