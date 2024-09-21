@@ -8,23 +8,21 @@ import sg.backend.common.ResponseMessage;
 import sg.backend.dto.response.ResponseDto;
 
 @Getter
-public class SignUpResponseDto extends ResponseDto {
-
+public class LoginResponseDto extends ResponseDto {
     private String accessToken;
 
-    private SignUpResponseDto(String accessToken){
+    private LoginResponseDto(String accessToken) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.accessToken = accessToken;
     }
 
-    public static ResponseEntity<ResponseDto> success(String accessToken){
-        SignUpResponseDto result = new SignUpResponseDto(accessToken);
+    public static ResponseEntity<LoginResponseDto> success(String accessToken) {
+        LoginResponseDto result = new LoginResponseDto(accessToken);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    public static ResponseEntity<ResponseDto> duplicateEmail(){
-        ResponseDto result = new ResponseDto(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
+    public static ResponseEntity<ResponseDto> failure() {
+        ResponseDto result = new ResponseDto(ResponseCode.SIGN_IN_FAIL, ResponseMessage.SIGN_IN_FAIL);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
-
 }
