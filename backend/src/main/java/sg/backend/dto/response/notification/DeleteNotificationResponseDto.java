@@ -14,11 +14,6 @@ public class DeleteNotificationResponseDto extends ResponseDto {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
     }
 
-    public static ResponseEntity<DeleteNotificationResponseDto> success() {
-        DeleteNotificationResponseDto result = new DeleteNotificationResponseDto();
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
     public static ResponseEntity<ResponseDto> noExistUser() {
         ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
