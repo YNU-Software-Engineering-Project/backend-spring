@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('ADMIN', 'USER', 'SUSPENDED') NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     school_email VARCHAR(255),
-    school_email_verified BOOLEAN,
+    school_email_verified BOOLEAN DEFAULT FALSE,
     postal_code VARCHAR(10),
     road_address VARCHAR(255),
     land_lot_address VARCHAR(255),
@@ -153,8 +153,10 @@ CREATE TABLE IF NOT EXISTS comment (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-CREATE TABLE refresh_token (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE,
-    refresh_token VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS email_token (
+    email_token_id VARCHAR(36) PRIMARY KEY,
+    expiration_date TIMESTAMP NOT NULL,
+    expired BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL,
+    email VARCHAR(255)
 );
