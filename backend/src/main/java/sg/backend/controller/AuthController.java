@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
@@ -29,7 +30,7 @@ public class AuthController{
     })
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignUpRequestDto signUpRequestDto){
+    public ResponseEntity<?> signup(@RequestBody @Valid SignUpRequestDto signUpRequestDto){
         return userService.signup(signUpRequestDto);
     }
 
@@ -42,7 +43,7 @@ public class AuthController{
     })
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto){
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto){
         return userService.login(loginRequestDto);
     }
 }
