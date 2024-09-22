@@ -12,15 +12,17 @@ public class UploadInfoFileResponseDto extends ResponseDto {
 
     private String orginalName;
     private String uuid_name;
+    private String url;
 
-    private UploadInfoFileResponseDto(String orginalName, String uuid_name) {
+    private UploadInfoFileResponseDto(String orginalName, String uuid_name, String url) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.orginalName = orginalName;
         this.uuid_name = uuid_name;
+        this.url = url;
     }
 
-    public static ResponseEntity<UploadInfoFileResponseDto> success(String orginalName, String uuid_name) {
-        UploadInfoFileResponseDto result = new UploadInfoFileResponseDto(orginalName, uuid_name);
+    public static ResponseEntity<UploadInfoFileResponseDto> success(String orginalName, String uuid_name, String url) {
+        UploadInfoFileResponseDto result = new UploadInfoFileResponseDto(orginalName, uuid_name, url);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

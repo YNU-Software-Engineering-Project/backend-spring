@@ -14,11 +14,15 @@ import sg.backend.dto.response.file.UploadInfoFileResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.DocumentRepository;
 import sg.backend.repository.FundingRepository;
+import sg.backend.repository.FundingTagRepository;
 import sg.backend.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 import static java.lang.Integer.parseInt;
 
 @Service
@@ -31,12 +35,13 @@ public class FundingInfoService {
     @Autowired
     FileService fileService;
 
-    @Autowired
-    private UserRepository userRepository;
+    //private final UserRepository userRepository;
+
     @Autowired
     private FundingRepository fundingRepository;
     @Autowired
     private DocumentRepository documentRepository;
+    private final FundingTagRepository fundingTagRepository;
 
     String large;
     String small;
@@ -51,6 +56,9 @@ public class FundingInfoService {
 
     @Transactional
     public ResponseEntity<? super GetInfoResponseDto> getInfo(Long funding_id){
+        String[] tag;
+        String id_card_url;
+        String[] document_url;
         try{
             Optional<Funding> option = fundingRepository.findById(funding_id);
             if(option.isEmpty()) {
@@ -60,9 +68,28 @@ public class FundingInfoService {
 
             large = funding.getCategory().getMessage();
             small = funding.getSubCategory().getMessage();
+
+            List<FundingTag> fundingTags = fundingTagRepository.findAllByFunding(funding);
+            ArrayList<String> tags = new ArrayList<>();
+            for(FundingTag tag_name: fundingTags){
+                tags.add(tag_name.getTag_name());
+            }
+            tag = tags.toArray(new String[0]);
+
+            String id_card = funding.getOrganizerIdCard();
+            id_card = id_card.replace("/app/data/project_document/", "");
+            id_card_url = "http://localhost:8080/file/view/funding_image/"+ id_card;
+
             organizer_name = funding.getOrganizerName();
             organizer_email = funding.getOrganizerEmail();
             tax_email = funding.getTaxEmail();
+            
+            List<Document> documents = documentRepository.findAllByFunding(funding);
+            ArrayList<String> urls = new ArrayList<>();
+            for(Document docu: documents){
+                urls.add("http://localhost:8080/file/view/project_document/"+ docu.getUuid());
+            }
+            document_url = urls.toArray(new String[0]);
 
             start = funding.getStartDate().format(format);
             start = start.replace(" 11:59", "");
@@ -74,7 +101,7 @@ public class FundingInfoService {
         } catch(Exception e){
             return ResponseDto.databaseError();
         }
-        return GetInfoResponseDto.success(large,small,organizer_name,organizer_email,tax_email,start,end,amount);
+        return GetInfoResponseDto.success(large,small,tag, id_card_url,organizer_name,organizer_email,tax_email,document_url,start,end,amount);
     }
 
 
@@ -86,16 +113,27 @@ public class FundingInfoService {
             small = dto.getSmall_category();
             SubCategory small_category = SubCategory.getCategory(small);
 
+            //이메일 형식은 프론트에서 검사하고 잘못됐으면 오류 메세지 나가고 백엔드엔 null로 전달
             organizer_name = dto.getOrganizer_name();
             organizer_email = dto.getOrganizer_email();
             tax_email = dto.getTax_email();
 
             String start = dto.getStart_date();
-            start = start.concat(" 11:59");
-            LocalDateTime start_date = LocalDateTime.parse(start,format);
+            LocalDateTime start_date;
+            if(start == null){
+                start_date = null;
+            } else{
+                start = start.concat(" 11:59");
+                start_date = LocalDateTime.parse(start,format);
+            }
             String end = dto.getEnd_date();
-            end = end.concat(" 11:59");
-            LocalDateTime end_date = LocalDateTime.parse(end, format);
+            LocalDateTime end_date;
+            if(end == null){
+                end_date = null;
+            } else{
+                end = end.concat(" 11:59");
+                end_date = LocalDateTime.parse(end, format);
+            }
 
             Integer target_amount = parseInt(dto.getTarget_amount());
 
@@ -123,17 +161,18 @@ public class FundingInfoService {
     }
 
     @Transactional
-    public ResponseEntity<? super UploadInfoFileResponseDto> uploadFile(Long funding_id, MultipartFile id_card, Boolean store){
+    public ResponseEntity<? super UploadInfoFileResponseDto> uploadFile(Long funding_id, MultipartFile file, Boolean store){
 
         String originalFilename;
         String uuid_name;
+        String url;
         try{
-            if(id_card.isEmpty()){  //not_existed_file
+            if(file.isEmpty()){  //not_existed_file
                 return UploadInfoFileResponseDto.not_existed_file();
             }
 
-            originalFilename = id_card.getOriginalFilename();
-            uuid_name = fileService.file_upload("project_document", id_card);
+            originalFilename = file.getOriginalFilename();
+            uuid_name = fileService.file_upload("project_document", file);
             String file_path = filePath + "project_document/" + uuid_name;
             if(uuid_name == null){
                 return ResponseDto.databaseError();
@@ -151,12 +190,13 @@ public class FundingInfoService {
             } else{
                 funding.setOrganizerIdCard(file_path);
             }
+            url = "http://localhost:8080/file/view/project_document/"+ uuid_name;
         }catch(Exception e){
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return UploadInfoFileResponseDto.success(originalFilename, uuid_name);
+        return UploadInfoFileResponseDto.success(originalFilename, uuid_name, url);
     }
 
     @Transactional
