@@ -79,4 +79,6 @@ public class User {
     public void setSchoolEmailVerified(boolean b) {
         schoolEmailVerified = b;
     }
+
+    public void setPassword(String newPassword){ this.password = newPassword; }
 }
