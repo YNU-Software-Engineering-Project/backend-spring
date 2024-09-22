@@ -1,7 +1,6 @@
 package sg.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,13 +31,11 @@ public class Funding {
     @Enumerated(EnumType.STRING)
     private SubCategory subCategory;
 
-    @NotBlank //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
+    //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
     private String organizerName;
 
-    @NotBlank
     private String organizerEmail;
 
-    @NotBlank
     private String taxEmail;
 
     private String organizerIdCard; //파일 경로 작성
