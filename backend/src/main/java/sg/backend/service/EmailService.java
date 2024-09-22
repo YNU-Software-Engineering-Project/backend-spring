@@ -40,7 +40,7 @@ public class EmailService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return EmailSendTokenResponseDto.noExistUser();
             user = optionalUser.get();
 
             String receiverEmail = dto.getEmail();
@@ -87,7 +87,7 @@ public class EmailService {
     @Transactional
     public ResponseEntity<? super EmailVerificationResponseDto> verifyEmail(String token) {
 
-        User user = null;
+        User user;
 
         try {
             EmailToken emailToken = findByEmailTokenIdAndExpirationDateAfterAndExpired(token);

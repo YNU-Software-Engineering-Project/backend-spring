@@ -118,7 +118,7 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return PatchPhoneNumberResponseDto.noExistUser();
             user = optionalUser.get();
 
             String phoneNumber = dto.getPhoneNumber();
@@ -138,7 +138,7 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return PatchUserProfileResponseDto.noExistUser();
             user = optionalUser.get();
 
             String nickname = dto.getNickname();
@@ -263,7 +263,6 @@ public class UserService {
                 dto.setMainImage(f.getMainImage());
                 dto.setProjectSummary(f.getProjectSummary());
                 dto.setCategory(String.valueOf(f.getCategory()));
-                dto.setSubCategory(String.valueOf(f.getSubCategory()));
 
                 List<Tag> tagList = fundingTagRepository.findTagByFundingId(f.getFundingId());
                 List<String> tag = new ArrayList<>();
@@ -300,19 +299,18 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if (optionalUser.isEmpty()) return GetFundingListResponseDto.noExistUser();
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size);
             fundingList = funderRepository.findFundingByUserIdOrderByFunderCreatedAt(user.getUserId(), pageRequest);
 
-            for(Funding f : fundingList) {
+            for (Funding f : fundingList) {
                 FundingDataDto dto = new FundingDataDto();
                 dto.setTitle(f.getTitle());
                 dto.setMainImage(f.getMainImage());
                 dto.setProjectSummary(f.getProjectSummary());
                 dto.setCategory(String.valueOf(f.getCategory()));
-                dto.setSubCategory(String.valueOf(f.getSubCategory()));
 
                 List<Tag> tagList = fundingTagRepository.findTagByFundingId(f.getFundingId());
                 List<String> tag = new ArrayList<>();
@@ -333,6 +331,7 @@ public class UserService {
                 dto.setState(String.valueOf(f.getCurrent()));
                 data.add(dto);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
@@ -351,7 +350,7 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return GetMyFundingListResponseDto.noExistUser();
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
