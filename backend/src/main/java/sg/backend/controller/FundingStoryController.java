@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.FundingStoryRequestDto;
-import sg.backend.dto.response.DeleteFileResponseDto;
+import sg.backend.dto.response.file.DeleteFileResponseDto;
 import sg.backend.dto.response.ModifyContentResponseDto;
-import sg.backend.dto.response.UploadImageResponseDto;
+import sg.backend.dto.response.file.UploadImageResponseDto;
 import sg.backend.service.implement.FundingStoryService;
 
 @RestController

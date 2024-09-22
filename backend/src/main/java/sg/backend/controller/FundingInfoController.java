@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.FundingInfoRequestDto;
-import sg.backend.dto.response.DeleteFileResponseDto;
+import sg.backend.dto.response.GetInfoResponseDto;
+import sg.backend.dto.response.file.DeleteFileResponseDto;
 import sg.backend.dto.response.ModifyContentResponseDto;
-import sg.backend.dto.response.UploadInfoFileResponseDto;
+import sg.backend.dto.response.file.UploadInfoFileResponseDto;
 import sg.backend.service.implement.FundingInfoService;
 
 @RestController
@@ -17,6 +18,13 @@ import sg.backend.service.implement.FundingInfoService;
 public class FundingInfoController {
 
     private final FundingInfoService fundingInfoService;
+
+    @GetMapping("/{funding_id}/info")
+    public ResponseEntity<? super GetInfoResponseDto> getInfo(
+            @PathVariable Long funding_id) {
+        ResponseEntity<? super GetInfoResponseDto> response = fundingInfoService.getInfo(funding_id);
+        return response;
+    }
 
     @PostMapping("/{funding_id}/info/organ")
     public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(

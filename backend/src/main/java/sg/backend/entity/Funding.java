@@ -9,7 +9,6 @@ import lombok.Setter;
 
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -44,9 +43,9 @@ public class Funding {
 
     private String organizerIdCard; //파일 경로 작성
 
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     private Integer targetAmount;
 

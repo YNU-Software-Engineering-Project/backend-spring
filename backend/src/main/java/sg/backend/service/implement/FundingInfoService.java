@@ -9,13 +9,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.FundingInfoRequestDto;
 import sg.backend.dto.response.*;
+import sg.backend.dto.response.file.DeleteFileResponseDto;
+import sg.backend.dto.response.file.UploadInfoFileResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.DocumentRepository;
 import sg.backend.repository.FundingRepository;
 import sg.backend.repository.UserRepository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import static java.lang.Integer.parseInt;
 
 @Service
 @RequiredArgsConstructor
@@ -34,24 +38,72 @@ public class FundingInfoService {
     @Autowired
     private DocumentRepository documentRepository;
 
+    String large;
+    String small;
+    String organizer_name;
+    String organizer_email;
+    String tax_email;
+    String start;
+    String end;
+    String amount;
+
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    @Transactional
+    public ResponseEntity<? super GetInfoResponseDto> getInfo(Long funding_id){
+        try{
+            Optional<Funding> option = fundingRepository.findById(funding_id);
+            if(option.isEmpty()) {
+                return GetInfoResponseDto.not_existed_post();
+            }
+            Funding funding = option.get();
+
+            large = funding.getCategory().getMessage();
+            small = funding.getSubCategory().getMessage();
+            organizer_name = funding.getOrganizerName();
+            organizer_email = funding.getOrganizerEmail();
+            tax_email = funding.getTaxEmail();
+
+            start = funding.getStartDate().format(format);
+            start = start.replace(" 11:59", "");
+            end = funding.getEndDate().format(format);
+            end = end.replace(" 11:59", "");
+
+            amount = funding.getTargetAmount().toString();
+
+        } catch(Exception e){
+            return ResponseDto.databaseError();
+        }
+        return GetInfoResponseDto.success(large,small,organizer_name,organizer_email,tax_email,start,end,amount);
+    }
+
 
     @Transactional  //펀딩 정보 수정
     public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto) {
         try {
-            Category large_category = dto.getLarge_category();
-            SubCategory small_category = dto.getSmall_category();
-            String organizer_name = dto.getOrganizer_name();
-            String organizer_email = dto.getOrganizer_email();
-            String tax_email = dto.getTax_email();
-            LocalDate start_date = dto.getStart_date();
-            LocalDate end_date = dto.getEnd_date();
-            Integer target_amount = dto.getTarget_amount();
+            large = dto.getLarge_category();
+            Category large_category = Category.getCategory(large);
+            small = dto.getSmall_category();
+            SubCategory small_category = SubCategory.getCategory(small);
 
-            Optional <Funding> options = fundingRepository.findById(funding_id);
-            if(options.isEmpty()) {
+            organizer_name = dto.getOrganizer_name();
+            organizer_email = dto.getOrganizer_email();
+            tax_email = dto.getTax_email();
+
+            String start = dto.getStart_date();
+            start = start.concat(" 11:59");
+            LocalDateTime start_date = LocalDateTime.parse(start,format);
+            String end = dto.getEnd_date();
+            end = end.concat(" 11:59");
+            LocalDateTime end_date = LocalDateTime.parse(end, format);
+
+            Integer target_amount = parseInt(dto.getTarget_amount());
+
+            Optional <Funding> option = fundingRepository.findById(funding_id);
+            if(option.isEmpty()) {
                 return ModifyContentResponseDto.not_existed_post();
             }
-            Funding funding = options.get();
+            Funding funding = option.get();
 
             funding.setCategory(large_category);
             funding.setSubCategory(small_category);

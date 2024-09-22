@@ -1,13 +1,14 @@
-package sg.backend.dto.response;
+package sg.backend.dto.response.file;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
+import sg.backend.dto.response.ResponseDto;
 
 @Getter
-public class UploadImageResponseDto extends ResponseDto{
+public class UploadImageResponseDto extends ResponseDto {
 
     private String url;
     private String uuid_name;

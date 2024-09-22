@@ -147,4 +147,13 @@ public enum SubCategory {
     SubCategory(String message) {
         this.message = message;
     }
+
+    public static SubCategory getCategory(String message) {
+        for (SubCategory category : SubCategory.values()) {
+            if (category.getMessage().equals(message)) {
+                return category;
+            }
+        }
+        return null;
+    }
 }
