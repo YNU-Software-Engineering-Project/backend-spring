@@ -15,6 +15,8 @@ public class FundingTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fundingTagId;
 
+    private String tag_name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
