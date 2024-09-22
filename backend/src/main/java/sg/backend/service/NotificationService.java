@@ -10,6 +10,7 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.notification.DeleteNotificationResponseDto;
 import sg.backend.dto.response.notification.DeleteNotificationsResponseDto;
 import sg.backend.dto.response.notification.GetNotificationsResponseDto;
+import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.entity.Notification;
 import sg.backend.entity.User;
 import sg.backend.repository.NotificationRepository;
@@ -24,14 +25,15 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
-    public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(Long userId, int page, int size) {
+    public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(String email, int page, int size) {
 
-        User user = null;
+        User user;
         Page<Notification> notificationList;
 
         try {
-            user = userRepository.findByUserId(userId);
-            if(user == null) return GetNotificationsResponseDto.noExistUser();
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
             notificationList = notificationRepository.findByUser(user, pageRequest);
@@ -44,13 +46,14 @@ public class NotificationService {
         return GetNotificationsResponseDto.success(notificationList);
     }
 
-    public ResponseEntity<? super DeleteNotificationsResponseDto> deleteNotifications(Long userId) {
+    public ResponseEntity<? super DeleteNotificationsResponseDto> deleteNotifications(String email) {
 
-        User user = null;
+        User user;
 
         try {
-            user = userRepository.findByUserId(userId);
-            if(user == null) return DeleteNotificationsResponseDto.noExistUser();
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            user = optionalUser.get();
 
             notificationRepository.deleteByUser(user);
 
@@ -62,13 +65,14 @@ public class NotificationService {
         return DeleteNotificationsResponseDto.success();
     }
 
-    public ResponseEntity<? super DeleteNotificationResponseDto> deleteNotification(Long userId, Long notificationId) {
+    public ResponseEntity<? super DeleteNotificationResponseDto> deleteNotification(String email, Long notificationId) {
 
-        User user = null;
+        User user;
 
         try {
-            user = userRepository.findByUserId(userId);
-            if(user == null) return DeleteNotificationResponseDto.noExistUser();
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            user = optionalUser.get();
 
             Optional<Notification> notification = notificationRepository.findById(notificationId);
             if(!notification.isPresent())

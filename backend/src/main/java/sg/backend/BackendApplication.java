@@ -24,15 +24,3 @@ public class BackendApplication {
 	}
 
 }
-
-//
-// api_test / hyeon
-@RestController
-class ApiController {
-	@GetMapping("/api_test")
-	public String api_test() {
-		return "test complete";
-	}
-}
-//
-//

@@ -1,11 +1,12 @@
 package sg.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AccessLevel;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,6 +57,9 @@ public class User {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.role = Role.USER;
+        this.schoolEmailVerified = false;
+        this.createdAt = LocalDateTime.now();
     }
   
     public void patchUserProfile(PatchUserProfileRequestDto dto, String imageUrl) {

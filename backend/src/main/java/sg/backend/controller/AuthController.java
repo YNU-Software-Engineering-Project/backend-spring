@@ -1,4 +1,5 @@
 package sg.backend.controller;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -6,14 +7,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.auth.PasswordResetResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
 import sg.backend.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,7 +46,6 @@ public class AuthController{
             @ApiResponse(responseCode = "401", description = "잘못된 이메일 또는 비밀번호",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto){
         return userService.login(loginRequestDto);
