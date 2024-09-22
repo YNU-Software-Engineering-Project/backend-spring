@@ -3,9 +3,9 @@ server:
 
 spring:
   mail:
-    host: smtp.google.com
+    host: smtp.gmail.com
     port: 587
-    username: ${GEMAL}
+    username: ${GMAIL}
     password: ${PW}
     properties:
       mail:
