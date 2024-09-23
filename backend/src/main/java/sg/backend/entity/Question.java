@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "question")
@@ -20,7 +21,7 @@ public class Question {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
-    private Funding funding;
+    private Optional<Funding> funding;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -32,7 +33,7 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> commentList;
 
-    public Question(Funding funding, User user, String content) {
+    public Question(Optional<Funding> funding, User user, String content) {
         this.funding = funding;
         this.user = user;
         this.content = content;

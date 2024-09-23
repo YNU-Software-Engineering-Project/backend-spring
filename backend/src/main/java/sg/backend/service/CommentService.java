@@ -38,13 +38,12 @@ public class CommentService {
         return commentRepository.findByQuestion(question, pageRequest);
     }
 
-    public ResponseEntity<String> deleteComment(Long commentId, User authenticatedUser){
+    public ResponseEntity<String> deleteComment(Long commentId, User authenticatedUser) {
         Optional<Comment> comment = commentRepository.findById(commentId);
-        if (!comment.get().getUser().getUserId().equals(authenticatedUser.getUserId())){
+        if (!comment.get().getUser().getUserId().equals(authenticatedUser.getUserId())) {
             throw new SecurityException("삭제할 수 있는 권한이 없습니다.");
         }
         commentRepository.deleteById(commentId);
         return CommentResponseDto.success("댓글이 삭제 되었습니다.");
-    }
     }
 }

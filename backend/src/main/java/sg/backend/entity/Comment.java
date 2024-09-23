@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "comment")
@@ -22,7 +23,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private Question question;
+    private Optional<Question> question;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -31,7 +32,7 @@ public class Comment {
     private String content;
     private LocalDateTime createdAt;
 
-    public Comment(Question question, User user, String content) {
+    public Comment(Optional<Question> question, User user, String content) {
         this.question = question;
         this.user = user;
         this.content = content;
