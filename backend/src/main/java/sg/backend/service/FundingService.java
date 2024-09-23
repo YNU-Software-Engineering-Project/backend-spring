@@ -2,7 +2,7 @@ package sg.backend.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,24 +12,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sg.backend.common.CategoryUtil;
 import sg.backend.dto.object.FundingDataDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.FundingLikeRepository;
-import sg.backend.repository.FundingTagRepository;
 import sg.backend.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FundingService {
 
     private final UserRepository userRepository;
-    private final FundingTagRepository fundingTagRepository;
     private final FundingLikeRepository fundingLikeRepository;
     private final JPAQueryFactory queryFactory;
 
@@ -37,138 +38,78 @@ public class FundingService {
     public ResponseEntity<? super GetFundingListResponseDto> searchFunding(String email, String keyword, String sort, String category, List<String> tags, Long minAmount, Boolean isClosed, Boolean isLiked, int page, int size) {
 
         User user = null;
+        boolean isAuthenticated = false;
         QFunding funding = QFunding.funding;
-        QReward reward = QReward.reward;
-        QFundingTag fundingTag = QFundingTag.fundingTag;
         QFundingLike fundingLike = QFundingLike.fundingLike;
-        BooleanBuilder builder = new BooleanBuilder();
+        BooleanBuilder filterBuilder = new BooleanBuilder();
         Page<Funding> fundingList;
         List<FundingDataDto> data = new ArrayList<>();
-        boolean isAuthenticated = false;
 
         try {
-            if(email != null) isAuthenticated = true;
+            if(!email.equals("anonymousUser")) isAuthenticated = true;
             if(isAuthenticated) {
                 Optional<User> optionalUser = userRepository.findByEmail(email);
-                if (optionalUser.isEmpty()) return GetFundingListResponseDto.noExistUser();
+                if(optionalUser.isEmpty()) return GetMyFundingListResponseDto.noExistUser();
                 user = optionalUser.get();
             }
 
-            if (keyword != null && !keyword.isEmpty()) {
-                builder.and(
-                        funding.title.containsIgnoreCase(keyword)
-                                .or(funding.projectSummary.containsIgnoreCase(keyword))
-                );
+            if (isClosed) {
+                filterBuilder.and(funding.current.eq(State.ONGOING).or(funding.current.eq(State.CLOSED)));
+            } else {
+                filterBuilder.and(funding.current.eq(State.ONGOING));
             }
 
-            if (category != null && !category.isEmpty()) {
+            if(category != null) {
                 List<String> categories = new ArrayList<>();
-                if(category.contains("A")) {
-                    addCategory(categories, category);
-                }
-                categories.add(category);
-                for(String c : categories)
-                    builder.and(funding.category.eq(Category.valueOf(c)));
+                if(Category.valueOf(category).toString().contains("A"))
+                    categories = CategoryUtil.valueOf(category).getCategories();
+                else
+                    categories.add(category);
+                addCategoryFilter(categories, funding, filterBuilder);
+            }
+
+            if(keyword != null) {
+                addKeywordFilter(keyword, funding, filterBuilder);
+            }
+
+            if(tags != null && !tags.isEmpty()) {
+                addTagFilter(tags, funding, filterBuilder);
             }
 
             if (minAmount != null) {
-                builder.and(funding.currentAmount.goe(minAmount));
+                filterBuilder.and(funding.currentAmount.goe(minAmount));
             }
 
-            if (tags != null && !tags.isEmpty()) {
-                builder.and(fundingTag.tag.tagName.in(tags));
+            if (isAuthenticated) {
+                if (!isLiked) {
+                    filterBuilder.and(funding.fundingId.notIn(
+                            JPAExpressions.select(fundingLike.funding.fundingId)
+                                    .from(fundingLike)
+                                    .where(fundingLike.user.eq(user))
+                    ));
+                }
             }
 
-            if (isLiked) {
-                if(isAuthenticated)
-                    builder.and(fundingLike.user.eq(user));
-            } else {
-                if(isAuthenticated)
-                    builder.and(fundingLike.user.ne(user));
-            }
-
-            if (isClosed) {
-                builder.and(funding.current.eq(State.CLOSED));
-            } else {
-                builder.and(funding.current.ne(State.CLOSED));
-            }
-
-            OrderSpecifier<?> orderSpecifier = funding.createdAt.desc();
-            switch (sort) {
-                case "oldest":
-                    orderSpecifier = funding.createdAt.asc();
-                    break;
-                case "priceAsc":
-                    orderSpecifier = reward.amount.asc();
-                    break;
-                case "priceDesc":
-                    orderSpecifier = reward.amount.desc();
-                    break;
-                case "achievementRate":
-                    orderSpecifier = Expressions.numberTemplate(Integer.class,
-                            "CAST(({0} * 100) / {1} AS INTEGER)", funding.currentAmount, funding.targetAmount).desc();
-                    break;
-                case "achievementRateAsc":
-                    orderSpecifier = Expressions.numberTemplate(Integer.class,
-                            "CAST(({0} * 100) / {1} AS INTEGER)", funding.currentAmount, funding.targetAmount).asc();
-                    break;
-                case "likes":
-                    orderSpecifier = funding.totalLikes.desc();
-                    break;
-                default:
-                    break;
-            }
+            OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sort, funding);
 
             Pageable pageable = PageRequest.of(page, size);
 
             List<Funding> results = queryFactory.selectFrom(funding)
-                    .leftJoin(fundingTag).on(fundingTag.funding.eq(funding))
-                    .leftJoin(fundingLike).on(fundingLike.funding.eq(funding))
-                    .leftJoin(funding.rewardList, reward)
-                    .where(builder)
+                    .leftJoin(funding.tagList).fetchJoin()
+                    .where(filterBuilder)
                     .orderBy(orderSpecifier)
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
 
             long total = queryFactory.selectFrom(funding)
-                    .leftJoin(fundingTag).on(fundingTag.funding.eq(funding))
-                    .leftJoin(fundingLike).on(fundingLike.funding.eq(funding))
-                    .where(builder)
-                    .fetchCount();
+                    .where(filterBuilder)
+                    .fetch()
+                    .size();
 
             fundingList = new PageImpl<>(results, pageable, total);
-
-            for (Funding f : fundingList) {
-                FundingDataDto dto = new FundingDataDto();
-                dto.setTitle(f.getTitle());
-                dto.setMainImage(f.getMainImage());
-                dto.setProjectSummary(f.getProjectSummary());
-                dto.setCategory(String.valueOf(f.getCategory()));
-
-                List<Tag> tagList = fundingTagRepository.findTagByFundingId(f.getFundingId());
-                List<String> tag = new ArrayList<>();
-                for (Tag t : tagList) {
-                    tag.add(t.getTagName());
-                }
-                dto.setTag(tag);
-
-                int targetAmount = f.getTargetAmount();
-                int currentAmount = f.getCurrentAmount();
-                int achievementRate;
-                if (currentAmount == 0) achievementRate = 0;
-                else achievementRate = (int) (((double) currentAmount / targetAmount) * 100);
-                dto.setAchievementRate(achievementRate);
-
-                if(isAuthenticated) {
-                    boolean isLike = fundingLikeRepository.existsByUserAndFunding(user, f);
-                    dto.setLike(isLike);
-                } else {
-                    dto.setLike(false);
-                }
-
-                dto.setState(String.valueOf(f.getCurrent()));
-                data.add(dto);
+            for(Funding f : fundingList) {
+                data.add(convertToDto(f, fundingLikeRepository, isAuthenticated, user));
             }
 
         } catch (Exception e) {
@@ -179,102 +120,73 @@ public class FundingService {
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
-    public void addCategory(List<String> c, String category) {
-        switch (category) {
-            case "A0010" :
-                for(int i=10; i<=60; i+=10) {
-                    c.add("B00" + i);
-                }
-                break;
-            case "A0020":
-                for(int i=70; i<=90; i+=10) {
-                    c.add("B00" + i);
-                }
-                for(int i=100; i<=140; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0030":
-                for(int i=150; i<=170; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0040":
-                for(int i=180; i<=190; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0050":
-                for(int i=200; i<=250; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0060":
-                for(int i=260; i<=340; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0070":
-                for(int i=350; i<=390; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0080":
-                for(int i=400; i<=420; i+=10) {
-                    c.add("B0" + i);
-                }
-                c.add("B0400"); c.add("B0410"); c.add("B0420");
-                break;
-            case "A0090":
-                for(int i=430; i<=520; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0100":
-                for(int i=530; i<=610; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0110":
-                for(int i=620; i<=670; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0120":
-                for(int i=680; i<=760; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0130":
-                for(int i=770; i<=810; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0140":
-                for(int i=820; i<=840; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0150":
-                for(int i=850; i<=900; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0160":
-                for(int i=910; i<=940; i+=10) {
-                    c.add("B0" + i);
-                }
-                break;
-            case "A0170":
-                for(int i=950; i<=990; i+=10) {
-                    c.add("B0" + i);
-                }
-                for(int i=1000; i<=1040; i+=10) {
-                    c.add("B" + i);
-                }
-                break;
-            default:
-                break;
+    private void addCategoryFilter(List<String> categories, QFunding funding, BooleanBuilder filterBuilder) {
+        if (!categories.isEmpty()) {
+            BooleanBuilder categoryFilter = new BooleanBuilder();
+            for(String category : categories) {
+                categoryFilter.or(funding.category.eq(Category.valueOf(category)));
+            }
+            filterBuilder.and(categoryFilter);
         }
     }
+
+    private void addTagFilter(List<String> tags, QFunding funding, BooleanBuilder filterBuilder) {
+        if (tags != null && !tags.isEmpty()) {
+            BooleanBuilder tagFilter = new BooleanBuilder();
+            for (String tag : tags) {
+                tagFilter.or(funding.tagList.any().tagName.eq(tag));
+            }
+            filterBuilder.and(tagFilter);
+        }
+    }
+
+    private void addKeywordFilter(String keyword, QFunding funding, BooleanBuilder filterBuilder) {
+        if (keyword != null) {
+            filterBuilder.and(
+                    funding.title.containsIgnoreCase(keyword)
+                            .or(funding.projectSummary.containsIgnoreCase(keyword))
+            );
+        }
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sort, QFunding funding) {
+        switch (sort) {
+            case "latest":
+                return funding.createdAt.desc();
+            case "oldest":
+                return funding.createdAt.asc();
+            case "priceAsc":
+                return funding.rewardAmount.asc();
+            case "priceDesc":
+                return funding.rewardAmount.desc();
+            case "likes":
+                return funding.totalLikes.desc();
+            default:
+                return funding.createdAt.desc();
+        }
+    }
+
+     public static FundingDataDto convertToDto(Funding funding, FundingLikeRepository fundingLikeRepository, boolean isAuthenticated, User user) {
+        FundingDataDto dto = new FundingDataDto();
+        dto.setTitle(funding.getTitle());
+        dto.setMainImage(funding.getMainImage());
+        dto.setProjectSummary(funding.getProjectSummary());
+        dto.setPrice(funding.getRewardAmount());
+        dto.setCategory(String.valueOf(funding.getCategory()));
+
+        List<String> tags = funding.getTagList().stream()
+                .map(Tag::getTagName)
+                .collect(Collectors.toList());
+        dto.setTag(tags);
+
+        int achievementRate = funding.getCurrentAmount() == 0 ? 0 :
+                (int) (((double) funding.getCurrentAmount() / funding.getTargetAmount()) * 100);
+        dto.setAchievementRate(achievementRate);
+
+        dto.setLiked(isAuthenticated && fundingLikeRepository.existsByUserAndFunding(user, funding));
+        dto.setState(String.valueOf(funding.getCurrent()));
+
+        return dto;
+    }
+
 }

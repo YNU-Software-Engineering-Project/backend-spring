@@ -76,6 +76,9 @@ public class Funding {
 
     private Integer currentAmount;
 
+
+    private Integer rewardAmount;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -93,5 +96,8 @@ public class Funding {
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Funder> funderList;
+
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Tag> tagList;
 
 }

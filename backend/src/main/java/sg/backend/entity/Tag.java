@@ -20,4 +20,9 @@ public class Tag {
     private Long tagId;
 
     private String tagName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "funding_id")
+    private Funding funding;
+
 }

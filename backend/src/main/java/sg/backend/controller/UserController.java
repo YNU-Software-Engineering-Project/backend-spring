@@ -107,7 +107,7 @@ public class UserController {
                     - 중복된 닉네임
                     - 비밀번호 불일치
                     - 새 비밀번호가 현재 비밀번호와 같음 
-                    - 주소란을 다 채우지 않은 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
+                    - 주소란을 일부만 채운 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
@@ -116,7 +116,7 @@ public class UserController {
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") @Valid PatchUserProfileRequestDto userInfo,
             @AuthenticationPrincipal(expression = "username") String email
-            ) {
+    ) {
         ResponseEntity<? super PatchUserProfileResponseDto> response = userService.modifyProfile(profileImage, userInfo, email);
         return response;
     }
