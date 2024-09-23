@@ -15,4 +15,7 @@ public interface FundingLikeRepository extends JpaRepository<FundingLike, Long> 
 
     @Query("SELECT fl.funding FROM FundingLike fl WHERE fl.user.userId = :userId ORDER BY fl.createdAt DESC")
     Page<Funding> findFundingLikedByUserIdOrderByLikeCreatedAt(@Param("userId") Long userId, Pageable pageable);
+
+    void deleteByUserId_FundingId(Long userId, Long fundingId);
+    boolean existsByUserId_FundingId(Long userId, Long fundingId);
 }
