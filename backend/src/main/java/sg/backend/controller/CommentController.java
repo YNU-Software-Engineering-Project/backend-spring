@@ -45,7 +45,7 @@ public class CommentController {
     public ResponseEntity<List<CommentResponseDto>> getCommentsByQuestion(
             @PathVariable Long questionId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         Page<Comment> commentPage = commentService.getCommentsByQuestion(questionId, page, size);
         List<CommentResponseDto> responseDtos = CommentResponseDto.fromEntityList(commentPage.getContent());
         return CommentResponseDto.success(responseDtos);

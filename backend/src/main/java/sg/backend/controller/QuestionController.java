@@ -45,7 +45,7 @@ public class QuestionController {
     public ResponseEntity<List<QuestionResponseDto>> getQuestionsByFunding(
             @PathVariable Long fundingId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         Page<Question> questionPage = questionService.getQuestionsByFunding(fundingId, page, size);
         List<QuestionResponseDto> responseDtos = QuestionResponseDto.fromEntityList(questionPage.getContent());
         return QuestionResponseDto.success(responseDtos);
