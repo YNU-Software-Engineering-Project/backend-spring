@@ -16,6 +16,7 @@ import sg.backend.common.CategoryUtil;
 import sg.backend.dto.object.FundingDataDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetFundingStateResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.FundingLikeRepository;
@@ -187,6 +188,30 @@ public class FundingService {
         dto.setState(String.valueOf(funding.getCurrent()));
 
         return dto;
+    }
+
+    public ResponseEntity<? super GetFundingStateResponseDto> getFundingStateCount(String email) {
+
+        User user;
+        QFunding funding = QFunding.funding;
+        long review;
+        long reviewCompleted;
+        long onGoing;
+
+        try {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return GetFundingStateResponseDto.noExistUser();
+            user = optionalUser.get();
+
+            if(!user.getRole().equals("ADMIN"))
+                return GetFundingStateResponseDto.noPermission();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetFundingStateResponseDto.success();
     }
 
 }
