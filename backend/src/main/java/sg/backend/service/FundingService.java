@@ -12,9 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sg.backend.common.CategoryUtil;
 import sg.backend.dto.object.FundingDataDto;
-import sg.backend.dto.object.FundingStateDto;
 import sg.backend.dto.object.ShortFundingDataDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
@@ -64,12 +62,7 @@ public class FundingService {
             }
 
             if(category != null) {
-                List<String> categories = new ArrayList<>();
-                if(Category.valueOf(category).toString().contains("A"))
-                    categories = CategoryUtil.valueOf(category).getCategories();
-                else
-                    categories.add(category);
-                addCategoryFilter(categories, funding, filterBuilder);
+                addCategoryFilter(category, funding, filterBuilder);
             }
 
             if(keyword != null) {
@@ -124,14 +117,8 @@ public class FundingService {
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
-    private void addCategoryFilter(List<String> categories, QFunding funding, BooleanBuilder filterBuilder) {
-        if (!categories.isEmpty()) {
-            BooleanBuilder categoryFilter = new BooleanBuilder();
-            for(String category : categories) {
-                categoryFilter.or(funding.category.eq(Category.valueOf(category)));
-            }
-            filterBuilder.and(categoryFilter);
-        }
+    private void addCategoryFilter(String category, QFunding funding, BooleanBuilder filterBuilder) {
+        filterBuilder.and(funding.category.eq(Category.valueOf(category)));
     }
 
     private void addTagFilter(List<String> tags, QFunding funding, BooleanBuilder filterBuilder) {
