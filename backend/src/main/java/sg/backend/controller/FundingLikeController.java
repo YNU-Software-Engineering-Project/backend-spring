@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sg.backend.dto.object.FundingLikeRequestDto;
+import sg.backend.dto.request.user.FundingLikeRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.service.FundingLikeService;
 

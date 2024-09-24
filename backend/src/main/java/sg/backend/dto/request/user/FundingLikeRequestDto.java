@@ -1,4 +1,4 @@
-package sg.backend.dto.object;
+package sg.backend.dto.request.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
