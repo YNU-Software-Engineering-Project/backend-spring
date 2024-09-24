@@ -34,9 +34,6 @@ public class Funding {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @Enumerated(EnumType.STRING)
-    private SubCategory subCategory;
-
     @NotBlank //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
     private String organizerName;
 
@@ -83,6 +80,9 @@ public class Funding {
 
     private Integer currentAmount;
 
+
+    private Integer rewardAmount;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -100,5 +100,8 @@ public class Funding {
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Funder> funderList;
+
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Tag> tagList;
 
 }

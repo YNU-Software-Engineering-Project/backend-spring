@@ -53,13 +53,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import static sg.backend.service.FundingService.convertToDto;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final FundingLikeRepository fundingLikeRepository;
-    private final FundingTagRepository fundingTagRepository;
     private final FunderRepository funderRepository;
     private final FundingRepository fundingRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -132,7 +133,7 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return PatchPhoneNumberResponseDto.noExistUser();
             user = optionalUser.get();
 
             String phoneNumber = dto.getPhoneNumber();
@@ -152,7 +153,7 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return PatchUserProfileResponseDto.noExistUser();
             user = optionalUser.get();
 
             String nickname = dto.getNickname();
@@ -272,30 +273,7 @@ public class UserService {
             fundingList = fundingLikeRepository.findFundingLikedByUserIdOrderByLikeCreatedAt(user.getUserId(), pageRequest);
 
             for(Funding f : fundingList) {
-                FundingDataDto dto = new FundingDataDto();
-                dto.setTitle(f.getTitle());
-                dto.setMainImage(f.getMainImage());
-                dto.setProjectSummary(f.getProjectSummary());
-                dto.setCategory(String.valueOf(f.getCategory()));
-                dto.setSubCategory(String.valueOf(f.getSubCategory()));
-
-                List<Tag> tagList = fundingTagRepository.findTagByFundingId(f.getFundingId());
-                List<String> tag = new ArrayList<>();
-                for(Tag t : tagList) {
-                    tag.add(t.getTagName());
-                }
-                dto.setTag(tag);
-
-                int targetAmount = f.getTargetAmount();
-                int currentAmount = f.getCurrentAmount();
-                int achievementRate;
-                if(currentAmount == 0) achievementRate = 0;
-                else achievementRate = (int) (((double) currentAmount / targetAmount) * 100);
-                dto.setAchievementRate(achievementRate);
-
-                dto.setLike(true);
-                dto.setState(String.valueOf(f.getCurrent()));
-                data.add(dto);
+                data.add(convertToDto(f, fundingLikeRepository, true, user));
             }
 
         } catch (Exception e) {
@@ -314,39 +292,16 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if (optionalUser.isEmpty()) return GetFundingListResponseDto.noExistUser();
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size);
             fundingList = funderRepository.findFundingByUserIdOrderByFunderCreatedAt(user.getUserId(), pageRequest);
 
-            for(Funding f : fundingList) {
-                FundingDataDto dto = new FundingDataDto();
-                dto.setTitle(f.getTitle());
-                dto.setMainImage(f.getMainImage());
-                dto.setProjectSummary(f.getProjectSummary());
-                dto.setCategory(String.valueOf(f.getCategory()));
-                dto.setSubCategory(String.valueOf(f.getSubCategory()));
-
-                List<Tag> tagList = fundingTagRepository.findTagByFundingId(f.getFundingId());
-                List<String> tag = new ArrayList<>();
-                for (Tag t : tagList) {
-                    tag.add(t.getTagName());
-                }
-                dto.setTag(tag);
-
-                int targetAmount = f.getTargetAmount();
-                int currentAmount = f.getCurrentAmount();
-                int achievementRate;
-                if (currentAmount == 0) achievementRate = 0;
-                else achievementRate = (int) (((double) currentAmount / targetAmount) * 100);
-                dto.setAchievementRate(achievementRate);
-
-                boolean isLike = fundingLikeRepository.existsByUserAndFunding(user, f);
-                dto.setLike(isLike);
-                dto.setState(String.valueOf(f.getCurrent()));
-                data.add(dto);
+            for (Funding f : fundingList) {
+                data.add(convertToDto(f, fundingLikeRepository, true, user));
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
@@ -365,7 +320,7 @@ public class UserService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return GetMyFundingListResponseDto.noExistUser();
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());

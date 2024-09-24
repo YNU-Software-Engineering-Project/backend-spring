@@ -1,5 +1,6 @@
 package sg.backend.dto.object;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,10 +12,10 @@ public class FundingDataDto {
     private String title;
     private String mainImage;
     private String projectSummary;
+    private int price;
     private String category;
-    private String subCategory;
     private List<String> tag;
     private int achievementRate;
-    private boolean isLike;
+    private boolean isLiked;
     private String state;
 }
