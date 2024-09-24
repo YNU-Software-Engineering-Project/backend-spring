@@ -13,14 +13,14 @@ import sg.backend.entity.Funding;
 import java.util.List;
 
 @Getter
-public class GetAdminFundingListResponseDto extends ResponseDto {
+public class GetFundingByStateResponseDto extends ResponseDto {
     private List<ShortFundingDataDto> data;
     private int page;
     private int size;
     private int totalPages;
     private long totalElements;
 
-    private GetAdminFundingListResponseDto(Page<Funding> fundingList, List<ShortFundingDataDto> data) {
+    private GetFundingByStateResponseDto(Page<Funding> fundingList, List<ShortFundingDataDto> data) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.data = data;
         this.page = fundingList.getNumber();
@@ -29,8 +29,8 @@ public class GetAdminFundingListResponseDto extends ResponseDto {
         this.totalElements = fundingList.getTotalElements();
     }
 
-    public static ResponseEntity<GetAdminFundingListResponseDto> success(Page<Funding> fundingList, List<ShortFundingDataDto> data) {
-        GetAdminFundingListResponseDto result = new GetAdminFundingListResponseDto(fundingList, data);
+    public static ResponseEntity<GetFundingByStateResponseDto> success(Page<Funding> fundingList, List<ShortFundingDataDto> data) {
+        GetFundingByStateResponseDto result = new GetFundingByStateResponseDto(fundingList, data);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
-import sg.backend.dto.response.funding.GetFundingStateResponseDto;
 import sg.backend.service.FundingService;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/fundings")
@@ -35,7 +31,7 @@ public class FundingController {
             summary = "펀딩 게시물 정렬 및 검색"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "펀딩 게시물 정렬 및 검색",
+            @ApiResponse(responseCode = "200", description = "펀딩 게시물 정렬 및 검색 성공",
                     content = @Content(schema = @Schema(implementation = GetFundingListResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
