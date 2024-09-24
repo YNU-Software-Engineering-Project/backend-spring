@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetFundingStateResponseDto;
 import sg.backend.service.FundingService;
 
 import java.security.Principal;
@@ -48,7 +49,7 @@ public class FundingController {
                     likes: 추천순(좋아요 순)
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
-            @Parameter(description = "카테고리") @RequestParam(required = false) String category,
+            @Parameter(description = "카테고리", example = "category=A0010") @RequestParam(required = false) String category,
             @Parameter(description = "태그", example = "tags=art,design") @RequestParam(required = false) List<String> tags,
             @Parameter(description = "최소 후원 금액") @RequestParam(required = false) Long minAmount,
             @Parameter(description = "종료된 펀딩 여부 (true: 종료된 펀딩도 포함)")

@@ -9,11 +9,11 @@ import lombok.Setter;
 public class FundingStateDto {
 
     @Schema(description = "심사 대기 게시물 수")
-    int review;
+    long review;
 
     @Schema(description = "심사 완료 게시물 수")
-    int reviewCompleted;
+    long reviewCompleted;
 
     @Schema(description = "진행 중인 게시물 수")
-    int onGoing;
+    long onGoing;
 }

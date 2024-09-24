@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sg.backend.common.CategoryUtil;
 import sg.backend.dto.object.FundingDataDto;
+import sg.backend.dto.object.FundingStateDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetFundingStateResponseDto;
@@ -190,6 +191,7 @@ public class FundingService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
     public ResponseEntity<? super GetFundingStateResponseDto> getFundingStateCount(String email) {
 
         User user;
@@ -197,6 +199,7 @@ public class FundingService {
         long review;
         long reviewCompleted;
         long onGoing;
+        FundingStateDto data = new FundingStateDto();
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -206,12 +209,34 @@ public class FundingService {
             if(!user.getRole().equals("ADMIN"))
                 return GetFundingStateResponseDto.noPermission();
 
+            review = queryFactory
+                    .select(funding.count())
+                    .from(funding)
+                    .where(funding.current.eq(State.REVIEW))
+                    .fetchOne();
+
+            reviewCompleted = queryFactory
+                    .select(funding.count())
+                    .from(funding)
+                    .where(funding.current.eq(State.REVIEW_COMPLETED))
+                    .fetchOne();
+
+            onGoing = queryFactory
+                    .select(funding.count())
+                    .from(funding)
+                    .where(funding.current.eq(State.ONGOING))
+                    .fetchOne();
+
+            data.setReview(review);
+            data.setReviewCompleted(reviewCompleted);
+            data.setOnGoing(onGoing);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
 
-        return GetFundingStateResponseDto.success();
+        return GetFundingStateResponseDto.success(data);
     }
 
 }
