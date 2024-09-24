@@ -32,7 +32,7 @@ public class NotificationService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return GetNotificationsResponseDto.noExistUser();
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -52,7 +52,7 @@ public class NotificationService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return DeleteNotificationsResponseDto.noExistUser();
             user = optionalUser.get();
 
             notificationRepository.deleteByUser(user);
@@ -71,7 +71,7 @@ public class NotificationService {
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return DeleteNotificationResponseDto.noExistUser();
             user = optionalUser.get();
 
             Optional<Notification> notification = notificationRepository.findById(notificationId);
