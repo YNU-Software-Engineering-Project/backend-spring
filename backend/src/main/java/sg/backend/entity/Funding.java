@@ -23,6 +23,10 @@ public class Funding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fundingId;
 
+    public Funding(Long fundingId) {
+        this.fundingId = fundingId;
+    }
+
     //게시물 정보
     @Enumerated(EnumType.STRING)
     private State current;

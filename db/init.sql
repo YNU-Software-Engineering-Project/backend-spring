@@ -125,14 +125,23 @@ CREATE TABLE IF NOT EXISTS community_post (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS comment (
-    comment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    funding_id BIGINT,
+CREATE TABLE IF NOT EXISTS question (
+    question_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    funding_id BIGINT NOT NULL,
     user_id BIGINT,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (funding_id) REFERENCES funding(funding_id),
+    FOREIGN KEY (funding_id) REFERENCES funding(funding_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS comment (
+    comment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL,
+    user_id BIGINT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -206,6 +215,29 @@ VALUES
 (1, 14, '2024-09-22 11:14:00'),
 (1, 15, '2024-09-22 11:15:00');
 
+
+INSERT INTO question (funding_id, user_id, content, created_at)
+VALUES
+(1, 1, '이 제품의 예상 배송일은 언제인가요?', '2024-09-22 11:01:00'),
+(1, 1, '펀딩 금액은 어떤 방식으로 사용되나요?', '2024-09-22 11:03:00'),
+(1, 1, '제품의 A/S는 어떻게 받을 수 있나요?', '2024-09-22 11:05:00'),
+(1, 1, '배송비는 별도로 부과되나요?', '2024-09-22 11:09:00'),
+(1, 1, '제품 색상은 선택할 수 있나요?', '2024-09-22 11:02:00'),
+(1, 1, '첫번째 리워드의 특징이 무엇인가요?', '2024-09-22 11:06:00');
+
+INSERT INTO comment (question_id, user_id, content, created_at)
+VALUES
+(1, 1, '제품은 2024년 10월 중순에 발송될 예정입니다.', '2024-09-22 12:01:00'),
+(1, 1, '배송은 예상보다 빠를 수 있지만, 지연될 가능성도 있습니다.', '2024-09-22 12:03:00'),
+(1, 1, '펀딩 금액은 주로 생산비와 품질 관리를 위해 사용됩니다.', '2024-09-22 12:05:00'),
+(1, 1, '일부 금액은 마케팅과 배송비로도 쓰입니다.', '2024-09-22 12:06:00'),
+(1, 1, 'A/S는 제품 구매 후 1년간 무상으로 제공됩니다.', '2024-09-22 12:08:00'),
+(1, 1, 'A/S 신청은 고객센터로 연락 주시면 됩니다.', '2024-09-22 12:10:00'),
+(1, 1, '네, 배송비는 결제 시 별도로 추가됩니다.', '2024-09-22 12:12:00'),
+(1, 1, '지역에 따라 배송비가 상이할 수 있습니다.', '2024-09-22 12:15:00'),
+(1, 1, '네, 결제 시 색상 옵션을 선택할 수 있습니다.', '2024-09-22 12:17:00'),
+(1, 1, '선택 가능한 색상은 총 3가지입니다: 블랙, 화이트, 블루.', '2024-09-22 12:20:00');
+
 INSERT INTO reward (funding_id, amount, reward_name)
 VALUES
 (1, 10000, '미니 가습기'),
@@ -223,3 +255,4 @@ VALUES
 (7, 12000, '노트북 스탠드 기본형'),
 (7, 24000, '노트북 스탠드 프리미엄'),
 (8, 15000, '휴대용 전동칫솔');
+
