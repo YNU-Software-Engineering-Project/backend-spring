@@ -23,7 +23,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private Optional<Question> question;
+    private Question question;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -32,7 +32,7 @@ public class Comment {
     private String content;
     private LocalDateTime createdAt;
 
-    public Comment(Optional<Question> question, User user, String content) {
+    public Comment(Question question, User user, String content) {
         this.question = question;
         this.user = user;
         this.content = content;

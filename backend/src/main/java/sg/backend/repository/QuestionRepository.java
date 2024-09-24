@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
-    Page<Question> findByFunding(Optional<Funding> funding, Pageable pageable);
+    Page<Question> findByFunding(Funding funding, Pageable pageable);
 }
 

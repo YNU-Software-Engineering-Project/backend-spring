@@ -26,14 +26,20 @@ public class CommentService {
     }
 
     public ResponseEntity<String> createComment(Long questionId, CommentRequestDto requestDto, User authenticatedUser){
-        Optional<Question> question = questionRepository.findById(questionId);
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        Question question = null;
+        if(optionalQuestion.isPresent())
+            question = optionalQuestion.get();
         Comment comment = requestDto.toEntity(question, authenticatedUser);
         commentRepository.save(comment);
         return CommentResponseDto.success("댓글이 생성 되었습니다.");
     }
 
     public Page<Comment> getCommentsByQuestion(Long questionId, int page, int size){
-        Optional<Question> question = questionRepository.findById(questionId);
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        Question question = null;
+        if(optionalQuestion.isPresent())
+            question = optionalQuestion.get();
         PageRequest pageRequest = PageRequest.of(page, size);
         return commentRepository.findByQuestion(question, pageRequest);
     }

@@ -16,7 +16,7 @@ public class QuestionRequestDto {
 
     private String content;
 
-    public Question toEntity(Optional<Funding> funding, User user){
+    public Question toEntity(Funding funding, User user){
         return new Question(funding, user, content);
     }
 }

@@ -26,14 +26,20 @@ public class QuestionService {
     }
 
     public ResponseEntity<String> createQuestion(Long fundingId, QuestionRequestDto requestDto, User authenticatedUser){
-        Optional<Funding> funding = fundingRepository.findById(fundingId);
+        Optional<Funding> optionalFunding = fundingRepository.findById(fundingId);
+        Funding funding = null;
+        if(optionalFunding.isPresent())
+            funding = optionalFunding.get();
         Question question = requestDto.toEntity(funding, authenticatedUser);
         questionRepository.save(question);
         return QuestionResponseDto.success("질문이 생성 되었습니다.");
     }
 
     public Page<Question> getQuestionsByFunding(Long fundingId, int page, int size){
-        Optional<Funding> funding = fundingRepository.findById(fundingId);
+        Optional<Funding> optionalFunding = fundingRepository.findById(fundingId);
+        Funding funding = null;
+        if(optionalFunding.isPresent())
+            funding = optionalFunding.get();
         PageRequest pageRequest = PageRequest.of(page, size);
         return questionRepository.findByFunding(funding, pageRequest);
     }

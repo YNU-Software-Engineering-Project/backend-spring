@@ -21,7 +21,7 @@ public class Question {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
-    private Optional<Funding> funding;
+    private Funding funding;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -33,7 +33,7 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> commentList;
 
-    public Question(Optional<Funding> funding, User user, String content) {
+    public Question(Funding funding, User user, String content) {
         this.funding = funding;
         this.user = user;
         this.content = content;

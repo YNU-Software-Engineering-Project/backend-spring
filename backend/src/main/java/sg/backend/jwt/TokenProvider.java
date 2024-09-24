@@ -11,6 +11,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import sg.backend.entity.User;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
@@ -21,6 +24,11 @@ import java.util.Set;
 public class TokenProvider {
 
     private final JwtProperties jwtProperties;
+
+    private Key getSigningKey() {
+        byte[] keyBytes = jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
+        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+    }
 
     public String generateToken(User user, Duration expiredAt){
         Date now = new Date();
@@ -43,8 +51,9 @@ public class TokenProvider {
 
     public boolean validToken(String token){
         try{
-            Jwts.parser()
-                    .setSigningKey(jwtProperties.getSecretKey())
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e){
@@ -63,8 +72,9 @@ public class TokenProvider {
     }
 
     private Claims getClaims(String token){
-        return Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }

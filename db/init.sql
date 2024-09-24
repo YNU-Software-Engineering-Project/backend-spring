@@ -136,19 +136,19 @@ CREATE TABLE IF NOT EXISTS community_post (
 );
 
 CREATE TABLE IF NOT EXISTS question (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     funding_id BIGINT NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (funding_id) REFERENCES funding(id) ON DELETE CASCADE
+    FOREIGN KEY (funding_id) REFERENCES funding(funding_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comment (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    comment_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     question_id BIGINT NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (question_id) REFERENCES question(id) ON DELETE CASCADE
+    FOREIGN KEY (question_id) REFERENCES question(question_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS email_token (
@@ -231,7 +231,7 @@ VALUES
 (1, 14, '2024-09-22 11:14:00'),
 (1, 15, '2024-09-22 11:15:00');
 
-INSERT INTO questions(post_id, content, created_at)
+INSERT INTO question (post_id, content, created_at)
 VALUES
 (1, '이 제품의 예상 배송일은 언제인가요?', '2024-09-22 11:01:00'),
 (1, '펀딩 금액은 어떤 방식으로 사용되나요?', '2024-09-22 11:03:00'),
@@ -240,7 +240,7 @@ VALUES
 (1, '제품 색상은 선택할 수 있나요?', '2024-09-22 11:02:00'),
 (1, '첫번째 리워드의 특징이 무엇인가요?', '2024-09-22 11:06:00');
 
-INSERT INTO comments(question_id, content, created_at)
+INSERT INTO comment (question_id, content, created_at)
 VALUES
 (1, '제품은 2024년 10월 중순에 발송될 예정입니다.', '2024-09-22 12:01:00'),
 (1, '배송은 예상보다 빠를 수 있지만, 지연될 가능성도 있습니다.', '2024-09-22 12:03:00'),

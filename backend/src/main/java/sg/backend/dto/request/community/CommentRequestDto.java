@@ -16,7 +16,7 @@ public class CommentRequestDto {
 
     private String content;
 
-    public Comment toEntity(Optional<Question> question, User user){
+    public Comment toEntity(Question question, User user){
         return new Comment(question, user, content);
     }
 }

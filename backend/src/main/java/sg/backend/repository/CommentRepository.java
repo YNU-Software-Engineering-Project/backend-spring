@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findByQuestion(Optional<Question> question, Pageable pageable);
+    Page<Comment> findByQuestion(Question question, Pageable pageable);
 }
 
