@@ -17,7 +17,7 @@ import sg.backend.service.QuestionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/questions")
+@RequestMapping("/api/questions")
 public class QuestionController {
 
     private final QuestionService questionService;
@@ -43,7 +43,7 @@ public class QuestionController {
     })
     @GetMapping("/funding/{fundingId}")
     public ResponseEntity<List<QuestionResponseDto>> getQuestionsByFunding(
-            @PathVariable Long fundingId,
+            @PathVariable("fundingId") Long fundingId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Page<Question> questionPage = questionService.getQuestionsByFunding(fundingId, page, size);
