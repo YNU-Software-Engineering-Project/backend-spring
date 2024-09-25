@@ -22,7 +22,7 @@ public class CommentResponseDto {
         dto.setCommentId(comment.getCommentId());
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());
-        dto.setNickname(comment.getUser().getEmail());
+        dto.setNickname(comment.getUser().getNickname());
         return dto;
     }
 

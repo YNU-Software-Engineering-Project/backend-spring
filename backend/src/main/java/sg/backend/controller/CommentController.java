@@ -3,6 +3,7 @@ package sg.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,14 +42,13 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "댓글 조회 성공"),
     })
+    @Transactional
     @GetMapping("/question/{questionId}")
     public ResponseEntity<List<CommentResponseDto>> getCommentsByQuestion(
             @PathVariable Long questionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        Page<Comment> commentPage = commentService.getCommentsByQuestion(questionId, page, size);
-        List<CommentResponseDto> responseDtos = CommentResponseDto.fromEntityList(commentPage.getContent());
-        return CommentResponseDto.success(responseDtos);
+        return commentService.getCommentsByQuestion(questionId, page, size);
     }
 
     @Operation(summary = "커뮤니티 댓글 삭제")

@@ -23,7 +23,7 @@ public class QuestionResponseDto {
         dto.setQuestionId(question.getQuestionId());
         dto.setContent(question.getContent());
         dto.setCreatedAt(question.getCreatedAt());
-        dto.setNickname(question.getUser().getEmail());
+        dto.setNickname(question.getUser().getNickname());
         return dto;
     }
 
