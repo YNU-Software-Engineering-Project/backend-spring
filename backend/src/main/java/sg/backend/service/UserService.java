@@ -55,7 +55,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Value("${file.path}")
     private String filePath;

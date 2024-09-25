@@ -63,20 +63,9 @@ public class Notification {
         this.message = String.format("[%s]에 새로운 업데이트가 있습니다.", fundingName);
     }
 
-    // 펀딩 게시물 상태 변경 알림 메시지
-    public void setFundingStateUpdateMessage(String fundingName, State state) {
-        switch (state) {
-            case DRAFT:
-                this.message = String.format("[%s] 게시물이 '작성 중' 상태로 변경되었습니다.", fundingName);
-                break;
-            case REVIEW:
-                this.message = String.format("[%s] 게시물이 '심사 대기' 상태로 변경되었습니다.", fundingName);
-                break;
-            case REVIEW_COMPLETED:
-                this.message =String.format("[%s] 프로젝트가 승인되었습니다.", fundingName);
-                break;
-        }
-
+    // 펀딩 게시물 승인 알림 메시지
+    public void setFundingReviewCompletedMessage(String fundingName) {
+        this.message =String.format("[%s] 프로젝트가 승인되었습니다.", fundingName);
     }
 
     // 새로운 채팅 도착 알림 메시지
