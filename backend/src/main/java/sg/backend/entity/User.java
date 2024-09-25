@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +18,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
+    public User(Long userId) {
+        this.userId = userId;
+    }
 
     private String email;
 
@@ -83,4 +86,6 @@ public class User {
     public void setSchoolEmailVerified(boolean b) {
         schoolEmailVerified = b;
     }
+
+    public void setPassword(String newPassword){ this.password = newPassword; }
 }

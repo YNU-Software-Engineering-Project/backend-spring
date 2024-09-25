@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Category {
+    NONE("해당 없음"),
     A0010("캐릭터·굿즈"),
     A0020("홈·리빙"),
     A0030("사진"),
