@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
 import sg.backend.dto.response.funding.GetFundingStateCountResponseDto;
@@ -60,6 +57,26 @@ public class AdminController {
             @RequestParam(value = "size", defaultValue = "6") int size
     ) {
         ResponseEntity<? super GetFundingByStateResponseDto> response = fundingService.getFundingByState(email, state, keyword, page, size);
+        return response;
+    }
+
+    @Operation(
+            summary = "펀딩 상태 변경"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "펀딩 상태 변경 성공",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @PatchMapping("/funding/{fundingId}")
+    public ResponseEntity<? super ResponseDto> changeFundingState(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long fundingId,
+            @Parameter(description = "펀딩 상태 (DRAFT: 작성 중, REVIEW: 심사 대기, REVIEW_COMPLETED: 심사 완료, ONGOING: 진행 중, CLOSED: 종료)")
+            @RequestParam String state
+    ) {
+        ResponseEntity<? super ResponseDto> response = fundingService.changeFundingState(email, fundingId, state);
         return response;
     }
 }
