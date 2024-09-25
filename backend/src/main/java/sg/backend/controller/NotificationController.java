@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.notification.DeleteNotificationResponseDto;
-import sg.backend.dto.response.notification.DeleteNotificationsResponseDto;
 import sg.backend.dto.response.notification.GetNotificationsResponseDto;
 import sg.backend.service.NotificationService;
 
@@ -49,15 +47,15 @@ public class NotificationController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
-                    content = @Content(schema = @Schema(implementation = DeleteNotificationsResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @DeleteMapping("")
-    public ResponseEntity<? super DeleteNotificationsResponseDto> deleteNotifications(
+    public ResponseEntity<? super ResponseDto> deleteNotifications(
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super DeleteNotificationsResponseDto> response = notificationService.deleteNotifications(email);
+        ResponseEntity<? super ResponseDto> response = notificationService.deleteNotifications(email);
         return response;
     }
 
@@ -67,7 +65,7 @@ public class NotificationController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "알림 삭제 성공",
-                    content = @Content(schema = @Schema(implementation = DeleteNotificationResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "404", description = """
                     잘못된 요청
                     - 존재하지 않는 사용자
@@ -76,11 +74,11 @@ public class NotificationController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @DeleteMapping("/{notificationId}")
-    public ResponseEntity<? super DeleteNotificationResponseDto> deleteNotification(
+    public ResponseEntity<? super ResponseDto> deleteNotification(
             @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long notificationId
     ) {
-        ResponseEntity<? super DeleteNotificationResponseDto> response = notificationService.deleteNotification(email, notificationId);
+        ResponseEntity<? super ResponseDto> response = notificationService.deleteNotification(email, notificationId);
         return response;
     }
 }
