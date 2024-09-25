@@ -12,6 +12,8 @@ public interface ResponseCode {
     String NOT_EXISTED_USER = "NU";
     String NOT_EXISTED_BOARD = "NB";
     String NOT_EXISTED_FILE = "NF";
+    String NOT_EXISTED_DATA = "ND";
+    String FULL_DATA = "FD";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";

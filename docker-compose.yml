@@ -23,8 +23,8 @@ services:
     networks:
       - demo-network
     volumes:
-      - C:/Users/com/Desktop/funding_image:/app/data/funding_image
-      - C:/Users/com/Desktop/project_document:/app/data/project_document
+      - C:/Users/USER/Desktop/funding_image:/app/data/funding_image
+      - C:/Users/USER/Desktop/project_document:/app/data/project_document
 
   db:
     build: ./db

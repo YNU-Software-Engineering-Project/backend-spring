@@ -7,23 +7,16 @@ import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 
 @Getter
-public class GetProjectResponeDto extends ResponseDto{
+public class MakeRewardResponseDto extends ResponseDto{
+    private Long reward_id;
 
-    private String title;
-    private String main_url;
-    private String[] image_url;
-    private String summary;
-
-    private GetProjectResponeDto(String title, String main_url, String[] image_url, String summary){
+    private MakeRewardResponseDto(Long reward_id) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-        this.title = title;
-        this.main_url = main_url;
-        this.image_url = image_url;
-        this.summary = summary;
+        this.reward_id = reward_id;
     }
 
-    public static ResponseEntity<GetProjectResponeDto> success(String title, String main_url, String[] image_url, String summary) {
-        GetProjectResponeDto result = new GetProjectResponeDto(title, main_url, image_url, summary);
+    public static ResponseEntity<MakeRewardResponseDto> success(Long reward_id){
+        MakeRewardResponseDto result = new MakeRewardResponseDto(reward_id);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

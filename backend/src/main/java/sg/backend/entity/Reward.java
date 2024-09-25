@@ -33,4 +33,12 @@ public class Reward {
 
     @OneToMany(mappedBy = "reward")
     private List<SelectedReward> selrewardList;
+
+    public Reward(Funding funding, Integer amount, String rewardName, String rewardDescription, Integer quantity) {
+        this.funding = funding;
+        this.amount = amount;
+        this.rewardName = rewardName;
+        this.rewardDescription = rewardDescription;
+        this.quantity = quantity;
+    }
 }

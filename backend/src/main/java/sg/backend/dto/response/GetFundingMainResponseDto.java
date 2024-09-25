@@ -7,14 +7,18 @@ import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 
 @Getter
-public class ModifyContentResponseDto extends ResponseDto {
+public class GetFundingMainResponseDto extends ResponseDto {
+    private String main_url;
+    private String funding_title;
 
-    private ModifyContentResponseDto() {
+    private GetFundingMainResponseDto(String url, String title) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
+        this.main_url = url;
+        this.funding_title = title;
     }
 
-    public static ResponseEntity<ModifyContentResponseDto> success() {
-        ModifyContentResponseDto result = new ModifyContentResponseDto();
+    public static ResponseEntity<GetFundingMainResponseDto> success(String url, String title){
+        GetFundingMainResponseDto result = new GetFundingMainResponseDto(url, title);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -22,10 +26,4 @@ public class ModifyContentResponseDto extends ResponseDto {
         ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_BOARD, ResponseMessage.NOT_EXISTED_BOARD);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
-
-    public static ResponseEntity<ResponseDto> not_permission(){
-        ResponseDto result = new ResponseDto(ResponseCode.NO_PERMISSTION, ResponseMessage.NO_PERMISSTION);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-    }
-
 }

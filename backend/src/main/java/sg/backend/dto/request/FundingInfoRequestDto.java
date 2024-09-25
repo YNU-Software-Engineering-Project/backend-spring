@@ -9,8 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FundingInfoRequestDto {
 
-    private String large_category;
-    private String small_category;
+    private String category;
     private String organizer_name;
     private String organizer_email;
     private String tax_email;

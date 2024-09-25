@@ -2,20 +2,22 @@ package sg.backend.service.implement;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.FundingInfoRequestDto;
+import sg.backend.dto.request.InsertTagRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.file.DeleteFileResponseDto;
 import sg.backend.dto.response.file.UploadInfoFileResponseDto;
+import sg.backend.dto.response.DeleteDataResponseDto;
+import sg.backend.dto.response.fundingInfo.GetInfoResponseDto;
+import sg.backend.dto.response.fundingInfo.InsertTagResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.DocumentRepository;
 import sg.backend.repository.FundingRepository;
-import sg.backend.repository.FundingTagRepository;
-import sg.backend.repository.UserRepository;
+import sg.backend.repository.TagRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,28 +25,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.Integer.parseInt;
-
 @Service
 @RequiredArgsConstructor
 public class FundingInfoService {
 
+    private final FundingRepository fundingRepository;
+    private final DocumentRepository documentRepository;
+    private final TagRepository tagRepository;
+
+    private final FileService fileService;
     @Value("${file.path}")
     private String filePath;
 
-    @Autowired
-    FileService fileService;
-
-    //private final UserRepository userRepository;
-
-    @Autowired
-    private FundingRepository fundingRepository;
-    @Autowired
-    private DocumentRepository documentRepository;
-    private final FundingTagRepository fundingTagRepository;
-
-    String large;
-    String small;
+    String category;
     String organizer_name;
     String organizer_email;
     String tax_email;
@@ -54,110 +47,249 @@ public class FundingInfoService {
 
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    @Transactional
-    public ResponseEntity<? super GetInfoResponseDto> getInfo(Long funding_id){
-        String[] tag;
-        String id_card_url;
-        String[] document_url;
+
+    @Transactional   //펀딩 제일 처음 들어갔을때 나오는 이미지
+    public ResponseEntity<? super GetFundingMainResponseDto> getFundingMain(Long funding_id){
+        String url;
+        String title;
         try{
             Optional<Funding> option = fundingRepository.findById(funding_id);
-            if(option.isEmpty()) {
+            if (option.isEmpty()) {
+                return GetFundingMainResponseDto.not_existed_post();
+            }
+            Funding funding = option.get();
+
+            String main = funding.getMainImage();
+            if (main == null) {
+                url = null;
+            } else {
+                main = main.replace("/app/data/funding_image/", "");
+                url = "http://localhost:8080/file/view/funding_image/" + main;
+            }
+
+            title = funding.getTitle();
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetFundingMainResponseDto.success(url, title);
+    }
+
+    @Transactional  //정보작성 페이지 내용 get
+    public ResponseEntity<? super GetInfoResponseDto> getInfo(Long funding_id){
+        String[] tag;
+        Long[] tag_id;
+
+        String id_card_url;
+        String id_card_uuid;
+
+        String[] document_url;
+        String[] document_name;
+        String[] document_uuid;
+        try {
+            Optional<Funding> option = fundingRepository.findById(funding_id);
+            if (option.isEmpty()) {
                 return GetInfoResponseDto.not_existed_post();
             }
             Funding funding = option.get();
 
-            large = funding.getCategory().getMessage();
-            small = funding.getSubCategory().getMessage();
+            category = funding.getCategory().getMessage(); // null이면 해당없음 메시지
 
-            List<FundingTag> fundingTags = fundingTagRepository.findAllByFunding(funding);
-            ArrayList<String> tags = new ArrayList<>();
-            for(FundingTag tag_name: fundingTags){
-                tags.add(tag_name.getTag_name());
+            List<Tag> fundingTags = tagRepository.findAllByFunding(funding);
+            if (fundingTags.isEmpty()) {  // 빈 리스트 체크
+                tag = null;
+                tag_id = null;
+            } else {
+                ArrayList<String> tags = new ArrayList<>();
+                ArrayList<Long> tag_ids = new ArrayList<>();
+                for (Tag tag_name : fundingTags) {
+                    tags.add(tag_name.getTag_name());
+                    tag_ids.add(tag_name.getTag_id());
+                }
+                tag = tags.toArray(new String[0]);
+                tag_id = tag_ids.toArray(new Long[0]);
             }
-            tag = tags.toArray(new String[0]);
 
             String id_card = funding.getOrganizerIdCard();
-            id_card = id_card.replace("/app/data/project_document/", "");
-            id_card_url = "http://localhost:8080/file/view/funding_image/"+ id_card;
+            if (id_card == null) {
+                id_card_url = null;
+                id_card_uuid = null;
+            } else {
+                id_card_uuid = id_card.replace("/app/data/project_document/", "");
+                id_card_url = "http://localhost:8080/file/view/project_document/" + id_card;
+            }
 
             organizer_name = funding.getOrganizerName();
             organizer_email = funding.getOrganizerEmail();
             tax_email = funding.getTaxEmail();
-            
+
             List<Document> documents = documentRepository.findAllByFunding(funding);
-            ArrayList<String> urls = new ArrayList<>();
-            for(Document docu: documents){
-                urls.add("http://localhost:8080/file/view/project_document/"+ docu.getUuid());
+            if (documents.isEmpty()) {  // 빈 리스트 체크
+                document_url = new String[0];  // 빈 배열 반환
+                document_name = new String[0];
+                document_uuid = new String[0];
+            } else {
+                ArrayList<String> urls = new ArrayList<>();
+                ArrayList<String> names = new ArrayList<>();
+                ArrayList<String> uuids = new ArrayList<>();
+                for (Document docu : documents) {
+                    names.add(docu.getName());
+                    uuids.add(docu.getUuid());
+                    urls.add("http://localhost:8080/file/view/project_document/" + docu.getUuid());
+                }
+                document_url = urls.toArray(new String[0]);
+                document_name = names.toArray(new String[0]);
+                document_uuid = uuids.toArray(new String[0]);
             }
-            document_url = urls.toArray(new String[0]);
 
-            start = funding.getStartDate().format(format);
-            start = start.replace(" 11:59", "");
-            end = funding.getEndDate().format(format);
-            end = end.replace(" 11:59", "");
+            LocalDateTime start_day = funding.getStartDate();
+            if (start_day == null) {
+                start = null;
+            } else {
+                start = start_day.format(format);
+                start = start.replace(" 00:00", "");
+            }
+            LocalDateTime end_day = funding.getEndDate();
+            if (end_day == null) {
+                end = null;
+            } else {
+                end = end_day.format(format);
+                end = end.replace(" 11:59", "");
+            }
 
-            amount = funding.getTargetAmount().toString();
-
-        } catch(Exception e){
+            Integer amou = funding.getTargetAmount();
+            if(amou == null){
+                amount = null;
+            } else{
+                amount = amou.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return GetInfoResponseDto.success(large,small,tag, id_card_url,organizer_name,organizer_email,tax_email,document_url,start,end,amount);
+        return GetInfoResponseDto.success(category, tag, tag_id, id_card_url, id_card_uuid, organizer_name,
+                organizer_email, tax_email, document_url, document_name, document_uuid, start, end, amount);
     }
 
 
-    @Transactional  //펀딩 정보 수정
-    public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto) {
+
+    @Transactional  //펀딩 정보 수정 + 펀딩 등록하기
+    public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, Boolean type) {
         try {
-            large = dto.getLarge_category();
-            Category large_category = Category.getCategory(large);
-            small = dto.getSmall_category();
-            SubCategory small_category = SubCategory.getCategory(small);
+            category = dto.getCategory(); //맞는 카테고리 전달되도록하기
+            Category cate;
+            if(category == null){
+                cate = Category.NONE;
+            } else{
+                cate = Category.getCategory(category);
+            }
 
             //이메일 형식은 프론트에서 검사하고 잘못됐으면 오류 메세지 나가고 백엔드엔 null로 전달
             organizer_name = dto.getOrganizer_name();
             organizer_email = dto.getOrganizer_email();
             tax_email = dto.getTax_email();
 
+            if(type){  //등록하기 연산
+                if(organizer_name == null || organizer_email == null || tax_email == null){
+                    return ModifyContentResponseDto.not_permission();
+                }
+            }
+
             String start = dto.getStart_date();
             LocalDateTime start_date;
-            if(start == null){
+            if(start == null){ //날짜 형식 맞는지 프론트가 구분
                 start_date = null;
             } else{
-                start = start.concat(" 11:59");
+                start = start.concat(" 00:00");
                 start_date = LocalDateTime.parse(start,format);
             }
             String end = dto.getEnd_date();
             LocalDateTime end_date;
-            if(end == null){
+            if(end == null){ //날짜 형식 구분
                 end_date = null;
             } else{
                 end = end.concat(" 11:59");
                 end_date = LocalDateTime.parse(end, format);
             }
 
-            Integer target_amount = parseInt(dto.getTarget_amount());
-
-            Optional <Funding> option = fundingRepository.findById(funding_id);
-            if(option.isEmpty()) {
-                return ModifyContentResponseDto.not_existed_post();
+            String amount = dto.getTarget_amount(); //숫자가 들어갔는지 프론트가 구분
+            Integer target_amount;
+            if(amount == null){
+                target_amount = null;
+            } else{
+                target_amount = Integer.parseInt(amount);
             }
-            Funding funding = option.get();
 
-            funding.setCategory(large_category);
-            funding.setSubCategory(small_category);
-            funding.setOrganizerName(organizer_name);  //객체 내용 변경
-            funding.setOrganizerEmail(organizer_email);
-            funding.setTaxEmail(tax_email);
-            funding.setStartDate(start_date);
-            funding.setEndDate(end_date);
-            funding.setTargetAmount(target_amount);
+            if(type){ //새로운 펀딩 생성후 데이터 저장하고 펀딩을 데이터베이스에 저장
+                Funding new_funding = new Funding(organizer_name,organizer_email,tax_email);
+                new_funding.setCategory(cate);
+                new_funding.setStartDate(start_date);
+                new_funding.setEndDate(end_date);
+                new_funding.setTargetAmount(target_amount);
 
+                fundingRepository.save(new_funding);
+            } else{
+                Optional <Funding> option = fundingRepository.findById(funding_id);
+                if(option.isEmpty()) {
+                    return ModifyContentResponseDto.not_existed_post();
+                }
+                Funding funding = option.get();
+
+                funding.setCategory(cate);
+                funding.setOrganizerName(organizer_name);  //객체 내용 변경
+                funding.setOrganizerEmail(organizer_email);
+                funding.setTaxEmail(tax_email);
+                funding.setStartDate(start_date);
+                funding.setEndDate(end_date);
+                funding.setTargetAmount(target_amount);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-
         return ModifyContentResponseDto.success();
+    }
+
+
+    @Transactional
+    public ResponseEntity<? super InsertTagResponseDto> insertTag(Long id, InsertTagRequestDto tag_name){
+        Long tag_id;
+        try{
+            Optional<Funding> option = fundingRepository.findById(id);
+            if(option.isEmpty()) {
+                return InsertTagResponseDto.not_existed_post();
+            }
+            Funding funding = option.get();
+
+            if(tag_name.getTagName() == null){
+                return InsertTagResponseDto.not_existed_data();
+            } else{
+                long count = tagRepository.count();
+                if(count < 5) {
+                    Tag tag = new Tag(tag_name.getTagName(), funding);
+                    tagRepository.save(tag);
+                    tag_id = tag.getTag_id();
+                }else{
+                    return InsertTagResponseDto.full_data();
+                }
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return InsertTagResponseDto.success(tag_id);
+    }
+
+    @Transactional
+    public ResponseEntity<? super DeleteDataResponseDto> deleteTag(Long id){
+        try{
+            //id에 해당하는 값이 없으면 자동으로 EmptyResultDataAccessException 을 발생
+            tagRepository.deleteById(id);
+        } catch(Exception e){
+            e.printStackTrace();
+            return DeleteDataResponseDto.not_existed_data();
+        }
+        return DeleteDataResponseDto.success();
     }
 
     @Transactional
@@ -186,7 +318,7 @@ public class FundingInfoService {
 
             if(store){
                 Document document = new Document(funding, originalFilename, uuid_name, file_path);
-                documentRepository.save(document);
+                documentRepository.save(document);   //id_Card는 uuid는 안넘겨 줘도 됨.
             } else{
                 funding.setOrganizerIdCard(file_path);
             }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.FundingStoryRequestDto;
+import sg.backend.dto.response.GetProjectResponseDto;
 import sg.backend.dto.response.file.DeleteFileResponseDto;
 import sg.backend.dto.response.ModifyContentResponseDto;
 import sg.backend.dto.response.ResponseDto;
@@ -17,6 +18,8 @@ import sg.backend.entity.IntroImage;
 import sg.backend.repository.FundingRepository;
 import sg.backend.repository.IntroImageRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,6 +38,56 @@ public class FundingStoryService {
     private IntroImageRepository imageRepository;
     @Autowired
     private IntroImageRepository introImageRepository;
+
+    @Transactional
+    public ResponseEntity<? super GetProjectResponseDto> getProject(Long funding_id) {
+        String title;
+        String main_url;
+        String main_uuid;
+        String[] images_url;
+        String[] images_uuid;
+        String summary;
+        try{
+            Optional<Funding> option = fundingRepository.findById(funding_id);
+            if(option.isEmpty()){
+                return GetProjectResponseDto.not_existed_post();
+            }
+            Funding funding = option.get();
+
+            title = funding.getTitle();
+
+            String main = funding.getMainImage();
+            if(main == null){
+                main_url = null;
+                main_uuid = null;
+            } else{
+                main_uuid = main.replace("/app/data/funding_image/", "");
+                main_url = "http://localhost:8080/file/view/funding_image/" + main_uuid;
+            }
+
+            List<IntroImage> images = imageRepository.findAllByFunding(funding);
+            if(images.isEmpty()){
+                images_url = null;
+                images_uuid = null;
+            } else{
+                ArrayList<String> urls = new ArrayList<>();
+                ArrayList<String> uuids = new ArrayList<>();
+                for (IntroImage img : images) {
+                    urls.add("http://localhost:8080/file/view/funding_image/" + img.getUuid());
+                    uuids.add(img.getUuid());
+                }
+                images_url = urls.toArray(new String[urls.size()]);
+                images_uuid = uuids.toArray(new String[0]);
+            }
+
+            summary = funding.getProjectSummary();
+
+        } catch(Exception e){
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+        return GetProjectResponseDto.success(title, main_url, main_uuid,images_url, images_uuid,summary);
+    }
 
     @Transactional
     public ResponseEntity<? super ModifyContentResponseDto> modify_project(Long funding_id, FundingStoryRequestDto dto){

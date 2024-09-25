@@ -21,15 +21,12 @@ public class Funding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long funding_id;
 
-    //게시물 정보
+    //게시물 정보 //not blank
     @Enumerated(EnumType.STRING)
     private State current;
 
     @Enumerated(EnumType.STRING)
     private Category category;
-
-    @Enumerated(EnumType.STRING)
-    private SubCategory subCategory;
 
     //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
     private String organizerName;
@@ -56,7 +53,7 @@ public class Funding {
 
 
     //정책
-    private String productInfo;
+    private String rewardInfo;
 
     private String refundPolicy;
 
@@ -74,9 +71,12 @@ public class Funding {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) //not blank
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Tag> tagList;
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Document> documentList;
@@ -89,5 +89,13 @@ public class Funding {
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Funder> funderList;
+
+    public Funding(String organizerName, String organizerEmail, String taxEmail){
+        this.organizerName = organizerName;
+        this.organizerEmail = organizerEmail;
+        this.taxEmail = taxEmail;
+        this.current = State.DRAFT;
+        //user도 넣어야하는데
+    }
 
 }

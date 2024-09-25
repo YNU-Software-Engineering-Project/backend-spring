@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.FundingStoryRequestDto;
+import sg.backend.dto.response.GetProjectResponseDto;
 import sg.backend.dto.response.file.DeleteFileResponseDto;
 import sg.backend.dto.response.ModifyContentResponseDto;
 import sg.backend.dto.response.file.UploadImageResponseDto;
@@ -18,7 +19,13 @@ public class FundingStoryController {
 
     private final FundingStoryService fundingStoryService;
 
-    @PostMapping("/{funding_id}/story")
+    @GetMapping("/{funding_id}/story")
+    public ResponseEntity<? super GetProjectResponseDto> get_project(@PathVariable long funding_id) {
+        ResponseEntity<? super GetProjectResponseDto> response = fundingStoryService.getProject(funding_id);
+        return response;
+    }
+
+    @PostMapping("/{funding_id}/story/modify")
     public ResponseEntity<? super ModifyContentResponseDto> modify_project(
             @RequestBody @Valid FundingStoryRequestDto requestBody,
             @PathVariable("funding_id") Long funding_id
