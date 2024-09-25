@@ -35,17 +35,17 @@ public class Notification {
 
     // 후원한 펀딩의 목표 금액 달성 알림 메시지
     public void setFundingSuccessMessage(String fundingName) {
-        this.message = String.format("축하합니다! 후원하신 [%s]가 목표 금액을 달성했습니다.", fundingName);
+        this.message = String.format("축하합니다! 후원하신 [%s] 프로젝트가 목표 금액을 달성했습니다.", fundingName);
     }
 
     // 리워드 발송 알림 메시지
     public void setRewardShippedMessage(String fundingName) {
-        this.message = String.format("후원하신 [%s]가 종료되었으며, 리워드가 곧 발송될 예정입니다.", fundingName);
+        this.message = String.format("후원하신 [%s] 프로젝트가 종료되었으며, 리워드가 곧 발송될 예정입니다.", fundingName);
     }
 
     // 후원금 환불 알림 메시지
     public void setFundingFailureMessage(String fundingName) {
-        this.message = String.format("후원하신 [%s]가 목표 금액을 달성하지 못하여 후원 금액이 환불되었습니다.", fundingName);
+        this.message = String.format("후원하신 [%s] 프로젝트가 목표 금액을 달성하지 못하여 후원 금액이 환불되었습니다.", fundingName);
     }
 
     // 댓글 알림 메시지
