@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import sg.backend.entity.Funding;
 import sg.backend.entity.State;
+import sg.backend.entity.Tag;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +19,10 @@ public class FundingSortResponseDto {
     private Integer totalLikes;
     private LocalDateTime createdAt;
     private State current;
+    private Integer rewardAmount;
+    private String details;
+    private List<Tag> tags;
+    private Integer todayLikes;
 
     public FundingSortResponseDto(Funding funding){
         this.fundingId = funding.getFundingId();
@@ -26,5 +32,9 @@ public class FundingSortResponseDto {
         this.totalLikes = funding.getTotalLikes();
         this.createdAt = funding.getCreatedAt();
         this.current = funding.getCurrent();
+        this.rewardAmount = funding.getRewardAmount();
+        this.details = funding.getProjectSummary();
+        this.tags = funding.getTagList();
+        this.todayLikes = funding.getTotalLikes();
     }
 }
