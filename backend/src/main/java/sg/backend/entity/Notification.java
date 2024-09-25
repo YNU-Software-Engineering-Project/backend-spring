@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "notification")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +21,12 @@ public class Notification {
 
     private String message;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
+
+    public Notification(User user, String createdAt) {
+        this.user = user;
+        this.createdAt = createdAt;
+    }
 
     // 회원가입 시 알림 메시지
     public void setStartMessage() {
@@ -58,6 +61,22 @@ public class Notification {
     // 후원한 펀딩 게시물 업데이트 알림 메시지
     public void setFundingUpdateMessage(String fundingName) {
         this.message = String.format("[%s]에 새로운 업데이트가 있습니다.", fundingName);
+    }
+
+    // 펀딩 게시물 상태 변경 알림 메시지
+    public void setFundingStateUpdateMessage(String fundingName, State state) {
+        switch (state) {
+            case DRAFT:
+                this.message = String.format("[%s] 게시물이 '작성 중' 상태로 변경되었습니다.", fundingName);
+                break;
+            case REVIEW:
+                this.message = String.format("[%s] 게시물이 '심사 대기' 상태로 변경되었습니다.", fundingName);
+                break;
+            case REVIEW_COMPLETED:
+                this.message =String.format("[%s] 게시물이 심사 완료 되었습니다.", fundingName);
+                break;
+        }
+
     }
 
     // 새로운 채팅 도착 알림 메시지

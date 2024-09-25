@@ -1,19 +1,6 @@
 package sg.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import sg.backend.dto.request.auth.LoginRequestDto;
-import sg.backend.dto.request.auth.SignUpRequestDto;
-import sg.backend.dto.response.auth.LoginResponseDto;
-import sg.backend.entity.User;
-import sg.backend.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import sg.backend.common.ResponseCode;
-import sg.backend.common.ResponseMessage;
-import sg.backend.jwt.TokenProvider;
-import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.auth.SignUpResponseDto;
-import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +17,6 @@ import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
@@ -41,12 +26,15 @@ import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
 import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.entity.Funding;
-import sg.backend.entity.Tag;
+import sg.backend.entity.Notification;
 import sg.backend.entity.User;
 import sg.backend.jwt.TokenProvider;
 import sg.backend.repository.*;
+
 import java.io.File;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,9 +51,12 @@ public class UserService {
     private final FundingLikeRepository fundingLikeRepository;
     private final FunderRepository funderRepository;
     private final FundingRepository fundingRepository;
+    private final NotificationRepository notificationRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-  
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Value("${file.path}")
     private String filePath;
 
@@ -87,6 +78,11 @@ public class UserService {
         userRepository.save(user);
 
         String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
+
+        Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
+        notification.setStartMessage();
+        notificationRepository.save(notification);
+
         return SignUpResponseDto.success(accessToken);
     }
   

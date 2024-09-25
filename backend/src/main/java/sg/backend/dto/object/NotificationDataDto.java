@@ -11,5 +11,5 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NotificationDataDto {
     private String message;
-    private LocalDateTime createdAt;
+    private String createdAt;
 }
