@@ -10,7 +10,7 @@ public interface ResponseCode {
     String DUPLICATE_EMAIL = "DE";
     String DUPLICATE_NICKNAME = "DN";
     String NOT_EXISTED_USER = "NU";
-    String NOT_EXISTED_BOARD = "NB";
+    String NOT_EXISTED_FUNDING = "NB";
     String NOT_EXISTED_NOTIFICATION = "NN";
     String PASSWORD_SAME_AS_CURRENT = "PSC";
     String EMAIL_TOKEN_NOT_FOUND = "ETNF";

@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 import sg.backend.dto.object.FundingDataDto;
-import sg.backend.dto.object.MyFundingDataDto;
+import sg.backend.dto.object.ShortFundingDataDto;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
@@ -20,11 +20,11 @@ import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
+import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
+import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.entity.Funding;
 import sg.backend.entity.Notification;
 import sg.backend.entity.User;
@@ -310,7 +310,7 @@ public class UserService {
 
         User user;
         Page<Funding> fundingList;
-        List<MyFundingDataDto> data = new ArrayList<>();
+        List<ShortFundingDataDto> data = new ArrayList<>();
         int todayAmount = 0;
         int todayLikes = 0;
 
@@ -320,10 +320,10 @@ public class UserService {
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            fundingList = fundingRepository.findByUserUserId(user.getUserId(), pageRequest);
+            fundingList = fundingRepository.findByUser(user, pageRequest);
 
             for(Funding f : fundingList) {
-                MyFundingDataDto dto = new MyFundingDataDto();
+                ShortFundingDataDto dto = new ShortFundingDataDto();
                 dto.setTitle(f.getTitle());
                 dto.setMainImage(f.getMainImage());
                 dto.setState(String.valueOf(f.getCurrent()));

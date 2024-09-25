@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +18,7 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.service.FundingService;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/fundings")
@@ -34,7 +31,7 @@ public class FundingController {
             summary = "펀딩 게시물 정렬 및 검색"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "펀딩 게시물 정렬 및 검색",
+            @ApiResponse(responseCode = "200", description = "펀딩 게시물 정렬 및 검색 성공",
                     content = @Content(schema = @Schema(implementation = GetFundingListResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
@@ -48,7 +45,7 @@ public class FundingController {
                     likes: 추천순(좋아요 순)
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
-            @Parameter(description = "카테고리") @RequestParam(required = false) String category,
+            @Parameter(description = "카테고리", example = "category=A0010") @RequestParam(required = false) String category,
             @Parameter(description = "태그", example = "tags=art,design") @RequestParam(required = false) List<String> tags,
             @Parameter(description = "최소 후원 금액") @RequestParam(required = false) Long minAmount,
             @Parameter(description = "종료된 펀딩 여부 (true: 종료된 펀딩도 포함)")
