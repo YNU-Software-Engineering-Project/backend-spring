@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sg.backend.dto.request.email.EmailSendTokenRequestDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.email.EmailSendTokenResponseDto;
 import sg.backend.dto.response.user.EmailVerificationResponseDto;
-import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.entity.EmailToken;
 import sg.backend.entity.User;
 import sg.backend.repository.EmailTokenRepository;
@@ -34,19 +32,19 @@ public class EmailService {
         javaMailSender.send(email);
     }
 
-    public ResponseEntity<? super EmailSendTokenResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String email) {
+    public ResponseEntity<? super ResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String email) {
 
         User user;
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return EmailSendTokenResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
             user = optionalUser.get();
 
             String receiverEmail = dto.getEmail();
             int index = receiverEmail.indexOf("@");
             String domain = receiverEmail.substring(index+1);
-            if(!domain.contains("ac.kr")) return EmailSendTokenResponseDto.validationFailed();
+            if(!domain.contains("ac.kr")) return ResponseDto.validationFailed();
 
             EmailToken emailToken = EmailToken.createEmailToken(user.getUserId());
             emailToken.setEmail(receiverEmail);
@@ -74,7 +72,7 @@ public class EmailService {
             return ResponseDto.databaseError();
         }
 
-        return EmailSendTokenResponseDto.success();
+        return ResponseDto.success();
     }
 
     public EmailToken findByEmailTokenIdAndExpirationDateAfterAndExpired(String emailTokenId) {

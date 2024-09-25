@@ -309,7 +309,7 @@ public class UserService {
             user = optionalUser.get();
 
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            fundingList = fundingRepository.findByUserUserId(user.getUserId(), pageRequest);
+            fundingList = fundingRepository.findByUser(user, pageRequest);
 
             for(Funding f : fundingList) {
                 ShortFundingDataDto dto = new ShortFundingDataDto();
