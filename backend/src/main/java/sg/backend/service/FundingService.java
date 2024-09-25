@@ -12,10 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sg.backend.common.CategoryUtil;
 import sg.backend.dto.object.FundingDataDto;
+import sg.backend.dto.object.ShortFundingDataDto;
 import sg.backend.dto.response.ResponseDto;
+import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetFundingStateCountResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.FundingLikeRepository;
@@ -60,12 +62,7 @@ public class FundingService {
             }
 
             if(category != null) {
-                List<String> categories = new ArrayList<>();
-                if(Category.valueOf(category).toString().contains("A"))
-                    categories = CategoryUtil.valueOf(category).getCategories();
-                else
-                    categories.add(category);
-                addCategoryFilter(categories, funding, filterBuilder);
+                addCategoryFilter(category, funding, filterBuilder);
             }
 
             if(keyword != null) {
@@ -120,14 +117,8 @@ public class FundingService {
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
-    private void addCategoryFilter(List<String> categories, QFunding funding, BooleanBuilder filterBuilder) {
-        if (!categories.isEmpty()) {
-            BooleanBuilder categoryFilter = new BooleanBuilder();
-            for(String category : categories) {
-                categoryFilter.or(funding.category.eq(Category.valueOf(category)));
-            }
-            filterBuilder.and(categoryFilter);
-        }
+    private void addCategoryFilter(String category, QFunding funding, BooleanBuilder filterBuilder) {
+        filterBuilder.and(funding.category.eq(Category.valueOf(category)));
     }
 
     private void addTagFilter(List<String> tags, QFunding funding, BooleanBuilder filterBuilder) {
@@ -189,4 +180,93 @@ public class FundingService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
+    public ResponseEntity<? super GetFundingStateCountResponseDto> getFundingStateCount(String email) {
+
+        User user;
+        QFunding funding = QFunding.funding;
+        long review;
+        long reviewCompleted;
+        long onGoing;
+
+        try {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return GetFundingStateCountResponseDto.noExistUser();
+            user = optionalUser.get();
+
+            if(!user.getRole().equals(Role.ADMIN))
+                return GetFundingStateCountResponseDto.noPermission();
+
+            review = getFundingCount(State.REVIEW, funding);
+            reviewCompleted = getFundingCount(State.REVIEW_COMPLETED, funding);
+            onGoing = getFundingCount(State.ONGOING, funding);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetFundingStateCountResponseDto.success(review, reviewCompleted, onGoing);
+    }
+
+    private long getFundingCount(State state, QFunding funding) {
+        return queryFactory
+                .select(funding.count())
+                .from(funding)
+                .where(funding.current.eq(state))
+                .fetchOne();
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<? super GetFundingByStateResponseDto> getFundingByState(String email, String state, String keyword, int page, int size) {
+
+        User user;
+        QFunding funding = QFunding.funding;
+        BooleanBuilder filterBuilder = new BooleanBuilder();
+        Page<Funding> fundingList;
+        List<ShortFundingDataDto> data = new ArrayList<>();
+
+        try {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return GetFundingStateCountResponseDto.noExistUser();
+            user = optionalUser.get();
+
+            if(!user.getRole().equals(Role.ADMIN))
+                return GetFundingStateCountResponseDto.noPermission();
+
+            if(keyword != null) {
+                filterBuilder.and(funding.title.containsIgnoreCase(keyword));
+            }
+
+            filterBuilder.and(funding.current.eq(State.valueOf(state)));
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            List<Funding> results = queryFactory.selectFrom(funding)
+                    .where(filterBuilder)
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+
+            long total = queryFactory.selectFrom(funding)
+                    .where(filterBuilder)
+                    .fetch()
+                    .size();
+
+            fundingList = new PageImpl<>(results, pageable, total);
+            for(Funding f : fundingList) {
+                ShortFundingDataDto dto = new ShortFundingDataDto();
+                dto.setTitle(f.getTitle());
+                dto.setMainImage(f.getMainImage());
+                dto.setState(String.valueOf(f.getCurrent()));
+                data.add(dto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetFundingByStateResponseDto.success(fundingList, data);
+    }
 }
