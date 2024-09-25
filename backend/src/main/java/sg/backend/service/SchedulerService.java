@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sg.backend.entity.Funding;
-import sg.backend.entity.Notification;
-import sg.backend.entity.QFunding;
-import sg.backend.entity.State;
+import sg.backend.entity.*;
 import sg.backend.repository.NotificationRepository;
 
 import java.time.LocalDateTime;
@@ -23,7 +20,7 @@ public class SchedulerService {
     private final NotificationRepository notificationRepository;
     private final JPAQueryFactory queryFactory;
 
-    // 펀딩 시작 날짜 -> 진행 중으로 상태 변경
+    // 펀딩 시작 날짜 -> 프로젝트 시작 알림 & 진행 중으로 상태 변경
     @Transactional
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
     public void checkStartedFunding() {
@@ -38,14 +35,18 @@ public class SchedulerService {
 
         for(Funding f : fundingList) {
             f.setCurrent(State.ONGOING);
+            Notification notification = new Notification(f.getUser(), LocalDateTime.now().format(formatter));
+            notification.setFundingStartMessage(f.getTitle());
+            notificationRepository.save(notification);
         }
     }
 
-    // 펀딩 마감 날짜 -> 펀딩 성공(리워드 배송 안내) or 실패(환불) 알림 메시지
+    // 펀딩 마감 날짜 -> 프로젝트 종료 알림 & 후원자에게 리워드 배송 or 환불 알림 메시지
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void checkClosedFunding() {
         QFunding funding = QFunding.funding;
+        QFunder funder = QFunder.funder;
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -55,16 +56,29 @@ public class SchedulerService {
                 .fetch();
 
         for(Funding f : fundingList) {
-            if(f.getCurrentAmount() >= f.getTargetAmount()) {
-                Notification notification = new Notification(f.getUser(), LocalDateTime.now().format(formatter));
-                notification.setRewardShippedMessage(f.getTitle());
-                notificationRepository.save(notification);
-            } else {
-                Notification notification = new Notification(f.getUser(), LocalDateTime.now().format(formatter));
-                notification.setFundingFailureMessage(f.getTitle());
+            Notification notification = new Notification(f.getUser(), LocalDateTime.now().format(formatter));
+            notification.setFundingCloseMessage(f.getTitle());
+            notificationRepository.save(notification);
+
+            List<Funder> funders = queryFactory.selectFrom(funder)
+                    .where(funder.funding.eq(f))
+                    .fetch();
+
+            for (Funder fd : funders) {
+                User user = fd.getUser();
+
+                if (f.getCurrentAmount() >= f.getTargetAmount()) {
+                    notification = new Notification(user, LocalDateTime.now().format(formatter));
+                    notification.setRewardShippedMessage(f.getTitle());
+                } else {
+                    notification = new Notification(user, LocalDateTime.now().format(formatter));
+                    notification.setFundingFailureMessage(f.getTitle());
+                }
                 notificationRepository.save(notification);
             }
+
             f.setCurrent(State.CLOSED);
         }
     }
+
 }

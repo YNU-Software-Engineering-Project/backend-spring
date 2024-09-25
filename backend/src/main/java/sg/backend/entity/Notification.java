@@ -68,6 +68,16 @@ public class Notification {
         this.message =String.format("[%s] 프로젝트가 승인되었습니다.", fundingName);
     }
 
+    // 프로젝트 시작 알림 메시지
+    public void setFundingStartMessage(String fundingName) {
+        this.message =String.format("[%s] 프로젝트가 시작됩니다.", fundingName);
+    }
+
+    // 프로젝트 종료 알림 메시지
+    public void setFundingCloseMessage(String fundingName) {
+        this.message =String.format("[%s] 프로젝트가 종료되었습니다.", fundingName);
+    }
+
     // 새로운 채팅 도착 알림 메시지
     public String getNewMessageFromUserNotification(String userName) {
         return String.format("%s 님으로부터 새로운 채팅이 도착했습니다.", userName);
