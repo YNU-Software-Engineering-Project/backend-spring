@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
@@ -20,11 +21,11 @@ import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
+import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
+import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.entity.Funding;
 import sg.backend.entity.Notification;
 import sg.backend.entity.User;
@@ -253,6 +254,7 @@ public class UserService {
         return value == null || value.isBlank();
     }
 
+    @Transactional
     public ResponseEntity<? super GetFundingListResponseDto> getWishList(String email, int page, int size) {
 
         User user;
@@ -280,6 +282,7 @@ public class UserService {
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
+    @Transactional
     public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(String email, int page, int size) {
 
         User user;
