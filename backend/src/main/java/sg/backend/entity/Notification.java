@@ -73,7 +73,7 @@ public class Notification {
                 this.message = String.format("[%s] 게시물이 '심사 대기' 상태로 변경되었습니다.", fundingName);
                 break;
             case REVIEW_COMPLETED:
-                this.message =String.format("[%s] 게시물이 심사 완료 되었습니다.", fundingName);
+                this.message =String.format("[%s] 프로젝트가 승인되었습니다.", fundingName);
                 break;
         }
 
