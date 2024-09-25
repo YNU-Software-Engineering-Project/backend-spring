@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import sg.backend.entity.User;
 
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Duration;
 import java.util.Collections;
@@ -26,7 +26,7 @@ public class TokenProvider {
     private final JwtProperties jwtProperties;
 
     private Key getSigningKey() {
-        byte[] keyBytes = jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = Decoders.BASE64URL.decode(jwtProperties.getSecretKey());  // URL-safe Base64 디코딩
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
@@ -45,7 +45,7 @@ public class TokenProvider {
                 .setExpiration(expiry)
                 .setSubject(user.getEmail())
                 .claim("id", user.getUserId())
-                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())  // 서명 방식과 비밀키로 서명
+                .signWith(getSigningKey())
                 .compact();
     }
 
