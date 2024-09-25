@@ -22,12 +22,16 @@ import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.FundingLikeRepository;
 import sg.backend.repository.FundingRepository;
+import sg.backend.repository.NotificationRepository;
 import sg.backend.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static sg.backend.service.UserService.formatter;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +40,7 @@ public class FundingService {
     private final UserRepository userRepository;
     private final FundingRepository fundingRepository;
     private final FundingLikeRepository fundingLikeRepository;
+    private final NotificationRepository notificationRepository;
     private final JPAQueryFactory queryFactory;
 
     @Transactional(readOnly = true)
@@ -272,6 +277,7 @@ public class FundingService {
         return GetFundingByStateResponseDto.success(fundingList, data);
     }
 
+    @Transactional
     public ResponseEntity<? super ResponseDto> changeFundingState(String email, Long fundingId, String state) {
 
         User user;
@@ -292,6 +298,12 @@ public class FundingService {
 
             funding.setCurrent(State.valueOf(state));
             fundingRepository.save(funding);
+
+            if(state.equals("REVIEW_COMPLETED")) {
+                Notification notification = new Notification(funding.getUser(), LocalDateTime.now().format(formatter));
+                notification.setFundingReviewCompletedMessage(funding.getTitle());
+                notificationRepository.save(notification);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

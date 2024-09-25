@@ -56,6 +56,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Funder> funderList;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notificationList;
+
     public User(String email, String password, String phoneNumber){
         this.email = email;
         this.password = password;
