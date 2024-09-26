@@ -22,7 +22,6 @@ services:
       - db
     networks:
       - demo-network
-
     volumes:
       - C:/Users/joeun/Desktop/profile_images:/app/data/profile_images
       - C:/Users/joeun/Desktop/funding_image:/app/data/funding_image
@@ -36,6 +35,10 @@ services:
       MYSQL_DATABASE: testdb
     volumes:
       - db_test:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
     networks:
       - demo-network
 
@@ -50,7 +53,7 @@ services:
     networks:
       - demo-network
     depends_on:
-  #    - frontend
+      #    - frontend
       - backend
 
 networks:
