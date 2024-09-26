@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,12 +31,15 @@ public class FundingSortController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "최근 등록된 펀딩 순으로 정렬 ex)http://localhost:8080/api/fundings/new?page=0&currentUserId=1",
+                    description = "최근 등록된 펀딩 순으로 정렬",
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/new")
-    public ResponseEntity<Page<FundingSortResponseDto>> getNewFundings(@RequestParam(name = "page") int page,  @RequestParam(name = "currentUserId") Long currentUserId){
-        return ResponseEntity.ok(fundingSortService.getNewFundings(page, currentUserId));
+    public ResponseEntity<Page<FundingSortResponseDto>> getNewFundings(@RequestParam(name = "page") int page){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+
+        return ResponseEntity.ok(fundingSortService.getNewFundings(page, email));
     }
 
     @Operation(
@@ -45,8 +50,11 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/top3")
-    public ResponseEntity<List<FundingSortResponseDto>> getTop3PopularFundings( @RequestParam(name = "currentUserId") Long currentUserId ){
-        return ResponseEntity.ok(fundingSortService.getTop3PopularFundings(currentUserId));
+    public ResponseEntity<List<FundingSortResponseDto>> getTop3PopularFundings(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+
+        return ResponseEntity.ok(fundingSortService.getTop3PopularFundings(email));
     }
 
     @Operation(
@@ -57,8 +65,11 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/small")
-    public ResponseEntity<Page<FundingSortResponseDto>> getSmallFundings(@RequestParam(name = "page") int page, @RequestParam(name = "currentUserId") Long currentUserId){
-        return ResponseEntity.ok(fundingSortService.getSmallFundings(page, currentUserId));
+    public ResponseEntity<Page<FundingSortResponseDto>> getSmallFundings(@RequestParam(name = "page") int page){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+
+        return ResponseEntity.ok(fundingSortService.getSmallFundings(page, email));
     }
 
     @Operation(
@@ -69,7 +80,10 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/achievement")
-    public ResponseEntity<Page<FundingSortResponseDto>> getHighAchievementFundings(@RequestParam(name = "page") int page, @RequestParam(name = "currentUserId") Long currentUserId){
-        return ResponseEntity.ok(fundingSortService.getHighAchievementFundings(page,currentUserId));
+    public ResponseEntity<Page<FundingSortResponseDto>> getHighAchievementFundings(@RequestParam(name = "page") int page){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication != null ? authentication.getName() : null;
+
+        return ResponseEntity.ok(fundingSortService.getHighAchievementFundings(page, email));
     }
 }
