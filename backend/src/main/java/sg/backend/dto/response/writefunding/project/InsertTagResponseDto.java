@@ -1,4 +1,4 @@
-package sg.backend.dto.response.fundingInfo;
+package sg.backend.dto.response.writefunding.project;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

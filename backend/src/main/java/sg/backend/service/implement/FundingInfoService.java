@@ -6,14 +6,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sg.backend.dto.request.FundingInfoRequestDto;
-import sg.backend.dto.request.InsertTagRequestDto;
+import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
+import sg.backend.dto.request.wirtefunding.InsertTagRequestDto;
 import sg.backend.dto.response.*;
-import sg.backend.dto.response.file.DeleteFileResponseDto;
-import sg.backend.dto.response.file.UploadInfoFileResponseDto;
-import sg.backend.dto.response.DeleteDataResponseDto;
-import sg.backend.dto.response.fundingInfo.GetInfoResponseDto;
-import sg.backend.dto.response.fundingInfo.InsertTagResponseDto;
+import sg.backend.dto.response.writefunding.GetFundingMainResponseDto;
+import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
+import sg.backend.dto.response.writefunding.file.UploadInfoFileResponseDto;
+import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
+import sg.backend.dto.response.writefunding.project.GetInfoResponseDto;
+import sg.backend.dto.response.writefunding.project.InsertTagResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.DocumentRepository;
 import sg.backend.repository.FundingRepository;
@@ -33,7 +35,7 @@ public class FundingInfoService {
     private final DocumentRepository documentRepository;
     private final TagRepository tagRepository;
 
-    private final FileService fileService;
+    private final FundingFileService fileService;
     @Value("${file.path}")
     private String filePath;
 

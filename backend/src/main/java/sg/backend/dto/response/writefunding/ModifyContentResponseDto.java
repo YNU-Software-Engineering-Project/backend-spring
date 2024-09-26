@@ -1,22 +1,21 @@
-package sg.backend.dto.response;
+package sg.backend.dto.response.writefunding;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
+import sg.backend.dto.response.ResponseDto;
 
 @Getter
-public class MakeRewardResponseDto extends ResponseDto{
-    private Long reward_id;
+public class ModifyContentResponseDto extends ResponseDto {
 
-    private MakeRewardResponseDto(Long reward_id) {
+    private ModifyContentResponseDto() {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-        this.reward_id = reward_id;
     }
 
-    public static ResponseEntity<MakeRewardResponseDto> success(Long reward_id){
-        MakeRewardResponseDto result = new MakeRewardResponseDto(reward_id);
+    public static ResponseEntity<ModifyContentResponseDto> success() {
+        ModifyContentResponseDto result = new ModifyContentResponseDto();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -25,8 +24,9 @@ public class MakeRewardResponseDto extends ResponseDto{
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
-    public static ResponseEntity<ResponseDto> not_existed_data(){
-        ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_DATA, ResponseMessage.NOT_EXISTED_DATA);
+    public static ResponseEntity<ResponseDto> not_permission(){
+        ResponseDto result = new ResponseDto(ResponseCode.NO_PERMISSTION, ResponseMessage.NO_PERMISSTION);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
+
 }

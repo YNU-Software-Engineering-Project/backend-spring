@@ -1,13 +1,14 @@
-package sg.backend.dto.response;
+package sg.backend.dto.response.writefunding.reward;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
+import sg.backend.dto.response.ResponseDto;
 
 @Getter
-public class GetMRewardResponseDto extends ResponseDto{
+public class GetMRewardResponseDto extends ResponseDto {
     private String[] amount;
     private String[] reward_name;
     private String[] reward_description;

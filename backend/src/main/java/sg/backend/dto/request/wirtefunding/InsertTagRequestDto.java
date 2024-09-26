@@ -1,4 +1,4 @@
-package sg.backend.dto.request;
+package sg.backend.dto.request.wirtefunding;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PolicyRewardRequestDto {
-    private String reward_info;
+public class InsertTagRequestDto {
+    private String tagName;
 }

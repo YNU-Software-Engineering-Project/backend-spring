@@ -10,10 +10,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sg.backend.dto.request.MakeRewardRequestDto;
-import sg.backend.dto.request.PolicyRefundRequestDto;
-import sg.backend.dto.request.PolicyRewardRequestDto;
+import sg.backend.dto.request.wirtefunding.MakeRewardRequestDto;
+import sg.backend.dto.request.wirtefunding.PolicyRefundRequestDto;
+import sg.backend.dto.request.wirtefunding.PolicyRewardRequestDto;
 import sg.backend.dto.response.*;
+import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
+import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
+import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
+import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
 import sg.backend.service.implement.FundingRewardService;
 
 @RestController

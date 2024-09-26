@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/file")
 @RequiredArgsConstructor
-public class FileController {
+public class FundingFileController {
 
     @GetMapping("/view/funding_image/{file_name}")
     public ResponseEntity<Resource> viewImage(@PathVariable("file_name") String fileName) {

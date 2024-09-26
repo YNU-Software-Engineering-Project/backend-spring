@@ -1,4 +1,4 @@
-package sg.backend.dto.request;
+package sg.backend.dto.request.wirtefunding;
 
 import jakarta.validation.constraints.Email;
 import lombok.Getter;

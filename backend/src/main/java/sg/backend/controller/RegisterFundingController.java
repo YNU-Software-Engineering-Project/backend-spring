@@ -12,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import sg.backend.dto.request.FundingInfoRequestDto;
-import sg.backend.dto.response.ModifyContentResponseDto;
+import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
+import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.service.implement.FundingInfoService;
 

@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sg.backend.dto.request.FundingStoryRequestDto;
-import sg.backend.dto.response.GetProjectResponseDto;
-import sg.backend.dto.response.file.DeleteFileResponseDto;
-import sg.backend.dto.response.ModifyContentResponseDto;
+import sg.backend.dto.request.wirtefunding.FundingStoryRequestDto;
+import sg.backend.dto.response.writefunding.project.GetProjectResponseDto;
+import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
+import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.file.UploadImageResponseDto;
+import sg.backend.dto.response.writefunding.file.UploadImageResponseDto;
 import sg.backend.entity.Funding;
 import sg.backend.entity.IntroImage;
 import sg.backend.repository.FundingRepository;
@@ -30,7 +30,7 @@ public class FundingStoryService {
     private String filePath;
 
     @Autowired
-    FileService fileService;
+    FundingFileService fileService;
 
     @Autowired
     private FundingRepository fundingRepository;

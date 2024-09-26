@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-public class FileService {
+public class FundingFileService {
 
     @Value("${file.path}")
     private String filePath;

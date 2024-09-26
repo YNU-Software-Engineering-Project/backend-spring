@@ -10,14 +10,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sg.backend.dto.request.FundingInfoRequestDto;
-import sg.backend.dto.request.InsertTagRequestDto;
+import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
+import sg.backend.dto.request.wirtefunding.InsertTagRequestDto;
 import sg.backend.dto.response.*;
-import sg.backend.dto.response.file.DeleteFileResponseDto;
-import sg.backend.dto.response.file.UploadInfoFileResponseDto;
-import sg.backend.dto.response.DeleteDataResponseDto;
-import sg.backend.dto.response.fundingInfo.GetInfoResponseDto;
-import sg.backend.dto.response.fundingInfo.InsertTagResponseDto;
+import sg.backend.dto.response.writefunding.GetFundingMainResponseDto;
+import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
+import sg.backend.dto.response.writefunding.file.UploadInfoFileResponseDto;
+import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
+import sg.backend.dto.response.writefunding.project.GetInfoResponseDto;
+import sg.backend.dto.response.writefunding.project.InsertTagResponseDto;
 import sg.backend.service.implement.FundingInfoService;
 
 @RestController
