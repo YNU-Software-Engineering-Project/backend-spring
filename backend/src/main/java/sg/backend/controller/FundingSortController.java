@@ -28,12 +28,13 @@ public class FundingSortController {
             summary = "신생펀딩 정렬"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "최근 등록된 펀딩 순으로 정렬",
+            @ApiResponse(responseCode = "200",
+                    description = "최근 등록된 펀딩 순으로 정렬 ex)http://localhost:8080/api/fundings/new?page=0&currentUserId=1",
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/new")
-    public ResponseEntity<Page<FundingSortResponseDto>> getNewFundings(@RequestParam(name = "page") int page){
-        return ResponseEntity.ok(fundingSortService.getNewFundings(page));
+    public ResponseEntity<Page<FundingSortResponseDto>> getNewFundings(@RequestParam(name = "page") int page,  @RequestParam(name = "currentUserId") Long currentUserId){
+        return ResponseEntity.ok(fundingSortService.getNewFundings(page, currentUserId));
     }
 
     @Operation(
@@ -44,8 +45,8 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/top3")
-    public ResponseEntity<List<FundingSortResponseDto>> getTop3PopularFundings(){
-        return ResponseEntity.ok(fundingSortService.getTop3PopularFundings());
+    public ResponseEntity<List<FundingSortResponseDto>> getTop3PopularFundings( @RequestParam(name = "currentUserId") Long currentUserId ){
+        return ResponseEntity.ok(fundingSortService.getTop3PopularFundings(currentUserId));
     }
 
     @Operation(
@@ -56,8 +57,8 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/small")
-    public ResponseEntity<Page<FundingSortResponseDto>> getSmallFundings(@RequestParam(name = "page") int page){
-        return ResponseEntity.ok(fundingSortService.getSmallFundings(page));
+    public ResponseEntity<Page<FundingSortResponseDto>> getSmallFundings(@RequestParam(name = "page") int page, @RequestParam(name = "currentUserId") Long currentUserId){
+        return ResponseEntity.ok(fundingSortService.getSmallFundings(page, currentUserId));
     }
 
     @Operation(
@@ -68,7 +69,7 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/achievement")
-    public ResponseEntity<Page<FundingSortResponseDto>> getHighAchievementFundings(@RequestParam(name = "page") int page){
-        return ResponseEntity.ok(fundingSortService.getHighAchievementFundings(page));
+    public ResponseEntity<Page<FundingSortResponseDto>> getHighAchievementFundings(@RequestParam(name = "page") int page, @RequestParam(name = "currentUserId") Long currentUserId){
+        return ResponseEntity.ok(fundingSortService.getHighAchievementFundings(page,currentUserId));
     }
 }
