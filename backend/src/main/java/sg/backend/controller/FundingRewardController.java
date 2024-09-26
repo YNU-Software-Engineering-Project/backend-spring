@@ -19,7 +19,7 @@ import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
 import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
-import sg.backend.service.implement.FundingRewardService;
+import sg.backend.service.FundingRewardService;
 
 @RestController
 @RequestMapping("/api/user/fundings")

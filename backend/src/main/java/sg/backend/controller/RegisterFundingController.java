@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
 import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.service.implement.FundingInfoService;
+import sg.backend.service.FundingInfoService;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package sg.backend.service.implement;
+package sg.backend.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

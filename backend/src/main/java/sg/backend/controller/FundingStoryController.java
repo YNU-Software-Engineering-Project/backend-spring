@@ -17,7 +17,7 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadImageResponseDto;
-import sg.backend.service.implement.FundingStoryService;
+import sg.backend.service.FundingStoryService;
 
 @RestController
 @RequestMapping("/api/user/fundings")

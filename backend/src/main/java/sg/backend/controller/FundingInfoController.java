@@ -20,7 +20,7 @@ import sg.backend.dto.response.writefunding.file.UploadInfoFileResponseDto;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
 import sg.backend.dto.response.writefunding.project.GetInfoResponseDto;
 import sg.backend.dto.response.writefunding.project.InsertTagResponseDto;
-import sg.backend.service.implement.FundingInfoService;
+import sg.backend.service.FundingInfoService;
 
 @RestController
 @RequestMapping("/api/user/fundings")
