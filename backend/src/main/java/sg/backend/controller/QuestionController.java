@@ -41,8 +41,8 @@ public class QuestionController {
     @GetMapping("/funding/{fundingId}")
     public ResponseEntity<List<QuestionResponseDto>> getQuestionsByFunding(
             @PathVariable("fundingId") Long fundingId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size) {
         return questionService.getQuestionsByFunding(fundingId, page, size);
     }
 
