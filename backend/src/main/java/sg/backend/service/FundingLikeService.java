@@ -14,7 +14,10 @@ import sg.backend.repository.FundingLikeRepository;
 import sg.backend.repository.FundingRepository;
 import sg.backend.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static sg.backend.entity.QFundingLike.fundingLike;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +38,19 @@ public class FundingLikeService {
 
         if (exists){
             fundingLikeRepository.deleteByUserAndFunding(user, funding);
-            funding.setTodayLikes(funding.getTodayLikes() - 1);
-            funding.setTotalLikes(funding.getTotalLikes() - 1);
+            if (funding.getTodayLikes() > 0) {
+                funding.setTodayLikes(funding.getTodayLikes() - 1);
+            }
+            if (funding.getTotalLikes() > 0) {
+                funding.setTotalLikes(funding.getTotalLikes() - 1);
+            }
             fundingRepository.save(funding);
             return ResponseDto.success();
         } else{
             FundingLike fundingLike = new FundingLike();
             fundingLike.setUser(new User(requestDto.getUserId()));
             fundingLike.setFunding(new Funding(requestDto.getFundingId()));
+            fundingLike.setCreatedAt(LocalDateTime.now());
             fundingLikeRepository.save(fundingLike);
 
             funding.setTodayLikes(funding.getTodayLikes() + 1);
