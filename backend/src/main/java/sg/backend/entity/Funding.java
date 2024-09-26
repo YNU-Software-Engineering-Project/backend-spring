@@ -1,6 +1,7 @@
 package sg.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,11 @@ public class Funding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long funding_id;
 
-    //게시물 정보 //not blank
+    public Funding(Long fundingId) {
+        this.funding_id = fundingId;
+    }
+
+    //게시물 정보
     @Enumerated(EnumType.STRING)
     private State current;
 
@@ -61,6 +66,8 @@ public class Funding {
     //상황판
     private Integer totalLikes;
 
+    private Integer todayLikes;
+
     private Integer totalVisitors;
 
     private Integer todayVisitors;
@@ -68,6 +75,9 @@ public class Funding {
     private Integer todayAmount;
 
     private Integer currentAmount;
+
+
+    private Integer rewardAmount;
 
     private LocalDateTime createdAt;
 

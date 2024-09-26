@@ -6,14 +6,17 @@ public interface ResponseCode {
     String SUCCESS = "SU";
 
     // HTTP Status 400
-    String VALUDATION_FAILED = "VF";
+    String VALIDATION_FAILED = "VF";
     String DUPLICATE_EMAIL = "DE";
     String DUPLICATE_NICKNAME = "DN";
     String NOT_EXISTED_USER = "NU";
-    String NOT_EXISTED_BOARD = "NB";
     String NOT_EXISTED_FILE = "NF";
     String NOT_EXISTED_DATA = "ND";
     String FULL_DATA = "FD";
+    String NOT_EXISTED_FUNDING = "NB";
+    String NOT_EXISTED_NOTIFICATION = "NN";
+    String PASSWORD_SAME_AS_CURRENT = "PSC";
+    String EMAIL_TOKEN_NOT_FOUND = "ETNF";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";
