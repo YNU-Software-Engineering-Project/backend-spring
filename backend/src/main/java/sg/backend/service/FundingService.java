@@ -2,6 +2,7 @@ package sg.backend.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -159,6 +160,14 @@ public class FundingService {
                 return funding.rewardAmount.desc();
             case "likes":
                 return funding.totalLikes.desc();
+            case "achievementRateAsc":
+                return Expressions.numberTemplate(Double.class, "CASE WHEN {0} > 0 THEN {0} / {1} ELSE 0 END",
+                        funding.currentAmount, funding.targetAmount).asc();
+            case "achievementRateDesc":
+                return Expressions.numberTemplate(Double.class, "CASE WHEN {0} > 0 THEN {0} / {1} ELSE 0 END",
+                        funding.currentAmount, funding.targetAmount).desc();
+            case "deadlineDesc":
+                return funding.endDate.desc();
             default:
                 return funding.createdAt.desc();
         }

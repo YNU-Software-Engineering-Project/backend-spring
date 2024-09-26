@@ -42,6 +42,8 @@ public class FundingController {
             @Parameter(description = """
                     latest: 최신순, oldest: 오래된 순,
                     priceAsc: 가격 높은 순, priceDesc: 가격 낮은 순,
+                    achievementRateDesc: 달성률 높은 순, achievementRateAsc: 달성률 낮은 순,
+                    deadlineDesc: 마감임박순,
                     likes: 추천순(좋아요 순)
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
