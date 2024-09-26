@@ -407,6 +407,20 @@ public class UserService {
                 return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).asc();
             case "isDesc":
                 return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).desc();
+            case "emailAsc":
+                return user.schoolEmail.asc();
+            case "emailDesc":
+                return user.schoolEmail.desc();
+            case "phoneNumAsc":
+                return user.phoneNumber.asc();
+            case "phoneNumDesc":
+                return user.phoneNumber.desc();
+            case "adAsc":
+                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN {0} + ' ' + {1} ELSE {2} + ' ' + {1} END",
+                        user.roadAddress, user.detailAddress, user.landLotAddress).asc();
+            case "adDesc":
+                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN {0} + ' ' + {1} ELSE {2} + ' ' + {1} END",
+                        user.roadAddress, user.detailAddress, user.landLotAddress).desc();
             case "latest":
                 return user.createdAt.desc();
             case "oldest":
@@ -426,9 +440,18 @@ public class UserService {
         dto.setId(email.substring(0, index));
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setSchoolEmail(user.getSchoolEmail());
-        dto.setRoadAddress(user.getRoadAddress());
-        dto.setLandLotAddress(user.getLandLotAddress());
-        dto.setDetailAddress(user.getDetailAddress());
+        String roadAddress = user.getRoadAddress();
+        String landLotAddress = user.getLandLotAddress();
+        String detailAddress = user.getDetailAddress();
+        StringBuilder address = new StringBuilder();
+
+        if(roadAddress != null && !roadAddress.isEmpty())
+            address.append(roadAddress + " ").append(detailAddress);
+        else
+            address.append(landLotAddress + " ").append(detailAddress);
+        if(roadAddress == null && landLotAddress == null && roadAddress == null)
+            address = new StringBuilder();
+        dto.setAddress(address.toString());
         dto.setCreatedAt(user.getCreatedAt().format(formatter));
 
         return dto;

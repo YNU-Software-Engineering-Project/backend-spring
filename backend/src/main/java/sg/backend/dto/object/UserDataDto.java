@@ -14,14 +14,7 @@ public class UserDataDto {
 
     private String schoolEmail;
 
-    @Schema(description = "도로명 주소")
-    private String roadAddress;
-
-    @Schema(description = "지번 주소")
-    private String landLotAddress;
-
-    @Schema(description = "상세 주소")
-    private String detailAddress;
+    private String address;
 
     private String phoneNumber;
 

@@ -93,11 +93,14 @@ public class AdminController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/users")
-    public ResponseEntity<? super GetUserListResponseDto> changeFundingState(
+    public ResponseEntity<? super GetUserListResponseDto> getUserList(
             @AuthenticationPrincipal(expression = "username") String email,
             @Parameter(description = """
                     noAsc: 번호 오름차순, noDesc: 번호 내림차순,
                     idAsc: 아이디 오름차순, idDesc: 아이디 내림차순,
+                    emailAsc: 이메일 오름차순, emailAsc: 이메일 내림차순,
+                    phoneNumAsc: 전화번호 오름차순, phoneNumDesc: 전화번호 내림차순,
+                    adAsc: 주소 오름차순, adDesc: 주소 내림차순,
                     latest: 최근 가입 순, oldest: 가입 오래된 순
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
