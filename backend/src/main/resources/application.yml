@@ -39,6 +39,6 @@ jwt:
   issuer: "SpeedSpark"
   secretKey: ${SECRETKEY}
 
-file.path: /app/files/
-file.url: http://localhost:8080/file/
+profile.path: /app/files/
+profile.url: http://localhost:8080/file/
 
