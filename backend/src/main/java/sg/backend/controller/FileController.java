@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import sg.backend.service.implement.FileService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,21 +18,6 @@ import java.nio.file.Paths;
 @RequestMapping("/file")
 @RequiredArgsConstructor
 public class FileController {
-
-    private final FileService fileService;
-
-    @PostMapping("/upload")
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
-        String fileName = fileService.file_upload("funding_image", file);
-
-        if (fileName == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패");
-        }
-
-        // 파일을 확인할 수 있는 URL을 반환
-        String fileUrl = "http://localhost:8080/file/view/funding_image/" + fileName;
-        return ResponseEntity.ok(fileUrl);
-    }
 
     @GetMapping("/view/funding_image/{file_name}")
     public ResponseEntity<Resource> viewImage(@PathVariable("file_name") String fileName) {

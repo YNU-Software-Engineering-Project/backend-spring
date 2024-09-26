@@ -1,5 +1,10 @@
 package sg.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,13 @@ public class FundingInfoController {
 
     private final FundingInfoService fundingInfoService;
 
+    @Operation(summary = "메인 사진 보여주기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "보여주기 성공",
+                    content = @Content(schema = @Schema(implementation = GetFundingMainResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @GetMapping("/{funding_id}")
     public ResponseEntity<? super GetFundingMainResponseDto> getFundingMain(
             @PathVariable Long funding_id
@@ -30,6 +42,13 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "프로젝트정보작성 페이지 불러오기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "불러오기 성공",
+                    content = @Content(schema = @Schema(implementation = GetInfoResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @GetMapping("/{funding_id}/info")
     public ResponseEntity<? super GetInfoResponseDto> getInfo(
             @PathVariable Long funding_id) {
@@ -37,6 +56,17 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "프로젝트정보 작성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "작성 성공",
+                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = """
+                    -funding_id가 존재하지 않는 경우
+                    - 이메일 형식이 맞지 않는 경우
+                    - 날짜 형식이 맞지 않는 경우
+                    """,
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @PostMapping("/{funding_id}/info/modify")
     public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(
             @RequestBody @Valid FundingInfoRequestDto requestBody,
@@ -46,6 +76,17 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "tag 추가하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "tag 추가 성공",
+                    content = @Content(schema = @Schema(implementation = InsertTagResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = """
+                    - funding_id가 존재하지 않을 때
+                    - 추가할 태그가 null일 때
+                    - 태그를 5개 이상 추가했을 때
+                    """,
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @PostMapping("/{funding_id}/info/tag")
     public ResponseEntity<? super InsertTagResponseDto> insertTag(
             @PathVariable("funding_id") Long funding_id,
@@ -55,6 +96,13 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "tag 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "tag 삭제 성공",
+                    content = @Content(schema = @Schema(implementation = DeleteDataResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "삭제할 태그 id가 존재하지 않을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @DeleteMapping("/info/{tag_id}/del_tag")
     public ResponseEntity<? super DeleteDataResponseDto> deleteTag(
             @PathVariable("tag_id") Long tag_id
@@ -63,6 +111,13 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "신분증 추가")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "신분증 추가 성공",
+                    content = @Content(schema = @Schema(implementation = UploadInfoFileResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않거나 추가할 파일이 없을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @PostMapping("/{funding_id}/info/id_card")
     public ResponseEntity<? super UploadInfoFileResponseDto> uploadIDcard(
             @RequestParam("file") MultipartFile file,
@@ -72,6 +127,13 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "심사서류 추가")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "심사서류 추가 성공",
+                    content = @Content(schema = @Schema(implementation = UploadInfoFileResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않거나 추가할 파일이 없을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @PostMapping("/{funding_id}/info/document")
     public ResponseEntity<? super UploadInfoFileResponseDto> uploadDocument(
             @RequestParam("file") MultipartFile file,
@@ -81,6 +143,13 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "신분증 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "신분증 삭제 성공",
+                    content = @Content(schema = @Schema(implementation = DeleteFileResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않거나 삭제할 파일이 존재하지 않을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @DeleteMapping("/{funding_id}/info/del_id_card")
     public ResponseEntity<? super DeleteFileResponseDto> deleteIDcard(
             @PathVariable("funding_id") Long funding_id
@@ -89,6 +158,13 @@ public class FundingInfoController {
         return response;
     }
 
+    @Operation(summary = "심사서류 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "심사서류 삭제 성공",
+                    content = @Content(schema = @Schema(implementation = DeleteFileResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "삭제할 파일(uuid)이 존재하지 않을 때",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
     @DeleteMapping("/info/document/{uuid_name}")
     public ResponseEntity<? super DeleteFileResponseDto> deleteDocument(
             @PathVariable("uuid_name") String uuid_name

@@ -24,4 +24,9 @@ public class MakeRewardResponseDto extends ResponseDto{
         ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_BOARD, ResponseMessage.NOT_EXISTED_BOARD);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
+
+    public static ResponseEntity<ResponseDto> not_existed_data(){
+        ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_DATA, ResponseMessage.NOT_EXISTED_DATA);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
 }

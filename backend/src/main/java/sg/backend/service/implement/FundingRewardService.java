@@ -78,6 +78,10 @@ public class FundingRewardService {
     public ResponseEntity<? super MakeRewardResponseDto> insertReward(Long funding_id, MakeRewardRequestDto dto){
         Long reward_id;
         try{
+            if(dto.getAmount()==null || dto.getReward_name()==null || dto.getReward_description()==null || dto.getQuantity()==null){
+                return MakeRewardResponseDto.not_existed_data();
+            }
+
             Integer amount = Integer.parseInt(dto.getAmount());
             String reward_name = dto.getReward_name();
             String reward_description = dto.getReward_description();

@@ -45,7 +45,7 @@ public class FundingInfoService {
     String end;
     String amount;
 
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
     @Transactional   //펀딩 제일 처음 들어갔을때 나오는 이미지
@@ -147,14 +147,14 @@ public class FundingInfoService {
                 start = null;
             } else {
                 start = start_day.format(format);
-                start = start.replace(" 00:00", "");
+                start = start.replace(" 00:01:01", "");
             }
             LocalDateTime end_day = funding.getEndDate();
             if (end_day == null) {
                 end = null;
             } else {
                 end = end_day.format(format);
-                end = end.replace(" 11:59", "");
+                end = end.replace(" 11:59:59", "");
             }
 
             Integer amou = funding.getTargetAmount();
@@ -184,7 +184,7 @@ public class FundingInfoService {
                 cate = Category.getCategory(category);
             }
 
-            //이메일 형식은 프론트에서 검사하고 잘못됐으면 오류 메세지 나가고 백엔드엔 null로 전달
+            //이메일 형식 추가함
             organizer_name = dto.getOrganizer_name();
             organizer_email = dto.getOrganizer_email();
             tax_email = dto.getTax_email();
@@ -200,7 +200,7 @@ public class FundingInfoService {
             if(start == null){ //날짜 형식 맞는지 프론트가 구분
                 start_date = null;
             } else{
-                start = start.concat(" 00:00");
+                start = start.concat(" 00:01:01");
                 start_date = LocalDateTime.parse(start,format);
             }
             String end = dto.getEnd_date();
@@ -208,7 +208,7 @@ public class FundingInfoService {
             if(end == null){ //날짜 형식 구분
                 end_date = null;
             } else{
-                end = end.concat(" 11:59");
+                end = end.concat(" 11:59:59");
                 end_date = LocalDateTime.parse(end, format);
             }
 
