@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,7 +50,8 @@ public class FundingController {
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @Parameter(description = "카테고리", example = "category=A0010") @RequestParam(required = false) String category,
             @Parameter(description = "태그", example = "tags=art,design") @RequestParam(required = false) List<String> tags,
-            @Parameter(description = "최소 후원 금액") @RequestParam(required = false) Long minAmount,
+            @Parameter(description = "최소 달성률") @RequestParam(required = false, defaultValue = "0") int minRate,
+            @Parameter(description = "최대 달성률") @RequestParam(required = false, defaultValue = "100") int maxRate,
             @Parameter(description = "종료된 펀딩 여부 (true: 종료된 펀딩도 포함)")
             @RequestParam(required = false, defaultValue = "false") Boolean isClosed,
             @Parameter(description = "좋아요한 펀딩 여부 (true: 좋아요한 펀딩도 포함)")
@@ -61,7 +63,7 @@ public class FundingController {
         String email = authentication != null ? authentication.getName() : null;
 
         ResponseEntity<? super GetFundingListResponseDto> response = fundingService.searchFunding(
-                email, keyword, sort, category, tags, minAmount, isClosed, isLiked, page, size
+                email, keyword, sort, category, tags, minRate, maxRate, isClosed, isLiked, page, size
         );
         return response;
     }

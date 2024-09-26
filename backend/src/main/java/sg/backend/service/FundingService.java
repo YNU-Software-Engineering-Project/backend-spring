@@ -3,6 +3,7 @@ package sg.backend.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class FundingService {
     private final JPAQueryFactory queryFactory;
 
     @Transactional(readOnly = true)
-    public ResponseEntity<? super GetFundingListResponseDto> searchFunding(String email, String keyword, String sort, String category, List<String> tags, Long minAmount, Boolean isClosed, Boolean isLiked, int page, int size) {
+    public ResponseEntity<? super GetFundingListResponseDto> searchFunding(String email, String keyword, String sort, String category, List<String> tags, int minRate, int maxRate, Boolean isClosed, Boolean isLiked, int page, int size) {
 
         User user = null;
         boolean isAuthenticated = false;
@@ -81,8 +82,18 @@ public class FundingService {
                 addTagFilter(tags, funding, filterBuilder);
             }
 
-            if (minAmount != null) {
-                filterBuilder.and(funding.currentAmount.goe(minAmount));
+            filterBuilder.and(
+                    Expressions.numberTemplate(Double.class, "CASE WHEN {1} > 0 THEN (CAST({0} AS double) * 1.0 / {1}) * 100 ELSE 0 END",
+                                    funding.currentAmount, funding.targetAmount)
+                            .goe(minRate)
+            );
+
+            if(maxRate < 100) {
+                filterBuilder.and(
+                        Expressions.numberTemplate(Double.class, "CASE WHEN {1} > 0 THEN (CAST({0} AS double) * 1.0 / {1}) * 100 ELSE 0 END",
+                                        funding.currentAmount, funding.targetAmount)
+                                .loe(maxRate)
+                );
             }
 
             if (isAuthenticated) {
