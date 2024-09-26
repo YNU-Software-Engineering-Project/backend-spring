@@ -19,8 +19,6 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.service.EmailService;
 import sg.backend.service.UserService;
 
@@ -56,16 +54,16 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전화번호 수정 성공",
-                    content = @Content(schema = @Schema(implementation = PatchPhoneNumberResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/modify-phone-number")
-    public ResponseEntity<? super PatchPhoneNumberResponseDto> modifyPhoneNumber(
+    public ResponseEntity<? super ResponseDto> modifyPhoneNumber(
             @RequestBody @Valid PatchPhoneNumberRequestDto requestBody,
             @AuthenticationPrincipal(expression = "username") String email
     ){
-        ResponseEntity<? super PatchPhoneNumberResponseDto> response = userService.modifyPhoneNumber(requestBody, email);
+        ResponseEntity<? super ResponseDto> response = userService.modifyPhoneNumber(requestBody, email);
         return response;
     }
 
@@ -98,7 +96,7 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 프로필 수정 성공",
-                    content = @Content(schema = @Schema(implementation = PatchUserProfileResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청
                     - 존재하지 않는 사용자
@@ -110,12 +108,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/modify-profile")
-    public ResponseEntity<? super PatchUserProfileResponseDto> modifyProfile(
+    public ResponseEntity<? super ResponseDto> modifyProfile(
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") @Valid PatchUserProfileRequestDto userInfo,
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super PatchUserProfileResponseDto> response = userService.modifyProfile(profileImage, userInfo, email);
+        ResponseEntity<? super ResponseDto> response = userService.modifyProfile(profileImage, userInfo, email);
         return response;
     }
 

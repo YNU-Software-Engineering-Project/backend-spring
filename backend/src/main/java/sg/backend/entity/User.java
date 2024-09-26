@@ -91,4 +91,6 @@ public class User {
     }
 
     public void setPassword(String newPassword){ this.password = newPassword; }
+
+    public void setRole(Role role) { this.role = role; }
 }

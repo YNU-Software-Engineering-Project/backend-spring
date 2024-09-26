@@ -79,17 +79,17 @@ public class Notification {
     }
 
     // 새로운 채팅 도착 알림 메시지
-    public String getNewMessageFromUserNotification(String userName) {
+    public String setNewMessageFromUserNotification(String userName) {
         return String.format("%s 님으로부터 새로운 채팅이 도착했습니다.", userName);
     }
 
     // 계정 정지 알림 메시지
-    public void getAccountSuspensionMessage() {
+    public void setAccountSuspensionMessage() {
         this.message = String.format("회원님의 계정이 정지되었습니다. 자세한 내용은 관리자에게 문의해 주세요.");
     }
 
     // 계정 정지 해제 알림 메시지
-    public String getAccountRestorationMessage() {
+    public String setAccountRestorationMessage() {
         return "회원님의 계정이 정상적으로 복구되었습니다. 다시 서비스를 이용하실 수 있습니다.";
     }
 }
