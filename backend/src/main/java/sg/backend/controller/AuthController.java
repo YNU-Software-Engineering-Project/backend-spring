@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.auth.PasswordResetResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
 import sg.backend.service.UserService;
 

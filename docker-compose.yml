@@ -53,7 +53,7 @@ services:
     networks:
       - demo-network
     depends_on:
-  #    - frontend
+      #    - frontend
       - backend
 
 networks:
