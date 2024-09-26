@@ -26,7 +26,7 @@ public class FundingSortResponseDto {
     private boolean likedByCurrentUser;
 
     public FundingSortResponseDto(Funding funding, boolean likedByCurrentUser){
-        this.fundingId = funding.getFundingId();
+        this.fundingId = funding.getFunding_id();
         this.title = funding.getTitle();
         this.targetAmount = funding.getTargetAmount();
         this.currentAmount = funding.getCurrentAmount();
@@ -36,7 +36,7 @@ public class FundingSortResponseDto {
         this.rewardAmount = funding.getRewardAmount();
         this.details = funding.getProjectSummary();
         List<String> tags = funding.getTagList().stream()
-                .map(Tag::getTagName)
+                .map(Tag::getTag_name)
                 .collect(Collectors.toList());
         this.tags = tags;
         this.likedByCurrentUser = likedByCurrentUser;

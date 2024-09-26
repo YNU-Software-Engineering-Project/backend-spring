@@ -10,6 +10,8 @@ public interface ResponseCode {
     String DUPLICATE_EMAIL = "DE";
     String DUPLICATE_NICKNAME = "DN";
     String NOT_EXISTED_USER = "NU";
+
+    String NOT_EXISTED_BOARD = "NB";
     String NOT_EXISTED_FILE = "NF";
     String NOT_EXISTED_DATA = "ND";
     String FULL_DATA = "FD";

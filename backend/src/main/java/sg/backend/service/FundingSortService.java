@@ -48,7 +48,7 @@ public class FundingSortService {
                     .map(funding -> {
                         boolean likedByCurrentUser = false;
                         if(isAuthenticated) {
-                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFundingId())).isPresent();
+                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
                         }
                         return new FundingSortResponseDto(funding, likedByCurrentUser);
                     });
@@ -73,7 +73,7 @@ public class FundingSortService {
                 .map(funding -> {
                     boolean likedByCurrentUser = false;
                     if(isAuthenticated) {
-                        likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFundingId())).isPresent();
+                        likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
                     }
                     return new FundingSortResponseDto(funding, likedByCurrentUser);
                 })
@@ -101,7 +101,7 @@ public class FundingSortService {
                     .map(funding -> {
                         boolean likedByCurrentUser = false;
                         if(isAuthenticated) {
-                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFundingId())).isPresent();
+                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
                         }
                         return new FundingSortResponseDto(funding, likedByCurrentUser);
                     });
@@ -129,7 +129,7 @@ public class FundingSortService {
                     .map(funding -> {
                         boolean likedByCurrentUser = false;
                         if(isAuthenticated) {
-                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFundingId())).isPresent();
+                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
                         }
                         return new FundingSortResponseDto(funding, likedByCurrentUser);
                     });

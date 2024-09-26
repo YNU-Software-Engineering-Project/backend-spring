@@ -86,8 +86,8 @@ public class FundingService {
 
             if (isAuthenticated) {
                 if (!isLiked) {
-                    filterBuilder.and(funding.fundingId.notIn(
-                            JPAExpressions.select(fundingLike.funding.fundingId)
+                    filterBuilder.and(funding.funding_id.notIn(
+                            JPAExpressions.select(fundingLike.funding.funding_id)
                                     .from(fundingLike)
                                     .where(fundingLike.user.eq(user))
                     ));
@@ -132,7 +132,7 @@ public class FundingService {
         if (tags != null && !tags.isEmpty()) {
             BooleanBuilder tagFilter = new BooleanBuilder();
             for (String tag : tags) {
-                tagFilter.or(funding.tagList.any().tagName.eq(tag));
+                tagFilter.or(funding.tagList.any().tag_name.eq(tag));
             }
             filterBuilder.and(tagFilter);
         }
@@ -173,7 +173,7 @@ public class FundingService {
         dto.setCategory(String.valueOf(funding.getCategory()));
 
         List<String> tags = funding.getTagList().stream()
-                .map(Tag::getTagName)
+                .map(Tag::getTag_name)
                 .collect(Collectors.toList());
         dto.setTag(tags);
 
@@ -290,7 +290,7 @@ public class FundingService {
             if(!user.getRole().equals(Role.ADMIN))
                 return ResponseDto.noPermission();
 
-            Optional<Funding> optionalFunding = fundingRepository.findByFundingId(fundingId);
+            Optional<Funding> optionalFunding = fundingRepository.findById(fundingId);
             Funding funding;
             if(optionalFunding.isPresent())
                 funding = optionalFunding.get();

@@ -9,6 +9,8 @@ public interface ResponseMessage {
     String DUPLICATE_EMAIL = "Duplicate email";
     String DUPLICATE_NICKNAME = "Duplicate nickname";
     String NOT_EXISTED_USER = "This user does not exist";
+
+    String NOT_EXISTED_BOARD = "This board does not exist";
     String NOT_EXISTED_FILE = "Not existed file";
     String NOT_EXISTED_DATA = "Not existed data";
     String FULL_DATA = "Full data";

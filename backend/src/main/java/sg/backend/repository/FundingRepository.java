@@ -15,8 +15,6 @@ import java.util.Optional;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
 
-    Page<Funding> findByUserUserId(Long userId, PageRequest pageRequest);
-
     Page<Funding> findAllByCurrentOrderByCreatedAtDesc(State current, Pageable pageable);
 
     List<Funding> findTop3ByCurrentOrderByTotalLikesDesc(State current);
@@ -27,6 +25,4 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
     Page<Funding> findAllByCurrentOrderByAchievementRateDesc(@Param("current") State current, Pageable pageable);
 
     Page<Funding> findByUser(User user, PageRequest pageRequest);
-
-    Optional<Funding> findByFundingId(Long fundingId);
 }

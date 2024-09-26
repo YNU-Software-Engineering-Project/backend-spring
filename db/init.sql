@@ -19,9 +19,6 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-INSERT INTO users (email, nickname, password, role, phone_number, created_at)
-VALUES ('test@example.com', 'test_user', 'password123', 'USER', '010-1234-5678', '2024-09-10 00:00:00');
-
 CREATE TABLE IF NOT EXISTS funding (
     funding_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     current ENUM('DRAFT', 'REVIEW', 'REVIEW_COMPLETED', 'ONGOING', 'CLOSED') NOT NULL,
@@ -49,10 +46,6 @@ CREATE TABLE IF NOT EXISTS funding (
     user_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
-
-INSERT INTO funding (current, category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id)
-VALUES ('DRAFT', 'B0180', '홍길동', 'honggildong@example.com', 'tax@example.com', '/path/to/id_card.jpg', 1);
-
 
 CREATE TABLE IF NOT EXISTS notification (
     notification_id BIGINT AUTO_INCREMENT PRIMARY KEY,
