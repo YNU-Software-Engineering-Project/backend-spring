@@ -15,11 +15,19 @@ public class IntroImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long introImgId;
+    private Long img_id;
 
-    private String introImgPath;
+    private String uuid;   //uuid로 지정된 이름
+
+    private String fpath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
+
+    public IntroImage(Funding funding,String image_uuid, String introImgPath){
+        this.funding = funding;
+        this.uuid = image_uuid;
+        this.fpath = introImgPath;
+    }
 }

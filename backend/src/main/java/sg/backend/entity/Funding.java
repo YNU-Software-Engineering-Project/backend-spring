@@ -9,7 +9,6 @@ import lombok.Setter;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -21,10 +20,10 @@ public class Funding {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long fundingId;
+    private Long funding_id;
 
     public Funding(Long fundingId) {
-        this.fundingId = fundingId;
+        this.funding_id = fundingId;
     }
 
     //게시물 정보
@@ -34,16 +33,13 @@ public class Funding {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @NotBlank //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
+    //대표자이름, 이메일, 세금이메일, 신분증 있어야지 funding 생성
     private String organizerName;
 
-    @NotBlank
     private String organizerEmail;
 
-    @NotBlank
     private String taxEmail;
 
-    @NotBlank
     private String organizerIdCard; //파일 경로 작성
 
     private LocalDateTime startDate;
@@ -62,7 +58,7 @@ public class Funding {
 
 
     //정책
-    private String productInfo;
+    private String rewardInfo;
 
     private String refundPolicy;
 
@@ -85,9 +81,12 @@ public class Funding {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) //not blank
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Tag> tagList;
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Document> documentList;
@@ -101,7 +100,12 @@ public class Funding {
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Funder> funderList;
 
-    @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Tag> tagList;
+    public Funding(String organizerName, String organizerEmail, String taxEmail){
+        this.organizerName = organizerName;
+        this.organizerEmail = organizerEmail;
+        this.taxEmail = taxEmail;
+        this.current = State.DRAFT;
+        //user도 넣어야하는데
+    }
 
 }

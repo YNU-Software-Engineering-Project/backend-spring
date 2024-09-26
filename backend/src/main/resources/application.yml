@@ -20,7 +20,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://db:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8
     username: root
     password: password
 
@@ -34,6 +34,9 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
+
+file:
+  path: /app/data/
 
 jwt:
   issuer: "SpeedSpark"
