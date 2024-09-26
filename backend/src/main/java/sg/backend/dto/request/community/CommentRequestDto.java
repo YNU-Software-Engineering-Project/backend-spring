@@ -7,7 +7,6 @@ import sg.backend.entity.Comment;
 import sg.backend.entity.Question;
 import sg.backend.entity.User;
 
-import java.util.Optional;
 
 @Getter
 @NoArgsConstructor

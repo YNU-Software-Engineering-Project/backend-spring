@@ -12,6 +12,7 @@ import sg.backend.entity.User;
 import sg.backend.entity.Comment;
 import sg.backend.repository.CommentRepository;
 import sg.backend.repository.QuestionRepository;
+import sg.backend.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +22,18 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
 
-    public ResponseEntity<String> createComment(Long questionId, CommentRequestDto requestDto, User authenticatedUser){
+    public ResponseEntity<String> createComment(Long questionId, CommentRequestDto requestDto, String email){
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         Question question = null;
         if(optionalQuestion.isPresent())
             question = optionalQuestion.get();
-        Comment comment = requestDto.toEntity(question, authenticatedUser);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("User not found"));
+
+        Comment comment = requestDto.toEntity(question, user);
         commentRepository.save(comment);
         return CommentResponseDto.success("댓글이 생성 되었습니다.");
     }
@@ -44,13 +50,17 @@ public class CommentService {
         return ResponseEntity.ok(responseDtoe);
     }
 
-    public ResponseEntity<String> deleteComment(Long commentId, User authenticatedUser) {
+    public ResponseEntity<String> deleteComment(Long commentId, String email) {
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
         Comment comment = null;
         if(optionalComment.isPresent()){
             comment = optionalComment.get();
         }
-        if(!comment.getUser().getUserId().equals(authenticatedUser.getUserId())) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("User not found"));
+
+        if(!comment.getUser().getUserId().equals(user.getUserId())) {
             throw new SecurityException("삭제할 수 있는 권한이 없습니다.");
         }
         commentRepository.deleteById(commentId);

@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "question")
@@ -38,9 +36,5 @@ public class Question {
         this.user = user;
         this.content = content;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public Collection<Comment> getComments() {
-        return this.commentList;
     }
 }

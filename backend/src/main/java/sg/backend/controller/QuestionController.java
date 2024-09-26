@@ -4,24 +4,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.request.community.QuestionRequestDto;
 import sg.backend.dto.response.community.QuestionResponseDto;
-import sg.backend.entity.User;
 import sg.backend.service.QuestionService;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/questions")
 public class QuestionController {
 
     private final QuestionService questionService;
-
-    public QuestionController(QuestionService questionService){
-        this.questionService = questionService;
-    }
 
     @Operation(summary = "커뮤니티 질문 생성")
     @ApiResponses(value = {
@@ -31,9 +29,8 @@ public class QuestionController {
     public ResponseEntity<String> createQuestion(
             @PathVariable("fundingId") Long fundingId,
             @RequestBody QuestionRequestDto requestDto,
-            @RequestHeader("Authorization") String token){
-        User authenticatedUser = questionService.getUserFromToken(token);
-        return questionService.createQuestion(fundingId, requestDto, authenticatedUser);
+            @AuthenticationPrincipal(expression = "username") String email){
+        return questionService.createQuestion(fundingId, requestDto, email);
     }
 
     @Operation(summary = "특정 펀딩의 질문들 조회")
@@ -55,9 +52,8 @@ public class QuestionController {
     })
     @DeleteMapping("/{questionId}")
     public ResponseEntity<String> deleteQuestion(
-            @PathVariable("fundingId") Long questionId,
-            @RequestHeader("Authorization") String token){
-        User authenticatedUser = questionService.getUserFromToken(token);
-        return questionService.deleteQuestion(questionId, authenticatedUser);
+            @PathVariable("questionId") Long questionId,
+            @AuthenticationPrincipal(expression = "username") String email){
+        return questionService.deleteQuestion(questionId, email);
     }
 }

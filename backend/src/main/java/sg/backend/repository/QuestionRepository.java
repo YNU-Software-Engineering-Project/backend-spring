@@ -6,8 +6,6 @@ import sg.backend.entity.Funding;
 import sg.backend.entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     Page<Question> findByFunding(Funding funding, Pageable pageable);
