@@ -16,13 +16,11 @@ import sg.backend.dto.request.email.EmailSendTokenRequestDto;
 import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.email.EmailSendTokenResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
 import sg.backend.dto.response.user.PatchUserProfileResponseDto;
-import sg.backend.entity.User;
 import sg.backend.service.EmailService;
 import sg.backend.service.UserService;
 
@@ -77,7 +75,7 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "이메일 인증 토큰 발송 성공",
-                    content = @Content(schema = @Schema(implementation = EmailSendTokenResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청
                     - 존재하지 않는 사용자
@@ -86,11 +84,11 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @PostMapping("/email-verification")
-    public ResponseEntity<? super EmailSendTokenResponseDto> sendEmailToken(
+    public ResponseEntity<? super ResponseDto> sendEmailToken(
             @RequestBody @Valid EmailSendTokenRequestDto requestBody,
             @AuthenticationPrincipal(expression = "username") String email
             ) {
-        ResponseEntity<? super EmailSendTokenResponseDto> response = emailService.createEmailToken(requestBody, email);
+        ResponseEntity<? super ResponseDto> response = emailService.createEmailToken(requestBody, email);
         return response;
     }
 
@@ -107,7 +105,7 @@ public class UserController {
                     - 중복된 닉네임
                     - 비밀번호 불일치
                     - 새 비밀번호가 현재 비밀번호와 같음 
-                    - 주소란을 다 채우지 않은 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
+                    - 주소란을 일부만 채운 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
@@ -116,7 +114,7 @@ public class UserController {
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") @Valid PatchUserProfileRequestDto userInfo,
             @AuthenticationPrincipal(expression = "username") String email
-            ) {
+    ) {
         ResponseEntity<? super PatchUserProfileResponseDto> response = userService.modifyProfile(profileImage, userInfo, email);
         return response;
     }

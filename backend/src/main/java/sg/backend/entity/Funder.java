@@ -30,7 +30,6 @@ public class Funder {
     @JoinColumn(name = "funding_id")
     private Funding funding;
 
-
     @OneToMany(mappedBy = "funder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectedReward> selrewardList;
 }

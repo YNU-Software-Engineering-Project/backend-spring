@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +18,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
+    public User(Long userId) {
+        this.userId = userId;
+    }
 
     private String email;
 
@@ -52,6 +55,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Funder> funderList;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notificationList;
 
     public User(String email, String password, String phoneNumber){
         this.email = email;

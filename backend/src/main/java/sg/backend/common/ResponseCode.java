@@ -10,7 +10,12 @@ public interface ResponseCode {
     String DUPLICATE_EMAIL = "DE";
     String DUPLICATE_NICKNAME = "DN";
     String NOT_EXISTED_USER = "NU";
+
     String NOT_EXISTED_BOARD = "NB";
+    String NOT_EXISTED_FILE = "NF";
+    String NOT_EXISTED_DATA = "ND";
+    String FULL_DATA = "FD";
+    String NOT_EXISTED_FUNDING = "NB";
     String NOT_EXISTED_NOTIFICATION = "NN";
     String PASSWORD_SAME_AS_CURRENT = "PSC";
     String EMAIL_TOKEN_NOT_FOUND = "ETNF";
@@ -21,6 +26,9 @@ public interface ResponseCode {
 
     // HTTP Status 403
     String NO_PERMISSTION = "NP";
+
+    // HTTP Status 415
+    String UNSUPPORTED_MEDIA_TYPE = "UM";
 
     // HTTP Status 500
     String DATABASE_ERROR = "DBE";
