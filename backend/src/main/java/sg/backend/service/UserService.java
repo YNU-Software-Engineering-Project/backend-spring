@@ -58,11 +58,11 @@ public class UserService {
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Value("${file.path}")
-    private String filePath;
+    @Value("${profile.path}")
+    private String profileFilePath;
 
-    @Value("${file.url}")
-    private String fileUrl;
+    @Value("${profile.url}")
+    private String profileFileUrl;
 
     public ResponseEntity<ResponseDto> signup(SignUpRequestDto signupRequestDto) {
         if (userRepository.findByEmail(signupRequestDto.getEmail()).isPresent()) {
@@ -167,7 +167,7 @@ public class UserService {
                     String fileUrl = user.getProfileImage();
                     int index = fileUrl.lastIndexOf("/");
                     String fileName = fileUrl.substring(index+1);
-                    String path = filePath + fileName;
+                    String path = profileFilePath + fileName;
                     File file = new File(path);
 
                     if (file.exists()) {
@@ -191,11 +191,11 @@ public class UserService {
                 String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
                 String uuid = UUID.randomUUID().toString();
                 String saveFileName = uuid + extension;
-                String savePath = filePath + saveFileName;
+                String savePath = profileFilePath + saveFileName;
 
                 profileImage.transferTo(new File(savePath));
 
-                imageUrl = fileUrl + saveFileName;
+                imageUrl = profileFileUrl + saveFileName;
             }
 
             if(nickname != null && !nickname.isEmpty() && !nickname.equals(user.getNickname())) {

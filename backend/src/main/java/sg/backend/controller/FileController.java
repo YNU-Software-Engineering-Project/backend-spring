@@ -18,13 +18,13 @@ public class FileController {
     private final FileService fileService;
 
     @Operation(
-            summary = "이미지 불러오기"
+            summary = "프로필 이미지 불러오기"
     )
     @GetMapping(value = "/{fileName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public Resource getImage(
             @PathVariable("fileName") String fileName
     ) {
-        Resource resource = fileService.getImage(fileName);
+        Resource resource = fileService.getProfileImage(fileName);
         return resource;
     }
 }

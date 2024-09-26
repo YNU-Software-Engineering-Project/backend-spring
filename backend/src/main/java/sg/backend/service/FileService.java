@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileService {
 
-    @Value("${file.path}")
-    private String filePath;
+    @Value("${profile.path}")
+    private String profileFilePath;
 
-    public Resource getImage(String fileName) {
+    public Resource getProfileImage(String fileName) {
         Resource resource = null;
 
         try {
-            resource = new UrlResource("file:" + filePath + fileName);
+            resource = new UrlResource("file:" + profileFilePath + fileName);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
