@@ -16,10 +16,10 @@ public class FundingDashboardResponseDto {
     private Integer remainingDays;
     private Integer todayVisitors;
     private Integer totalVisitors;
-    private Double visitPercentage;
+    private Double todayPercentage;
     private Integer todayLikes;
     private Integer totalLikes;
-    private Double likePercentage;
+    private Double totalPercentage;
     private Integer currentAmount;
     private Integer targetAmount;
     private Double fundingAchievementRate;
@@ -29,15 +29,15 @@ public class FundingDashboardResponseDto {
         this.title = funding.getTitle();
         this.remainingDays = calculateRemainingDays(funding.getEndDate());
 
-        this.todayVisitors = funding.getTodayVisitors();
-        this.totalVisitors = funding.getTotalVisitors();
-        this.visitPercentage = (funding.getTotalVisitors() != 0)
-                ? (double) funding.getTodayVisitors() / funding.getTotalVisitors() * 100 : 0;
-
         this.todayLikes = funding.getTodayLikes();
+        this.todayVisitors = funding.getTodayVisitors();
+        this.todayPercentage = (funding.getTodayVisitors() != 0)
+                ? (double) funding.getTodayLikes() / funding.getTodayVisitors() * 100 : 0;
+
         this.totalLikes = funding.getTotalLikes();
-        this.likePercentage = (funding.getTotalLikes() != 0)
-                ? (double) funding.getTodayLikes() / funding.getTotalLikes() * 100 : 0;
+        this.totalVisitors = funding.getTotalVisitors();
+        this.totalPercentage = (funding.getTotalVisitors() != 0)
+                ? (double) funding.getTotalLikes() / funding.getTotalVisitors() * 100 : 0;
 
         this.currentAmount = funding.getCurrentAmount();
         this.targetAmount = funding.getTargetAmount();
