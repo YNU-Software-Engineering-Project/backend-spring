@@ -17,8 +17,6 @@ import sg.backend.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static sg.backend.entity.QFundingLike.fundingLike;
-
 @Service
 @RequiredArgsConstructor
 public class FundingLikeService {
