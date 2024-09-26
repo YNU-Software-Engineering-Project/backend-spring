@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 gradle:8.3-jdk17-jammy AS build
+FROM --platform=linux/arm64 gradle:8.3-jdk17-jammy AS build
 WORKDIR /app
 
 COPY build.gradle settings.gradle ./
@@ -9,7 +9,7 @@ COPY . /app
 
 RUN gradle clean build --no-daemon
 
-FROM --platform=linux/amd64 eclipse-temurin:17.0.10_7-jre
+FROM --platform=linux/arm64/v8 eclipse-temurin:17.0.10_7-jre
 WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar /app/agile.jar
