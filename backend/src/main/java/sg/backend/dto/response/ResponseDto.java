@@ -24,6 +24,11 @@ public class ResponseDto {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
+    public static ResponseEntity<ResponseDto> duplicateNickname() {
+        ResponseDto result = new ResponseDto(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
     public static ResponseEntity<ResponseDto> noPermission() {
         ResponseDto result = new ResponseDto(ResponseCode.NO_PERMISSTION, ResponseMessage.NO_PERMISSTION);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(result);
@@ -41,6 +46,11 @@ public class ResponseDto {
 
     public static ResponseEntity<ResponseDto> validationFailed() {
         ResponseDto result = new ResponseDto(ResponseCode.VALIDATION_FAILED, ResponseMessage.VALIDATION_FAILED);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    public static ResponseEntity<ResponseDto> PWSameAsCurrent() {
+        ResponseDto result = new ResponseDto(ResponseCode.PASSWORD_SAME_AS_CURRENT, ResponseMessage.PASSWORD_SAME_AS_CURRENT);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 

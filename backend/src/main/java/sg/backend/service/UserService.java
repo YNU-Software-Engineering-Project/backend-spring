@@ -1,10 +1,13 @@
 package sg.backend.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,22 +16,20 @@ import org.springframework.web.multipart.MultipartFile;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 import sg.backend.dto.object.FundingDataDto;
-import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
-import sg.backend.dto.request.user.PatchUserProfileRequestDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.dto.object.ShortFundingDataDto;
+import sg.backend.dto.object.UserDataDto;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
+import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
+import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
+import sg.backend.dto.response.user.GetUserListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
-import sg.backend.entity.Funding;
-import sg.backend.entity.Notification;
-import sg.backend.entity.User;
+import sg.backend.entity.*;
 import sg.backend.jwt.TokenProvider;
 import sg.backend.repository.*;
 
@@ -55,6 +56,7 @@ public class UserService {
     private final NotificationRepository notificationRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final JPAQueryFactory queryFactory;
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -124,13 +126,13 @@ public class UserService {
         return GetUserProfileResponseDto.success(user);
     }
 
-    public ResponseEntity<? super PatchPhoneNumberResponseDto> modifyPhoneNumber(PatchPhoneNumberRequestDto dto, String email) {
+    public ResponseEntity<? super ResponseDto> modifyPhoneNumber(PatchPhoneNumberRequestDto dto, String email) {
 
         User user;
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return PatchPhoneNumberResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
             user = optionalUser.get();
 
             String phoneNumber = dto.getPhoneNumber();
@@ -142,15 +144,15 @@ public class UserService {
             return ResponseDto.databaseError();
         }
 
-        return PatchPhoneNumberResponseDto.success();
+        return ResponseDto.success();
     }
-    public ResponseEntity<? super PatchUserProfileResponseDto> modifyProfile(MultipartFile profileImage, PatchUserProfileRequestDto dto, String email) {
+    public ResponseEntity<? super ResponseDto> modifyProfile(MultipartFile profileImage, PatchUserProfileRequestDto dto, String email) {
 
         User user;
 
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return PatchUserProfileResponseDto.noExistUser();
+            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
             user = optionalUser.get();
 
             String nickname = dto.getNickname();
@@ -200,22 +202,22 @@ public class UserService {
 
             if(nickname != null && !nickname.isEmpty() && !nickname.equals(user.getNickname())) {
                 boolean existedNickname = userRepository.existsByNickname(nickname);
-                if(existedNickname) return PatchUserProfileResponseDto.duplicateNickname();
+                if(existedNickname) return ResponseDto.duplicateNickname();
             }
 
             if(password == null || password.isEmpty()) {
                 dto.setPassword(user.getPassword());
             } else {
                 if(!password.equals(confirmPassword))
-                    return PatchUserProfileResponseDto.validationFailed();
+                    return ResponseDto.validationFailed();
 
                 String regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\\$%\\^&\\*])(?=\\S+$).{8,20}$";
                 Pattern pattern = Pattern.compile(regexp);
 
                 if(!pattern.matcher(password).matches())
-                    return PatchUserProfileResponseDto.validationFailed();
+                    return ResponseDto.validationFailed();
                 if(passwordEncoder.matches(password, user.getPassword()))
-                    return PatchUserProfileResponseDto.PWSameAsCurrent();
+                    return ResponseDto.PWSameAsCurrent();
                 else {
                     String encodedPassword = passwordEncoder.encode(password);
                     dto.setPassword(encodedPassword);
@@ -228,7 +230,7 @@ public class UserService {
                 boolean case3 = !isEmpty(postalCode) && !isEmpty(roadAddress) && !isEmpty(landLotAddress) && !isEmpty(detailAddress);
 
                 if (!(case1 || case2 || case3)) {
-                    return PatchUserProfileResponseDto.validationFailed();
+                    return ResponseDto.validationFailed();
                 }
             }
 
@@ -240,7 +242,7 @@ public class UserService {
             return ResponseDto.databaseError();
         }
 
-        return PatchUserProfileResponseDto.success();
+        return ResponseDto.success();
     }
 
     private boolean isRequiredAddressValidation(String postalCode, String roadAddress, String landLotAddress, String detailAddress) {
@@ -342,5 +344,133 @@ public class UserService {
         }
 
         return GetMyFundingListResponseDto.success(fundingList, data, todayAmount, todayLikes);
+    }
+
+    public ResponseEntity<? super GetUserListResponseDto> getUserList(String email, String sort, String id, int page, int size) {
+
+        User admin;
+        QUser user = QUser.user;
+        BooleanBuilder filterBuilder = new BooleanBuilder();
+        Page<User> userList;
+        List<UserDataDto> data = new ArrayList<>();
+
+        try {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
+            admin = optionalUser.get();
+
+            if(!admin.getRole().equals(Role.ADMIN))
+                return ResponseDto.noPermission();
+
+            if(id != null) {
+                StringTemplate userId = Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email);
+                filterBuilder.and(userId.contains(id));
+            }
+
+            OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sort, user);
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            List<User> results = queryFactory.selectFrom(user)
+                    .where(filterBuilder)
+                    .orderBy(orderSpecifier)
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+
+            long total = queryFactory.selectFrom(user)
+                    .where(filterBuilder)
+                    .fetch()
+                    .size();
+
+            userList = new PageImpl<>(results, pageable, total);
+            for(User u : userList) {
+                data.add(convertToUserDataDto(u));
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return GetUserListResponseDto.success(userList, data);
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sort, QUser user) {
+        switch (sort) {
+            case "noAsc":
+                return user.userId.asc();
+            case "noDesc":
+                return user.userId.desc();
+            case "idAsc":
+                return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).asc();
+            case "isDesc":
+                return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).desc();
+            case "latest":
+                return user.createdAt.desc();
+            case "oldest":
+                return user.createdAt.asc();
+            default:
+                return user.createdAt.asc();
+        }
+    }
+
+    public UserDataDto convertToUserDataDto(User user) {
+        UserDataDto dto = new UserDataDto();
+
+        String email = user.getEmail();
+        int index = email.indexOf("@");
+
+        dto.setNickname(user.getNickname());
+        dto.setId(email.substring(0, index));
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setSchoolEmail(user.getSchoolEmail());
+        dto.setRoadAddress(user.getRoadAddress());
+        dto.setLandLotAddress(user.getLandLotAddress());
+        dto.setDetailAddress(user.getDetailAddress());
+        dto.setCreatedAt(user.getCreatedAt().format(formatter));
+
+        return dto;
+    }
+
+    public ResponseEntity<? super ResponseDto> changeUserState(String email, Long userId, String role) {
+
+        User admin;
+
+        try {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return ResponseDto.noExistUser();
+            admin = optionalUser.get();
+
+            if(!admin.getRole().equals(Role.ADMIN))
+                return ResponseDto.noPermission();
+
+            User user = userRepository.findByUserId(userId);
+            if(user == null) return ResponseDto.noExistUser();
+
+            Role existedRole = user.getRole();
+            user.setRole(Role.valueOf(role));
+            userRepository.save(user);
+
+            if(existedRole != user.getRole()) {
+                if(role.equals("USER")) {
+                    Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
+                    notification.setAccountRestorationMessage();
+                    notificationRepository.save(notification);
+                }
+                if(role.equals("SUSPENDED")) {
+                    Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
+                    notification.setAccountSuspensionMessage();
+                    notificationRepository.save(notification);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDto.databaseError();
+        }
+
+        return ResponseDto.success();
     }
 }

@@ -75,21 +75,21 @@ public class Notification {
 
     // 프로젝트 종료 알림 메시지
     public void setFundingCloseMessage(String fundingName) {
-        this.message =String.format("[%s] 프로젝트가 종료되었습니다.", fundingName);
+        this.message = String.format("[%s] 프로젝트가 종료되었습니다.", fundingName);
     }
 
     // 새로운 채팅 도착 알림 메시지
-    public String getNewMessageFromUserNotification(String userName) {
-        return String.format("%s 님으로부터 새로운 채팅이 도착했습니다.", userName);
+    public void setNewMessageFromUserNotification(String userName) {
+        this.message = String.format("%s 님으로부터 새로운 채팅이 도착했습니다.", userName);
     }
 
     // 계정 정지 알림 메시지
-    public void getAccountSuspensionMessage() {
-        this.message = String.format("회원님의 계정이 정지되었습니다. 자세한 내용은 관리자에게 문의해 주세요.");
+    public void setAccountSuspensionMessage() {
+        this.message = "회원님의 계정이 정지되었습니다. 자세한 내용은 관리자에게 문의해 주세요.";
     }
 
     // 계정 정지 해제 알림 메시지
-    public String getAccountRestorationMessage() {
-        return "회원님의 계정이 정상적으로 복구되었습니다. 다시 서비스를 이용하실 수 있습니다.";
+    public void setAccountRestorationMessage() {
+        this.message = "회원님의 계정이 정상적으로 복구되었습니다. 다시 서비스를 이용하실 수 있습니다.";
     }
 }

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
 import sg.backend.dto.response.funding.GetFundingStateCountResponseDto;
+import sg.backend.dto.response.user.GetUserListResponseDto;
 import sg.backend.service.FundingService;
+import sg.backend.service.UserService;
 
 @RestController
 @RequestMapping("/admin")
@@ -21,6 +23,7 @@ import sg.backend.service.FundingService;
 public class AdminController {
 
     private final FundingService fundingService;
+    private final UserService userService;
 
     @Operation(
             summary = "펀딩 상태에 따른 게시물 수 조회"
@@ -77,6 +80,53 @@ public class AdminController {
             @RequestParam String state
     ) {
         ResponseEntity<? super ResponseDto> response = fundingService.changeFundingState(email, fundingId, state);
+        return response;
+    }
+
+    @Operation(
+            summary = "회원 리스트 조회"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 리스트 조회 성공",
+                    content = @Content(schema = @Schema(implementation = GetUserListResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @GetMapping("/users")
+    public ResponseEntity<? super GetUserListResponseDto> changeFundingState(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @Parameter(description = """
+                    noAsc: 번호 오름차순, noDesc: 번호 내림차순,
+                    idAsc: 아이디 오름차순, idDesc: 아이디 내림차순,
+                    latest: 최근 가입 순, oldest: 가입 오래된 순
+            """)
+            @RequestParam(required = false, defaultValue = "latest") String sort,
+            @Parameter(description = "아이디로 회원 검색")
+            @RequestParam(required = false) String id,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        ResponseEntity<? super GetUserListResponseDto> response = userService.getUserList(email, sort, id, page, size);
+        return response;
+    }
+
+    @Operation(
+            summary = "회원 상태 변경"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 상태 변경 성공",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @PatchMapping("/user/{userId}")
+    public ResponseEntity<? super ResponseDto> changeUserState(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long userId,
+            @Parameter(description = "회원 상태 (USER: 일반 회원, SUSPENDED: 정지 회원)")
+            @RequestParam String role
+    ) {
+        ResponseEntity<? super ResponseDto> response = userService.changeUserState(email, userId, role);
         return response;
     }
 }
