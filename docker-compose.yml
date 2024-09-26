@@ -14,8 +14,6 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    volumes:
-      - images:/app/files
     environment: # db가 의존성에 포함되어 있어서 임시로 제작. .env 파일로 변경 예정
       - DB_URL=jdbc:mysql://db:3306/testdb
       - DB_USERNAME=root
@@ -24,6 +22,11 @@ services:
       - db
     networks:
       - demo-network
+
+    volumes:
+      - C:/Users/joeun/Desktop/profile_images:/app/data/profile_images
+      - C:/Users/joeun/Desktop/funding_image:/app/data/funding_image
+      - C:/Users/joeun/Desktop/project_document:/app/data/project_document
 
   db:
     build: ./db
@@ -56,4 +59,3 @@ networks:
 
 volumes:
   db_test:
-  images:

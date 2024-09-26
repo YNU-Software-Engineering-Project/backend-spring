@@ -182,7 +182,7 @@ public class UserService {
                     }
                 }
 
-                File directory = new File("/app/files/");
+                File directory = new File("/app/data/profile_images/");
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
