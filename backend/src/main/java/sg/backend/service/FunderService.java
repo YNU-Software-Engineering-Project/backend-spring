@@ -35,7 +35,7 @@ public class FunderService {
     private final JPAQueryFactory queryFactory;
 
     @Transactional
-    public ResponseEntity<? super GetFunderListResponseDto> getFunderList(String email, Long fundingId, String sort, String id, String rewardOption, int page, int size) {
+    public ResponseEntity<? super GetFunderListResponseDto> getFunderList(String email, Long fundingId, String sort, String id, Integer rewardNo, int page, int size) {
 
         User loginUser;
         QFunder funder = QFunder.funder;
@@ -65,7 +65,8 @@ public class FunderService {
             QSelectedReward selectedReward = QSelectedReward.selectedReward;
             QReward reward = QReward.reward;
 
-            if (rewardOption != null) {
+            if(rewardNo != null) {
+                String rewardOption = funding.getRewardList().get(rewardNo).getRewardName();
                 filterBuilder.and(selectedReward.reward.rewardName.eq(rewardOption));
             }
 

@@ -9,11 +9,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFunderListResponseDto;
+import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetRewardListResponseDto;
 import sg.backend.service.FunderService;
+import sg.backend.service.FundingService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/funding")
@@ -21,6 +28,7 @@ import sg.backend.service.FunderService;
 public class FunderController {
 
     private final FunderService funderService;
+    private final FundingService fundingService;
 
     @Operation(
             summary = "후원자 명단 조회",
@@ -47,12 +55,29 @@ public class FunderController {
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @Parameter(description = "아이디로 검색")
             @RequestParam(required = false) String id,
-            @Parameter(description = "리워드 옵션")
-            @RequestParam(required = false) String rewardOption,
+            @Parameter(description = "리워드 옵션 번호", example = "rewardIndex=0")
+            @RequestParam(required = false) Integer rewardNo,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetFunderListResponseDto> response = funderService.getFunderList(email, fundingId, sort, id, rewardOption, page, size);
+        ResponseEntity<? super GetFunderListResponseDto> response = funderService.getFunderList(email, fundingId, sort, id, rewardNo, page, size);
+        return response;
+    }
+
+    @Operation(
+            summary = "특정 펀딩 게시물의 리워드 목록 가져오기"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "특정 펀딩 게시물의 리워드 목록 가져오기 성공",
+                    content = @Content(schema = @Schema(implementation = GetRewardListResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시물 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @GetMapping("{fundingId}/rewards")
+    public ResponseEntity<? super GetRewardListResponseDto> getRewardList(
+            @PathVariable Long fundingId
+    ) {
+        ResponseEntity<? super GetRewardListResponseDto> response = fundingService.getRewardList(fundingId);
         return response;
     }
 }
