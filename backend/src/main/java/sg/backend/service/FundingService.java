@@ -332,37 +332,4 @@ public class FundingService {
 
         return ResponseDto.success();
     }
-
-    @Transactional
-    public ResponseEntity<? super GetRewardListResponseDto> getRewardList(Long fundingId) {
-
-        List<RewardDataDto> data = new ArrayList<>();
-
-        try {
-            Optional<Funding> optionalFunding = fundingRepository.findById(fundingId);
-            Funding funding;
-            if(optionalFunding.isPresent())
-                funding = optionalFunding.get();
-            else return ResponseDto.noExistFunding();
-
-            List<String> rewards = funding.getRewardList().stream()
-                    .map(Reward::getRewardName)
-                    .collect(Collectors.toList());
-
-            int index = 0;
-            for(String reward : rewards) {
-                RewardDataDto dto = new RewardDataDto();
-                dto.setNo(index);
-                dto.setRewardName(reward);
-                data.add(dto);
-                index++;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return GetRewardListResponseDto.success(data);
-    }
 }
