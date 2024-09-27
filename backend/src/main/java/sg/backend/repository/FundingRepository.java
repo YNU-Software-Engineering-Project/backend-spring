@@ -11,7 +11,6 @@ import sg.backend.entity.State;
 
 import java.util.List;
 import sg.backend.entity.User;
-import java.util.Optional;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
 
@@ -25,4 +24,8 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
     Page<Funding> findAllByCurrentOrderByAchievementRateDesc(@Param("current") State current, Pageable pageable);
 
     Page<Funding> findByUser(User user, PageRequest pageRequest);
+
+    long countByCurrent(State state);
+
+    List<Funding> findByCurrent(State state);
 }
