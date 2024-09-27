@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,8 @@ public class AdminController {
     private final UserService userService;
 
     @Operation(
-            summary = "펀딩 상태에 따른 게시물 수 조회"
+            summary = "펀딩 상태에 따른 게시물 수 조회",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "펀딩 상태에 따른 게시물 수 조회 성공",
@@ -43,7 +45,8 @@ public class AdminController {
     }
 
     @Operation(
-            summary = "펀딩 상태에 따른 게시물 리스트 조회"
+            summary = "펀딩 상태에 따른 게시물 리스트 조회",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "펀딩 상태에 따른 게시물 리스트 조회 성공",
@@ -64,7 +67,8 @@ public class AdminController {
     }
 
     @Operation(
-            summary = "펀딩 상태 변경"
+            summary = "펀딩 상태 변경",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "펀딩 상태 변경 성공",
@@ -84,20 +88,25 @@ public class AdminController {
     }
 
     @Operation(
-            summary = "회원 리스트 조회"
+            summary = "회원 명단 조회",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원 리스트 조회 성공",
+            @ApiResponse(responseCode = "200", description = "회원 명단 조회 성공",
                     content = @Content(schema = @Schema(implementation = GetUserListResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/users")
-    public ResponseEntity<? super GetUserListResponseDto> changeFundingState(
+    public ResponseEntity<? super GetUserListResponseDto> getUserList(
             @AuthenticationPrincipal(expression = "username") String email,
             @Parameter(description = """
                     noAsc: 번호 오름차순, noDesc: 번호 내림차순,
                     idAsc: 아이디 오름차순, idDesc: 아이디 내림차순,
+                    nicknameAsc: 닉네임 오름차순, nicknameDesc: 닉네임 내림차순,
+                    emailAsc: 이메일 오름차순, emailAsc: 이메일 내림차순,
+                    phoneNumAsc: 전화번호 오름차순, phoneNumDesc: 전화번호 내림차순,
+                    adAsc: 주소 오름차순, adDesc: 주소 내림차순,
                     latest: 최근 가입 순, oldest: 가입 오래된 순
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
@@ -111,7 +120,8 @@ public class AdminController {
     }
 
     @Operation(
-            summary = "회원 상태 변경"
+            summary = "회원 상태 변경",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원 상태 변경 성공",

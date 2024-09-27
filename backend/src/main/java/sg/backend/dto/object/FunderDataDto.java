@@ -1,26 +1,19 @@
 package sg.backend.dto.object;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
-public class UserDataDto {
-
-    private int no;
-
-    private Long userId;
-
-    private String id;
-
-    private String nickname;
-
-    private String schoolEmail;
-
-    private String address;
-
-    private String phoneNumber;
+public class FunderDataDto {
 
     private String createdAt;
+    private String id;
+    private String nickname;
+    private String email;
+    private String address;
+    private String phoneNumber;
+    private List<String> rewards;
 }

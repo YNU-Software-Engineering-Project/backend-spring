@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class FundingDataDto {
+    private Long fundingId;
     private String title;
     private String mainImage;
     private String projectSummary;

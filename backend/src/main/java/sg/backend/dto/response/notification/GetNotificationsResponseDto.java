@@ -28,7 +28,7 @@ public class GetNotificationsResponseDto extends ResponseDto {
         List<NotificationDataDto> data = new ArrayList<>();
 
         for(Notification n : notificationList) {
-            data.add(new NotificationDataDto(n.getMessage(), n.getCreatedAt()));
+            data.add(new NotificationDataDto(n.getNotification_id(), n.getMessage(), n.getCreatedAt()));
         }
 
         this.data = data;

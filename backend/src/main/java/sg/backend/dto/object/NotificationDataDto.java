@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class NotificationDataDto {
+    private Long notificationId;
     private String message;
     private String createdAt;
 }

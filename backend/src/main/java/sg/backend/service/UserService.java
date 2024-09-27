@@ -263,7 +263,6 @@ public class UserService {
         Page<Funding> fundingList;
         List<FundingDataDto> data = new ArrayList<>();
 
-
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
             if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
@@ -329,6 +328,7 @@ public class UserService {
 
             for(Funding f : fundingList) {
                 ShortFundingDataDto dto = new ShortFundingDataDto();
+                dto.setFundingId(f.getFunding_id());
                 dto.setTitle(f.getTitle());
                 dto.setMainImage(f.getMainImage());
                 dto.setState(String.valueOf(f.getCurrent()));
@@ -384,6 +384,7 @@ public class UserService {
                     .size();
 
             userList = new PageImpl<>(results, pageable, total);
+
             for(User u : userList) {
                 data.add(convertToUserDataDto(u));
             }
@@ -394,7 +395,7 @@ public class UserService {
             return ResponseDto.databaseError();
         }
 
-        return GetUserListResponseDto.success(userList, data);
+        return GetUserListResponseDto.success(userList, data, sort);
     }
 
     private OrderSpecifier<?> getOrderSpecifier(String sort, QUser user) {
@@ -404,9 +405,27 @@ public class UserService {
             case "noDesc":
                 return user.userId.desc();
             case "idAsc":
-                return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).asc();
+                return user.email.asc();
             case "isDesc":
-                return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).desc();
+                return user.email.desc();
+            case "nicknameAsc":
+                return user.nickname.asc();
+            case "nicknameDesc":
+                return user.nickname.desc();
+            case "emailAsc":
+                return user.schoolEmail.asc();
+            case "emailDesc":
+                return user.schoolEmail.desc();
+            case "phoneNumAsc":
+                return user.phoneNumber.asc();
+            case "phoneNumDesc":
+                return user.phoneNumber.desc();
+            case "adAsc":
+                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN CONCAT({0}, ' ', {1}) ELSE CONCAT({2}, ' ', {1}) END",
+                        user.roadAddress, user.detailAddress, user.landLotAddress).asc();
+            case "adDesc":
+                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN CONCAT({0}, ' ', {1}) ELSE CONCAT({2}, ' ', {1}) END",
+                        user.roadAddress, user.detailAddress, user.landLotAddress).desc();
             case "latest":
                 return user.createdAt.desc();
             case "oldest":
@@ -419,16 +438,34 @@ public class UserService {
     public UserDataDto convertToUserDataDto(User user) {
         UserDataDto dto = new UserDataDto();
 
-        String email = user.getEmail();
-        int index = email.indexOf("@");
+        dto.setUserId(user.getUserId());
 
-        dto.setNickname(user.getNickname());
-        dto.setId(email.substring(0, index));
+        if(user.getNickname() == null)
+            dto.setNickname("");
+        else
+            dto.setNickname(user.getNickname());
+
+        String email = user.getEmail();
+        int emailIndex = email.indexOf("@");
+        dto.setId(email.substring(0, emailIndex));
         dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setSchoolEmail(user.getSchoolEmail());
-        dto.setRoadAddress(user.getRoadAddress());
-        dto.setLandLotAddress(user.getLandLotAddress());
-        dto.setDetailAddress(user.getDetailAddress());
+
+        if(user.getSchoolEmail() == null)
+            dto.setSchoolEmail("");
+        else
+            dto.setSchoolEmail(user.getSchoolEmail());
+
+        String roadAddress = user.getRoadAddress();
+        String landLotAddress = user.getLandLotAddress();
+        String detailAddress = user.getDetailAddress();
+        StringBuilder address = new StringBuilder();
+        if(roadAddress != null && detailAddress != null) {
+            address.append(roadAddress + " ").append(detailAddress);
+        } else if(landLotAddress != null && detailAddress != null) {
+            address.append(landLotAddress + " ").append(detailAddress);
+
+        }
+        dto.setAddress(address.toString());
         dto.setCreatedAt(user.getCreatedAt().format(formatter));
 
         return dto;
