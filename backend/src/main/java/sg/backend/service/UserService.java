@@ -405,9 +405,13 @@ public class UserService {
             case "noDesc":
                 return user.userId.desc();
             case "idAsc":
-                return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).asc();
+                return user.email.asc();
             case "isDesc":
-                return Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).desc();
+                return user.email.desc();
+            case "nicknameAsc":
+                return user.nickname.asc();
+            case "nicknameDesc":
+                return user.nickname.desc();
             case "emailAsc":
                 return user.schoolEmail.asc();
             case "emailDesc":
