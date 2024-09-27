@@ -33,9 +33,9 @@ public class Notification {
         this.message = "새로운 프로젝트를 시작해보세요.";
     }
 
-    // 후원한 펀딩의 목표 금액 달성 알림 메시지
+    // 목표 금액 달성 알림 메시지
     public void setFundingSuccessMessage(String fundingName) {
-        this.message = String.format("축하합니다! 후원하신 [%s] 프로젝트가 목표 금액을 달성했습니다.", fundingName);
+        this.message = String.format("축하합니다! [%s] 프로젝트가 목표 금액을 달성했습니다.", fundingName);
     }
 
     // 리워드 발송 알림 메시지
@@ -49,13 +49,13 @@ public class Notification {
     }
 
     // 댓글 알림 메시지
-    public void setCommentMessage(String fundingName) {
-        this.message = String.format("[%s]에 댓글이 달렸습니다.", fundingName);
+    public void setQuestionMessage(String name, String fundingName) {
+        this.message = String.format("'%s'님이 [%s]에 질문을 남겼습니다.", name, fundingName);
     }
 
     // 댓글 답글 알림 메시지
-    public void setCommentReplyMessage(String fundingName) {
-        this.message = String.format("[%s]에 남긴 댓글에 답글이 달렸습니다.", fundingName);
+    public void setCommentMessage(String fundingName) {
+        this.message = String.format("[%s]에 답글이 달렸습니다.", fundingName);
     }
 
     // 후원한 펀딩 게시물 업데이트 알림 메시지

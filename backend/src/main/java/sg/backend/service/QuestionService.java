@@ -8,14 +8,20 @@ import org.springframework.stereotype.Service;
 import sg.backend.dto.request.community.QuestionRequestDto;
 import sg.backend.dto.response.community.QuestionResponseDto;
 import sg.backend.entity.Funding;
+import sg.backend.entity.Notification;
 import sg.backend.entity.Question;
 import sg.backend.entity.User;
 import sg.backend.repository.FundingRepository;
+import sg.backend.repository.NotificationRepository;
 import sg.backend.repository.QuestionRepository;
 import sg.backend.repository.UserRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static sg.backend.service.UserService.formatter;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final FundingRepository fundingRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     public ResponseEntity<String> createQuestion(Long fundingId, QuestionRequestDto requestDto, String email){
         Optional<Funding> optionalFunding = fundingRepository.findById(fundingId);
@@ -36,6 +43,15 @@ public class QuestionService {
 
         Question question = requestDto.toEntity(funding, user);
         questionRepository.save(question);
+
+        Notification notification = new Notification(funding.getUser(), LocalDateTime.now().format(formatter));
+        String name = user.getNickname();
+        if(name == null) {
+            int index = email.indexOf("@");
+            name = email.substring(0, index);
+        }
+        notification.setQuestionMessage(name, funding.getTitle());
+        notificationRepository.save(notification);
         return QuestionResponseDto.success("질문이 생성 되었습니다.");
     }
 

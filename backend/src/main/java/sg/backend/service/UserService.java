@@ -328,6 +328,7 @@ public class UserService {
 
             for(Funding f : fundingList) {
                 ShortFundingDataDto dto = new ShortFundingDataDto();
+                dto.setFundingId(f.getFunding_id());
                 dto.setTitle(f.getTitle());
                 dto.setMainImage(f.getMainImage());
                 dto.setState(String.valueOf(f.getCurrent()));
@@ -433,13 +434,15 @@ public class UserService {
     public UserDataDto convertToUserDataDto(User user) {
         UserDataDto dto = new UserDataDto();
 
-        String email = user.getEmail();
-        int emailIndex = email.indexOf("@");
+        dto.setUserId(user.getUserId());
 
         if(user.getNickname() == null)
             dto.setNickname("");
         else
             dto.setNickname(user.getNickname());
+
+        String email = user.getEmail();
+        int emailIndex = email.indexOf("@");
         dto.setId(email.substring(0, emailIndex));
         dto.setPhoneNumber(user.getPhoneNumber());
 

@@ -5,17 +5,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sg.backend.dto.request.community.CommentRequestDto;
 import sg.backend.dto.response.community.CommentResponseDto;
+import sg.backend.entity.Notification;
 import sg.backend.entity.Question;
 import sg.backend.entity.User;
 import sg.backend.entity.Comment;
 import sg.backend.repository.CommentRepository;
+import sg.backend.repository.NotificationRepository;
 import sg.backend.repository.QuestionRepository;
 import sg.backend.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static sg.backend.service.UserService.formatter;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +29,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
+    @Transactional
     public ResponseEntity<String> createComment(Long questionId, CommentRequestDto requestDto, String email){
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         Question question = null;
@@ -35,6 +43,10 @@ public class CommentService {
 
         Comment comment = requestDto.toEntity(question, user);
         commentRepository.save(comment);
+
+        Notification notification = new Notification(question.getUser(), LocalDateTime.now().format(formatter));
+        notification.setCommentMessage(question.getFunding().getTitle());
+        notificationRepository.save(notification);
         return CommentResponseDto.success("댓글이 생성 되었습니다.");
     }
 

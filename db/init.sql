@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS funding (
     today_amount INT DEFAULT 0,
     current_amount INT DEFAULT 0,
     reward_amount INT DEFAULT 0,
+    targetAmountReached BOOLEAN DEFAULT FALSE
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     user_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL

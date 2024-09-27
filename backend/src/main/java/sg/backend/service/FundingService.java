@@ -186,6 +186,7 @@ public class FundingService {
 
      public static FundingDataDto convertToDto(Funding funding, FundingLikeRepository fundingLikeRepository, boolean isAuthenticated, User user) {
         FundingDataDto dto = new FundingDataDto();
+        dto.setFundingId(funding.getFunding_id());
         dto.setTitle(funding.getTitle());
         dto.setMainImage(funding.getMainImage());
         dto.setProjectSummary(funding.getProjectSummary());
@@ -283,6 +284,7 @@ public class FundingService {
             fundingList = new PageImpl<>(results, pageable, total);
             for(Funding f : fundingList) {
                 ShortFundingDataDto dto = new ShortFundingDataDto();
+                dto.setFundingId(f.getFunding_id());
                 dto.setTitle(f.getTitle());
                 dto.setMainImage(f.getMainImage());
                 dto.setState(String.valueOf(f.getCurrent()));
