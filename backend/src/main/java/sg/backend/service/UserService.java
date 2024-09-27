@@ -263,7 +263,6 @@ public class UserService {
         Page<Funding> fundingList;
         List<FundingDataDto> data = new ArrayList<>();
 
-
         try {
             Optional<User> optionalUser = userRepository.findByEmail(email);
             if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
@@ -384,6 +383,7 @@ public class UserService {
                     .size();
 
             userList = new PageImpl<>(results, pageable, total);
+
             for(User u : userList) {
                 data.add(convertToUserDataDto(u));
             }
@@ -394,7 +394,7 @@ public class UserService {
             return ResponseDto.databaseError();
         }
 
-        return GetUserListResponseDto.success(userList, data);
+        return GetUserListResponseDto.success(userList, data, sort);
     }
 
     private OrderSpecifier<?> getOrderSpecifier(String sort, QUser user) {
@@ -434,13 +434,13 @@ public class UserService {
         UserDataDto dto = new UserDataDto();
 
         String email = user.getEmail();
-        int index = email.indexOf("@");
+        int emailIndex = email.indexOf("@");
 
         if(user.getNickname() == null)
             dto.setNickname("");
         else
             dto.setNickname(user.getNickname());
-        dto.setId(email.substring(0, index));
+        dto.setId(email.substring(0, emailIndex));
         dto.setPhoneNumber(user.getPhoneNumber());
 
         if(user.getSchoolEmail() == null)
