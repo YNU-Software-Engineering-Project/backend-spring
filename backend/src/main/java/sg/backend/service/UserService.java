@@ -416,10 +416,10 @@ public class UserService {
             case "phoneNumDesc":
                 return user.phoneNumber.desc();
             case "adAsc":
-                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN {0} + ' ' + {1} ELSE {2} + ' ' + {1} END",
+                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN CONCAT({0}, ' ', {1}) ELSE CONCAT({2}, ' ', {1}) END",
                         user.roadAddress, user.detailAddress, user.landLotAddress).asc();
             case "adDesc":
-                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN {0} + ' ' + {1} ELSE {2} + ' ' + {1} END",
+                return Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN CONCAT({0}, ' ', {1}) ELSE CONCAT({2}, ' ', {1}) END",
                         user.roadAddress, user.detailAddress, user.landLotAddress).desc();
             case "latest":
                 return user.createdAt.desc();
@@ -436,21 +436,28 @@ public class UserService {
         String email = user.getEmail();
         int index = email.indexOf("@");
 
-        dto.setNickname(user.getNickname());
+        if(user.getNickname() == null)
+            dto.setNickname("");
+        else
+            dto.setNickname(user.getNickname());
         dto.setId(email.substring(0, index));
         dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setSchoolEmail(user.getSchoolEmail());
+
+        if(user.getSchoolEmail() == null)
+            dto.setSchoolEmail("");
+        else
+            dto.setSchoolEmail(user.getSchoolEmail());
+
         String roadAddress = user.getRoadAddress();
         String landLotAddress = user.getLandLotAddress();
         String detailAddress = user.getDetailAddress();
         StringBuilder address = new StringBuilder();
-
-        if(roadAddress != null && !roadAddress.isEmpty())
+        if(roadAddress != null && detailAddress != null) {
             address.append(roadAddress + " ").append(detailAddress);
-        else
+        } else if(landLotAddress != null && detailAddress != null) {
             address.append(landLotAddress + " ").append(detailAddress);
-        if(roadAddress == null && landLotAddress == null && roadAddress == null)
-            address = new StringBuilder();
+
+        }
         dto.setAddress(address.toString());
         dto.setCreatedAt(user.getCreatedAt().format(formatter));
 
