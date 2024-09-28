@@ -81,7 +81,7 @@ public class FundingDetailsService {
     }
 
     private Long getSupporterCount(Long fundingId){
-        return fundingRepository.countFundersByFunding_id(fundingId);
+        return fundingRepository.countFundersByFundingId(fundingId);
     }
 
     @Scheduled(cron = "0 0 0 * * ?")

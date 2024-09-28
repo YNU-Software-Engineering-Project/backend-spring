@@ -29,5 +29,6 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
 
     List<Funding> findByCurrent(State state);
 
-    long countFundersByFunding_id(Long fundingId);
+    @Query("SELECT COUNT(f) FROM Funding f WHERE f.funding_id = :fundingId")
+    long countFundersByFundingId(@Param("fundingId") Long fundingId);
 }
