@@ -10,7 +10,6 @@ import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
 import sg.backend.dto.request.wirtefunding.InsertTagRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.GetFundingMainResponseDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadInfoFileResponseDto;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
@@ -20,6 +19,7 @@ import sg.backend.entity.*;
 import sg.backend.repository.DocumentRepository;
 import sg.backend.repository.FundingRepository;
 import sg.backend.repository.TagRepository;
+import sg.backend.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +34,7 @@ public class FundingInfoService {
     private final FundingRepository fundingRepository;
     private final DocumentRepository documentRepository;
     private final TagRepository tagRepository;
+    private final UserRepository userRepository;
 
     private final FundingFileService fileService;
     @Value("${file.path}")
@@ -57,7 +58,7 @@ public class FundingInfoService {
         try{
             Optional<Funding> option = fundingRepository.findById(funding_id);
             if (option.isEmpty()) {
-                return GetFundingMainResponseDto.not_existed_post();
+                return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
 
@@ -91,7 +92,7 @@ public class FundingInfoService {
         try {
             Optional<Funding> option = fundingRepository.findById(funding_id);
             if (option.isEmpty()) {
-                return GetInfoResponseDto.not_existed_post();
+                return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
 
@@ -176,7 +177,7 @@ public class FundingInfoService {
 
 
     @Transactional  //펀딩 정보 수정 + 펀딩 등록하기
-    public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, Boolean type) {
+    public ResponseEntity<ResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, String email, Boolean type) {
         try {
             category = dto.getCategory(); //맞는 카테고리 전달되도록하기
             Category cate;
@@ -186,18 +187,18 @@ public class FundingInfoService {
                 cate = Category.getCategory(category);
             }
 
-            //이메일 형식 추가함
+            //이메일 형식 추가함 => 이메일 형식 안 맞으면 database error 뜸
             organizer_name = dto.getOrganizer_name();
             organizer_email = dto.getOrganizer_email();
             tax_email = dto.getTax_email();
 
             if(type){  //등록하기 연산
                 if(organizer_name == null || organizer_email == null || tax_email == null){
-                    return ModifyContentResponseDto.not_permission();
+                    return ResponseDto.noPermission();
                 }
             }
 
-            String start = dto.getStart_date();
+            String start = dto.getStart_date(); // => 날짜 형식 안 맞으면 DBE
             LocalDateTime start_date;
             if(start == null){ //날짜 형식 맞는지 프론트가 구분
                 start_date = null;
@@ -214,6 +215,7 @@ public class FundingInfoService {
                 end_date = LocalDateTime.parse(end, format);
             }
 
+            //=> 숫자형식 안 맞으면 DBE
             String amount = dto.getTarget_amount(); //숫자가 들어갔는지 프론트가 구분
             Integer target_amount;
             if(amount == null){
@@ -223,7 +225,13 @@ public class FundingInfoService {
             }
 
             if(type){ //새로운 펀딩 생성후 데이터 저장하고 펀딩을 데이터베이스에 저장
-                Funding new_funding = new Funding(organizer_name,organizer_email,tax_email);
+                Optional<User> option = userRepository.findByEmail(email);
+                if(option.isEmpty()) {
+                    return ResponseDto.noExistUser();
+                }
+                User user = option.get();
+
+                Funding new_funding = new Funding(organizer_name,organizer_email,tax_email, user);
                 new_funding.setCategory(cate);
                 new_funding.setStartDate(start_date);
                 new_funding.setEndDate(end_date);
@@ -233,7 +241,7 @@ public class FundingInfoService {
             } else{
                 Optional <Funding> option = fundingRepository.findById(funding_id);
                 if(option.isEmpty()) {
-                    return ModifyContentResponseDto.not_existed_post();
+                    return ResponseDto.noExistFunding();
                 }
                 Funding funding = option.get();
 
@@ -249,7 +257,7 @@ public class FundingInfoService {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ModifyContentResponseDto.success();
+        return ResponseDto.success();
     }
 
 
@@ -266,7 +274,7 @@ public class FundingInfoService {
             if(tag_name.getTagName() == null){
                 return InsertTagResponseDto.not_existed_data();
             } else{
-                long count = tagRepository.count();
+                long count = tagRepository.countByFunding(funding);
                 if(count < 5) {
                     Tag tag = new Tag(tag_name.getTagName(), funding);
                     tagRepository.save(tag);
@@ -344,8 +352,11 @@ public class FundingInfoService {
             Funding funding = options.get();
 
             String file_path = funding.getOrganizerIdCard();
-            if(!fileService.file_delete(file_path)){
+            if(file_path == null || file_path.isEmpty()){
                 return DeleteFileResponseDto.not_existed_file();
+            }
+            if(!fileService.file_delete(file_path)){
+                return ResponseDto.databaseError();
             }
 
             funding.setOrganizerIdCard(null);
@@ -362,10 +373,9 @@ public class FundingInfoService {
 
         try{
             Document document = documentRepository.findByUuid(uuid);
-            if(document.getFpath() == null){
+            if(document == null || document.getFpath() == null || document.getFpath().isEmpty()){
                 return DeleteFileResponseDto.not_existed_file();
             }
-
             if(!fileService.file_delete(document.getFpath())){
                 return ResponseDto.databaseError();
             }

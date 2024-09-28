@@ -61,7 +61,7 @@ public class FundingInfoController {
     @Operation(summary = "프로젝트정보 작성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "작성 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = """
                     -funding_id가 존재하지 않는 경우
                     - 이메일 형식이 맞지 않는 경우
@@ -70,11 +70,11 @@ public class FundingInfoController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/info/modify")
-    public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(
+    public ResponseEntity<ResponseDto> modifyInfo(
             @RequestBody @Valid FundingInfoRequestDto requestBody,
             @PathVariable("funding_id") Long funding_id
     ) {
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingInfoService.modifyInfo(funding_id, requestBody, false);
+        ResponseEntity<ResponseDto> response = fundingInfoService.modifyInfo(funding_id, requestBody, null, false);
         return response;
     }
 

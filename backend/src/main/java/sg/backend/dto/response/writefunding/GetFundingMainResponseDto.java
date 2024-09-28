@@ -22,9 +22,4 @@ public class GetFundingMainResponseDto extends ResponseDto {
         GetFundingMainResponseDto result = new GetFundingMainResponseDto(url, title);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
-    public static ResponseEntity<ResponseDto> not_existed_post(){
-        ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_BOARD, ResponseMessage.NOT_EXISTED_BOARD);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-    }
 }

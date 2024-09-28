@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +36,10 @@ public class RegisterFundingController {
     })
     @PostMapping("api/register/info")
     public ResponseEntity<? super ModifyContentResponseDto> register_funding(
-            @RequestBody @Valid FundingInfoRequestDto requestBody
-            ){
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingInfoService.modifyInfo(null,requestBody,true);
+            @RequestBody @Valid FundingInfoRequestDto requestBody,
+            @AuthenticationPrincipal(expression = "username") String email
+    ){
+        ResponseEntity<? super ModifyContentResponseDto> response = fundingInfoService.modifyInfo(null,requestBody, email,true);
         return response;
     }
 }

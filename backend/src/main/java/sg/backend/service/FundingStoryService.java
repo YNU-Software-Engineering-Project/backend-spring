@@ -174,8 +174,11 @@ public class FundingStoryService {
             Funding funding = options.get();
 
             String file_path = funding.getMainImage();
-            if(!fileService.file_delete(file_path)){
+            if(file_path == null || file_path.isEmpty()){
                 return DeleteFileResponseDto.not_existed_file();
+            }
+            if(!fileService.file_delete(file_path)){
+                return ResponseDto.databaseError();
             }
 
             funding.setMainImage(null);
@@ -192,10 +195,10 @@ public class FundingStoryService {
 
         try{
             IntroImage image = introImageRepository.findByUuid(uuid);
-            if( image.getFpath() == null){
+
+            if( image == null || image.getFpath() == null || image.getFpath().isEmpty()){
                 return DeleteFileResponseDto.not_existed_file();
             }
-
             if(!fileService.file_delete(image.getFpath())){
                 return ResponseDto.databaseError();
             }

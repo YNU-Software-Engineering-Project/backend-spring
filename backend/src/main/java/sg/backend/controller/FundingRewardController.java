@@ -16,6 +16,7 @@ import sg.backend.dto.request.wirtefunding.PolicyRewardRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
 import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
 import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
@@ -145,10 +146,10 @@ public class FundingRewardController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/giveup")
-    public ResponseEntity<? super ModifyContentResponseDto> giveup_funding(
+    public ResponseEntity<? super DeleteFileResponseDto> giveup_funding(
             @PathVariable Long funding_id
     ){
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingRewardService.giveup_funding(funding_id);
+        ResponseEntity<? super DeleteFileResponseDto> response = fundingRewardService.giveup_funding(funding_id);
         return response;
     }
 }
