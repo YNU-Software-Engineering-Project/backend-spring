@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS funding (
     project_summary TEXT,
     reward_info TEXT,
     refund_policy TEXT,
+    story Text,
     total_likes INT DEFAULT 0,
     today_likes INT DEFAULT 0,
     total_visitors INT DEFAULT 0,
@@ -161,18 +162,18 @@ VALUES
 (1, 'test@example.com', 'testuser1', 'Password123!', '010-1234-5678'),
 (2, 'test2@example.com', 'testuser2', 'Password123!', '010-1111-2222');
 
-INSERT INTO funding (funding_id, reward_amount, title, project_summary, current_amount, target_amount, current, category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id, created_at, total_likes)
+INSERT INTO funding (funding_id, reward_amount, title, project_summary, current_amount, target_amount, current, category, organizer_name, organizer_email, tax_email, organizer_id_card, user_id, created_at, total_likes, reward_info, refund_policy, end_date, story)
 VALUES
-(1, 100000, '10초 완판 | 차원이 다른 스마트 가습기', '강력한 미세 분사와 자동 습도 조절 기능 탑재', 1500000, 5000000, 'ONGOING', 'A0010', '더워터', 'organizer1@example.com', 'tax1@example.com', '/path/to/id_card1.jpg', 1, '2024-09-21 11:11:11', 25),
-(2, 200000, '여행자를 위한 올인원 멀티툴', '캠핑부터 도심 여행까지, 하나로 충분한 멀티툴', 700000, 1000000, 'ONGOING', 'A0020', '트래블팩', 'organizer2@example.com', 'tax2@example.com', '/path/to/id_card2.jpg', 1, '2024-09-21 11:12:11', 50),
-(3, 150000, '한정판 | 차세대 친환경 에코백', '100% 재활용 소재로 만들어진 에코백', 5000000, 8000000, 'ONGOING', 'A0030', '에코리브', 'organizer3@example.com', 'tax3@example.com', '/path/to/id_card3.jpg', 1, '2024-09-21 11:13:11', 30),
-(4, 230000, '반려동물을 위한 스마트 피딩기', '자동 급식 및 원격 제어 기능으로 편리한 반려동물 관리', 6000000, 6000000, 'CLOSED', 'A0040', '펫케어', 'organizer4@example.com', 'tax4@example.com', '/path/to/id_card4.jpg', 1, '2024-09-21 11:14:11', 75),
-(5, 187000, '세상을 바꾸는 휴대용 태양광 충전기', '휴대가 간편한 태양광 충전기, 어디서나 충전 가능', 2000000, 3000000, 'CLOSED', 'A0050', '솔라팩', 'organizer5@example.com', 'tax5@example.com', '/path/to/id_card5.jpg', 1, '2024-09-21 11:15:11', 90),
-(6, 268000, '스마트홈을 위한 차세대 AI 스피커', 'AI 기술로 더욱 똑똑해진 스마트 스피커', 10000000, 15000000, 'ONGOING', 'A0060', '홈스마트', 'organizer6@example.com', 'tax6@example.com', '/path/to/id_card6.jpg', 1, '2024-09-21 11:16:11', 10),
-(7, 328300, '학생들을 위한 다기능 노트북 스탠드', '높이 조절이 가능한 인체공학적 디자인의 노트북 스탠드', 1000000, 2000000, 'REVIEW', 'A0010', '스탠드컴퍼니', 'organizer7@example.com', 'tax7@example.com', '/path/to/id_card7.jpg', 1, '2024-09-21 11:17:11', 20),
-(8, 981240, '신개념 휴대용 전동칫솔', '초고속 전동 칫솔로 어디서나 간편한 구강 관리', 1500000, 2500000, 'ONGOING', 'A0020', '클린덴트', 'organizer8@example.com', 'tax8@example.com', '/path/to/id_card8.jpg', 1, '2024-09-21 11:18:11', 15),
-(9, 124150, '100% 천연 성분의 스킨케어 제품', '피부에 자극 없는 순한 천연 스킨케어', 800000, 2000000, 'ONGOING', 'A0030', '네이처케어', 'organizer9@example.com', 'tax9@example.com', '/path/to/id_card9.jpg', 1, '2024-09-21 11:19:11', 12),
-(10, 359000, '한 번 충전으로 한 달 사용 가능한 무선 청소기', '강력한 흡입력과 긴 사용시간을 자랑하는 무선 청소기', 3000000, 5000000, 'CLOSED', 'A0040', '클린홈', 'organizer10@example.com', 'tax10@example.com', '/path/to/id_card10.jpg', 1, '2024-09-21 11:20:11', 100);
+(1, 100000, '10초 완판 | 차원이 다른 스마트 가습기', '강력한 미세 분사와 자동 습도 조절 기능 탑재', 1500000, 5000000, 'ONGOING', 'A0010', '더워터', 'organizer1@example.com', 'tax1@example.com', '/path/to/id_card1.jpg', 1, '2024-09-21 11:11:11', 25, '가습기 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '스마트 가습기의 우수성에 대한 설명'),
+(2, 200000, '여행자를 위한 올인원 멀티툴', '캠핑부터 도심 여행까지, 하나로 충분한 멀티툴', 700000, 1000000, 'ONGOING', 'A0020', '트래블팩', 'organizer2@example.com', 'tax2@example.com', '/path/to/id_card2.jpg', 1, '2024-09-21 11:12:11', 50, '멀티툴 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '멀티툴의 다기능성에 대한 설명'),
+(3, 150000, '한정판 | 차세대 친환경 에코백', '100% 재활용 소재로 만들어진 에코백', 5000000, 8000000, 'ONGOING', 'A0030', '에코리브', 'organizer3@example.com', 'tax3@example.com', '/path/to/id_card3.jpg', 1, '2024-09-21 11:13:11', 30, '에코백 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '친환경 소재 에코백의 중요성에 대한 설명'),
+(4, 230000, '반려동물을 위한 스마트 피딩기', '자동 급식 및 원격 제어 기능으로 편리한 반려동물 관리', 6000000, 6000000, 'CLOSED', 'A0040', '펫케어', 'organizer4@example.com', 'tax4@example.com', '/path/to/id_card4.jpg', 1, '2024-09-21 11:14:11', 75, '피딩기 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '반려동물 관리의 편리성에 대한 설명'),
+(5, 187000, '세상을 바꾸는 휴대용 태양광 충전기', '휴대가 간편한 태양광 충전기, 어디서나 충전 가능', 2000000, 3000000, 'CLOSED', 'A0050', '솔라팩', 'organizer5@example.com', 'tax5@example.com', '/path/to/id_card5.jpg', 1, '2024-09-21 11:15:11', 90, '태양광 충전기 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '태양광 기술의 미래에 대한 설명'),
+(6, 268000, '스마트홈을 위한 차세대 AI 스피커', 'AI 기술로 더욱 똑똑해진 스마트 스피커', 10000000, 15000000, 'ONGOING', 'A0060', '홈스마트', 'organizer6@example.com', 'tax6@example.com', '/path/to/id_card6.jpg', 1, '2024-09-21 11:16:11', 10, 'AI 스피커 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', 'AI 기술의 스마트홈 적용에 대한 설명'),
+(7, 328300, '학생들을 위한 다기능 노트북 스탠드', '높이 조절이 가능한 인체공학적 디자인의 노트북 스탠드', 1000000, 2000000, 'REVIEW', 'A0010', '스탠드컴퍼니', 'organizer7@example.com', 'tax7@example.com', '/path/to/id_card7.jpg', 1, '2024-09-21 11:17:11', 20, '노트북 스탠드 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '노트북 사용의 편리성에 대한 설명'),
+(8, 981240, '신개념 휴대용 전동칫솔', '초고속 전동 칫솔로 어디서나 간편한 구강 관리', 1500000, 2500000, 'ONGOING', 'A0020', '클린덴트', 'organizer8@example.com', 'tax8@example.com', '/path/to/id_card8.jpg', 1, '2024-09-21 11:18:11', 15, '전동칫솔 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '전동칫솔의 장점에 대한 설명'),
+(9, 124150, '100% 천연 성분의 스킨케어 제품', '피부에 자극 없는 순한 천연 스킨케어', 800000, 2000000, 'ONGOING', 'A0030', '네이처케어', 'organizer9@example.com', 'tax9@example.com', '/path/to/id_card9.jpg', 1, '2024-09-21 11:19:11', 12, '스킨케어 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '천연 성분 스킨케어 제품의 중요성에 대한 설명'),
+(10, 359000, '한 번 충전으로 한 달 사용 가능한 무선 청소기', '강력한 흡입력과 긴 사용시간을 자랑하는 무선 청소기', 3000000, 5000000, 'CLOSED', 'A0040', '클린홈', 'organizer10@example.com', 'tax10@example.com', '/path/to/id_card10.jpg', 1, '2024-09-21 11:20:11', 100, '무선 청소기 리워드 정보', '환불 정책 안내', '2024-10-31 23:59:59', '무선 청소기의 편리성에 대한 설명');
 
 
 INSERT INTO tag (tag_name, funding_id) VALUES ('프리미엄', 1);

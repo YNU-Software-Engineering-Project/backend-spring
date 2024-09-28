@@ -1,7 +1,6 @@
 package sg.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,6 +55,8 @@ public class Funding {
 
     private String projectSummary;
 
+    @Lob
+    private String story;  // 마크다운 형식의 스토리
 
     //정책
     private String rewardInfo;
@@ -111,3 +112,5 @@ public class Funding {
         //user도 넣어야하는데
     }
 }
+
+

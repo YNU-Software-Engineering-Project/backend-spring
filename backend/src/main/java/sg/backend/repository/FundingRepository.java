@@ -28,4 +28,6 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
     long countByCurrent(State state);
 
     List<Funding> findByCurrent(State state);
+
+    long countFundersByFunding_id(Long fundingId);
 }
