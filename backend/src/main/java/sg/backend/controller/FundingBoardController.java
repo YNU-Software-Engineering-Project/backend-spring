@@ -63,7 +63,7 @@ public class FundingBoardController {
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @Parameter(description = "아이디로 검색")
             @RequestParam(required = false) String id,
-            @Parameter(description = "리워드 옵션 번호", example = "rewardIndex=0")
+            @Parameter(description = "리워드 옵션 번호", example = "0")
             @RequestParam(required = false) Integer rewardNo,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
@@ -73,10 +73,10 @@ public class FundingBoardController {
     }
 
     @Operation(
-            summary = "특정 펀딩 게시물의 리워드 목록 가져오기"
+            summary = "펀딩 리워드 이름 목록 가져오기"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "특정 펀딩 게시물의 리워드 목록 가져오기 성공",
+            @ApiResponse(responseCode = "200", description = "펀딩 리워드 이름 목록 가져오기 성공",
                     content = @Content(schema = @Schema(implementation = GetRewardListResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시물 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))

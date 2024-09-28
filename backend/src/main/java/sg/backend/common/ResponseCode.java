@@ -15,7 +15,7 @@ public interface ResponseCode {
     String NOT_EXISTED_FILE = "NF";
     String NOT_EXISTED_DATA = "ND";
     String FULL_DATA = "FD";
-    String NOT_EXISTED_FUNDING = "NB";
+    String NOT_EXISTED_FUNDING = "NF";
     String NOT_EXISTED_NOTIFICATION = "NN";
     String PASSWORD_SAME_AS_CURRENT = "PSC";
     String EMAIL_TOKEN_NOT_FOUND = "ETNF";

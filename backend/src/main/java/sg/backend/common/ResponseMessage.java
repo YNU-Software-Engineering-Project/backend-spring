@@ -14,7 +14,7 @@ public interface ResponseMessage {
     String NOT_EXISTED_FILE = "Not existed file";
     String NOT_EXISTED_DATA = "Not existed data";
     String FULL_DATA = "Full data";
-    String NOT_EXISTED_FUNDING = "This board does not exist.";
+    String NOT_EXISTED_FUNDING = "This funding does not exist.";
     String NOT_EXISTED_NOTIFICATION = "This notification does not exist.";
     String PASSWORD_SAME_AS_CURRENT = "New password cannot be the same as the current password.";
     String EMAIL_TOKEN_NOT_FOUND = "Email token not found.";
