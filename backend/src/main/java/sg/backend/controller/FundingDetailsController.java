@@ -32,8 +32,8 @@ public class FundingDetailsController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/{funding_id}/story")
-    public FundingDetailsResponseDto getFundingStory(@PathVariable Long fundingId){
-        return fundingDetailsService.getFundingStory(fundingId);
+    public FundingDetailsResponseDto getFundingStory(@PathVariable("funding_id") Long funding_id){
+        return fundingDetailsService.getFundingStory(funding_id);
     }
 
     @Operation(
@@ -46,8 +46,8 @@ public class FundingDetailsController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("{funding_id}/refund-policy")
-    public FundingDetailsResponseDto getfundPolicy(@PathVariable Long fundingId){
-        return fundingDetailsService.getRefundPolicy(fundingId);
+    public FundingDetailsResponseDto getfundPolicy(@PathVariable("funding_id") Long funding_id){
+        return fundingDetailsService.getRefundPolicy(funding_id);
     }
 
     @Operation(
@@ -61,7 +61,7 @@ public class FundingDetailsController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("{funding_id}/rewards")
-    public FundingDetailsResponseDto getRewardInfo(@PathVariable Long fundingId){
-        return fundingDetailsService.getRewardInfo(fundingId);
+    public FundingDetailsResponseDto getRewardInfo(@PathVariable("funding_id") Long funding_id){
+        return fundingDetailsService.getRewardInfo(funding_id);
     }
 }
