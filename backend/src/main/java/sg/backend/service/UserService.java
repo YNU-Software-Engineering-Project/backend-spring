@@ -372,6 +372,8 @@ public class UserService {
             if(!admin.getRole().equals(Role.ADMIN))
                 return ResponseDto.noPermission();
 
+            filterBuilder.and(user.role.ne(Role.ADMIN));
+
             if(id != null) {
                 StringTemplate userId = Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email);
                 filterBuilder.and(userId.contains(id));
