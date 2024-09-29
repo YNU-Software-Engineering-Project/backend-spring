@@ -42,8 +42,9 @@ jwt:
   issuer: "SpeedSpark"
   secretKey: ${SECRETKEY}
 
-profile.path: /app/data/profile_images/
-profile.url: http://localhost:8080/file/
+profile:
+  path: /app/data/profile_images/
+  url: http://localhost:8080/file/
 
 invite:
   adminCode: ${ADMIN_INVITE_CODE}
