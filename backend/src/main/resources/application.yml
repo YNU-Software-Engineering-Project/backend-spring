@@ -45,3 +45,5 @@ jwt:
 profile.path: /app/data/profile_images/
 profile.url: http://localhost:8080/file/
 
+invite:
+  adminCode: ${ADMIN_INVITE_CODE}
