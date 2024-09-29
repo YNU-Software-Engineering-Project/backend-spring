@@ -55,8 +55,8 @@ public class FundingController {
                             A0100 -> 테크·가전, A0110 -> 자동차, A0120 -> 패션, 
                             A0130 -> 아트, A0140 -> 소셜, A0150 -> 영화·음악, 
                             A0160 -> 반려동물, A0170 -> 디자인
-                    """, example = "A0010") @RequestParam(required = false) String category,
-            @Parameter(description = "태그", example = "tags=art,design") @RequestParam(required = false) List<String> tags,
+                    """, example = "A0010,A0020") @RequestParam(required = false) List<String> categories,
+            @Parameter(description = "태그", example = "art,design") @RequestParam(required = false) List<String> tags,
             @Parameter(description = "최소 달성률") @RequestParam(required = false, defaultValue = "0") int minRate,
             @Parameter(description = "최대 달성률") @RequestParam(required = false, defaultValue = "100") int maxRate,
             @Parameter(description = "종료된 펀딩 여부 (true: 종료된 펀딩도 포함)")
@@ -70,7 +70,7 @@ public class FundingController {
         String email = authentication != null ? authentication.getName() : null;
 
         ResponseEntity<? super GetFundingListResponseDto> response = fundingService.searchFunding(
-                email, keyword, sort, category, tags, minRate, maxRate, isClosed, isLiked, page, size
+                email, keyword, sort, categories, tags, minRate, maxRate, isClosed, isLiked, page, size
         );
         return response;
     }

@@ -3,7 +3,6 @@ package sg.backend.service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sg.backend.dto.object.FundingDataDto;
-import sg.backend.dto.object.RewardDataDto;
 import sg.backend.dto.object.ShortFundingDataDto;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.funding.*;
+import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
+import sg.backend.dto.response.funding.GetFundingListResponseDto;
+import sg.backend.dto.response.funding.GetFundingStateCountResponseDto;
+import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.FundingLikeRepository;
 import sg.backend.repository.FundingRepository;
@@ -44,7 +45,7 @@ public class FundingService {
     private final JPAQueryFactory queryFactory;
 
     @Transactional(readOnly = true)
-    public ResponseEntity<? super GetFundingListResponseDto> searchFunding(String email, String keyword, String sort, String category, List<String> tags, int minRate, int maxRate, Boolean isClosed, Boolean isLiked, int page, int size) {
+    public ResponseEntity<? super GetFundingListResponseDto> searchFunding(String email, String keyword, String sort, List<String> categories, List<String> tags, int minRate, int maxRate, Boolean isClosed, Boolean isLiked, int page, int size) {
 
         User user = null;
         boolean isAuthenticated = false;
@@ -68,8 +69,8 @@ public class FundingService {
                 filterBuilder.and(funding.current.eq(State.ONGOING));
             }
 
-            if(category != null) {
-                addCategoryFilter(category, funding, filterBuilder);
+            if(categories != null) {
+                addCategoryFilter(categories, funding, filterBuilder);
             }
 
             if(keyword != null) {
@@ -80,15 +81,17 @@ public class FundingService {
                 addTagFilter(tags, funding, filterBuilder);
             }
 
-            filterBuilder.and(
-                    Expressions.numberTemplate(Double.class, "CASE WHEN {1} > 0 THEN (CAST({0} AS double) * 1.0 / {1}) * 100 ELSE 0 END",
-                                    funding.currentAmount, funding.targetAmount)
-                            .goe(minRate)
-            );
+            if(minRate > 0) {
+                filterBuilder.and(
+                        Expressions.numberTemplate(Integer.class, "CASE WHEN {1} > 0 THEN (CAST({0} AS double) * 1.0 / {1}) * 100 ELSE 0 END",
+                                        funding.currentAmount, funding.targetAmount)
+                                .goe(minRate)
+                );
+            }
 
             if(maxRate < 100) {
                 filterBuilder.and(
-                        Expressions.numberTemplate(Double.class, "CASE WHEN {1} > 0 THEN (CAST({0} AS double) * 1.0 / {1}) * 100 ELSE 0 END",
+                        Expressions.numberTemplate(Integer.class, "CASE WHEN {1} > 0 THEN (CAST({0} AS double) * 1.0 / {1}) * 100 ELSE 0 END",
                                         funding.currentAmount, funding.targetAmount)
                                 .loe(maxRate)
                 );
@@ -134,8 +137,14 @@ public class FundingService {
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
-    private void addCategoryFilter(String category, QFunding funding, BooleanBuilder filterBuilder) {
-        filterBuilder.and(funding.category.eq(Category.valueOf(category)));
+    private void addCategoryFilter(List<String> categories, QFunding funding, BooleanBuilder filterBuilder) {
+        if(categories != null & !categories.isEmpty()) {
+            BooleanBuilder categoryFilter = new BooleanBuilder();
+            for(String category : categories) {
+                categoryFilter.or(funding.category.eq(Category.valueOf(category)));
+            }
+            filterBuilder.and(categoryFilter);
+        }
     }
 
     private void addTagFilter(List<String> tags, QFunding funding, BooleanBuilder filterBuilder) {
@@ -182,14 +191,13 @@ public class FundingService {
         }
     }
 
-     public static FundingDataDto convertToDto(Funding funding, FundingLikeRepository fundingLikeRepository, boolean isAuthenticated, User user) {
+    public static FundingDataDto convertToDto(Funding funding, FundingLikeRepository fundingLikeRepository, boolean isAuthenticated, User user) {
         FundingDataDto dto = new FundingDataDto();
+        dto.setProfileImage(funding.getUser().getProfileImage());
         dto.setFundingId(funding.getFunding_id());
         dto.setTitle(funding.getTitle());
         dto.setMainImage(funding.getMainImage());
         dto.setProjectSummary(funding.getProjectSummary());
-        dto.setPrice(funding.getRewardAmount());
-        dto.setCategory(String.valueOf(funding.getCategory()));
 
         List<String> tags = funding.getTagList().stream()
                 .map(Tag::getTag_name)

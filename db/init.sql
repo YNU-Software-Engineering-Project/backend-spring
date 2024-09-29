@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS funding (
     today_visitors INT DEFAULT 0,
     today_amount INT DEFAULT 0,
     current_amount INT DEFAULT 0,
+    is_target_amount_achieved BOOLEAN DEFAULT FALSE,
     reward_amount INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     user_id BIGINT,
