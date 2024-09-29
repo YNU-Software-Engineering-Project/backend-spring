@@ -8,13 +8,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
 import sg.backend.dto.request.wirtefunding.InsertTagRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.GetFundingMainResponseDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.RegisterResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadInfoFileResponseDto;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
@@ -22,12 +23,26 @@ import sg.backend.dto.response.writefunding.project.GetInfoResponseDto;
 import sg.backend.dto.response.writefunding.project.InsertTagResponseDto;
 import sg.backend.service.FundingInfoService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/user/fundings")
 @RequiredArgsConstructor
 public class FundingInfoController {
 
     private final FundingInfoService fundingInfoService;
+
+    //@Valid 에러 메세지 보내주는 함수 -> modify(email), insertTag(tag_size)
+    @ExceptionHandler(MethodArgumentNotValidException.class)  //유효성 검사 처리
+    public ResponseEntity<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errorMessages = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errorMessages);
+    }
 
     @Operation(summary = "메인 사진 보여주기")
     @ApiResponses(value = {
@@ -61,7 +76,7 @@ public class FundingInfoController {
     @Operation(summary = "프로젝트정보 작성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "작성 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = """
                     -funding_id가 존재하지 않는 경우
                     - 이메일 형식이 맞지 않는 경우
@@ -70,11 +85,11 @@ public class FundingInfoController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/info/modify")
-    public ResponseEntity<? super ModifyContentResponseDto> modifyInfo(
+    public ResponseEntity<? super RegisterResponseDto> modifyInfo(
             @RequestBody @Valid FundingInfoRequestDto requestBody,
             @PathVariable("funding_id") Long funding_id
     ) {
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingInfoService.modifyInfo(funding_id, requestBody, false);
+        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.modifyInfo(funding_id, requestBody, null, false);
         return response;
     }
 
@@ -92,7 +107,7 @@ public class FundingInfoController {
     @PostMapping("/{funding_id}/info/tag")
     public ResponseEntity<? super InsertTagResponseDto> insertTag(
             @PathVariable("funding_id") Long funding_id,
-            @RequestBody InsertTagRequestDto requestBody
+            @RequestBody @Valid InsertTagRequestDto requestBody
     ){
         ResponseEntity<? super InsertTagResponseDto> response = fundingInfoService.insertTag(funding_id, requestBody);
         return response;

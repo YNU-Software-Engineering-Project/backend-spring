@@ -19,6 +19,8 @@ public class SelectedReward {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long selRewardId;
 
+    private Integer selQuantity;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

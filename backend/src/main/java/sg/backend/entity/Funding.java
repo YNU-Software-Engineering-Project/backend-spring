@@ -104,12 +104,12 @@ public class Funding {
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Question> questionList;
 
-    public Funding(String organizerName, String organizerEmail, String taxEmail){
+    public Funding(String organizerName, String organizerEmail, String taxEmail, User user){
         this.organizerName = organizerName;
         this.organizerEmail = organizerEmail;
         this.taxEmail = taxEmail;
         this.current = State.DRAFT;
-        //user도 넣어야하는데
+        this.user = user;
     }
 }
 

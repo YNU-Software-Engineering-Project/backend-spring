@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS funder (
 );
 
 CREATE TABLE IF NOT EXISTS selected_reward (
-    selreward_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sel_reward_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     funder_id BIGINT,
     reward_id BIGINT,
     sel_quantity INT DEFAULT 1,
