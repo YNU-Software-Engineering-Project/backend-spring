@@ -3,6 +3,7 @@ package sg.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.response.funding.RewardListResponseDto;
+import sg.backend.entity.Funding;
 import sg.backend.entity.Reward;
 import sg.backend.repository.RewardRepository;
 
@@ -15,8 +16,8 @@ public class RewardListService {
 
     private final RewardRepository rewardRepository;
 
-    public List<RewardListResponseDto> getRewardsByFundingId(Long fundingId) {
-        List<Reward> rewards = rewardRepository.findByFunding_Funding_id(fundingId);
+    public List<RewardListResponseDto> getRewardsByFunding(Funding funding) {
+        List<Reward> rewards = rewardRepository.findAllByFunding(funding);
         return rewards.stream()
                 .map(RewardListResponseDto::new)
                 .collect(Collectors.toList());
