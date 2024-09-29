@@ -94,7 +94,7 @@ public class UserService {
         notification.setStartMessage();
         notificationRepository.save(notification);
 
-        return SignUpResponseDto.success(accessToken);
+        return SignUpResponseDto.success(accessToken, role);
     }
   
     public ResponseEntity<?> login(LoginRequestDto loginRequestDto){
@@ -108,8 +108,10 @@ public class UserService {
             return LoginResponseDto.failure();
         }
 
+        Role role = user.getRole();
+
         String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
-        return LoginResponseDto.success(accessToken);
+        return LoginResponseDto.success(accessToken, role);
     }
 
     public User findById(Long id){
