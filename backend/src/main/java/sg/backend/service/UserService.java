@@ -66,7 +66,7 @@ public class UserService {
     @Value("${profile.url}")
     private String profileFileUrl;
 
-    @Value("${invite.adminCode}")
+    @Value("${spring.invite.adminCode}")
     private String adminInviteCode;
 
     public ResponseEntity<ResponseDto> signup(SignUpRequestDto signupRequestDto) {
