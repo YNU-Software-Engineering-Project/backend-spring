@@ -61,8 +61,7 @@ public class FundingDetailsController {
     }
 
     @Operation(
-            summary = "펀딩 리워드 정보 조회",
-            security = @SecurityRequirement(name = "Bearer 토큰 값")
+            summary = "펀딩 리워드 정보 조회"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "리워드 정보 조회 성공",
