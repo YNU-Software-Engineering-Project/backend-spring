@@ -14,13 +14,12 @@ import java.util.stream.Collectors;
 @Setter
 public class FundingSortResponseDto {
     private Long fundingId;
+    private String profileImage;
     private String title;
-    private Integer targetAmount;
-    private Integer currentAmount;
-    private Integer totalLikes;
+    private String mainImage;
+    private int achievementRate;
     private LocalDateTime createdAt;
     private State current;
-    private Integer rewardAmount;
     private String details;
     private List<String> tags;
     private boolean likedByCurrentUser;
@@ -28,17 +27,22 @@ public class FundingSortResponseDto {
     public FundingSortResponseDto(Funding funding, boolean likedByCurrentUser){
         this.fundingId = funding.getFunding_id();
         this.title = funding.getTitle();
-        this.targetAmount = funding.getTargetAmount();
-        this.currentAmount = funding.getCurrentAmount();
-        this.totalLikes = funding.getTotalLikes();
+        this. profileImage = funding.getUser().getProfileImage();
+        this.mainImage = funding.getMainImage();
+        this.achievementRate = getAchievementRate(funding);
         this.createdAt = funding.getCreatedAt();
         this.current = funding.getCurrent();
-        this.rewardAmount = funding.getRewardAmount();
         this.details = funding.getProjectSummary();
         List<String> tags = funding.getTagList().stream()
                 .map(Tag::getTag_name)
                 .collect(Collectors.toList());
         this.tags = tags;
         this.likedByCurrentUser = likedByCurrentUser;
+    }
+
+    private int getAchievementRate(Funding funding) {
+        int achievementRate = funding.getCurrentAmount() == 0 ? 0 :
+                (int) (((double) funding.getCurrentAmount() / funding.getTargetAmount()) * 100);
+        return achievementRate;
     }
 }
