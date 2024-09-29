@@ -10,6 +10,7 @@ import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
 import sg.backend.dto.request.wirtefunding.InsertTagRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.GetFundingMainResponseDto;
+import sg.backend.dto.response.writefunding.RegisterResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadInfoFileResponseDto;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
@@ -49,6 +50,25 @@ public class FundingInfoService {
     String amount;
 
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    @Transactional
+    public ResponseEntity<? super RegisterResponseDto> register(String email){
+        try{
+            Optional<User> option = userRepository.findByEmail(email);
+            if(option.isEmpty()) {
+                return ResponseDto.noExistUser();
+            }
+            User user = option.get();
+
+            String school_email = user.getSchoolEmail();
+            if(school_email == null || school_email.isEmpty()){
+                return RegisterResponseDto.not_schoolemail();
+            }
+        } catch(Exception e){
+            return ResponseDto.databaseError();
+        }
+        return ResponseDto.success();
+    }
 
 
     @Transactional   //펀딩 제일 처음 들어갔을때 나오는 이미지
@@ -177,7 +197,7 @@ public class FundingInfoService {
 
 
     @Transactional  //펀딩 정보 수정 + 펀딩 등록하기
-    public ResponseEntity<ResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, String email, Boolean type) {
+    public ResponseEntity<? super RegisterResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, String email, Boolean type) {
         try {
             category = dto.getCategory(); //맞는 카테고리 전달되도록하기
             Category cate;
@@ -238,6 +258,9 @@ public class FundingInfoService {
                 new_funding.setTargetAmount(target_amount);
 
                 fundingRepository.save(new_funding);
+                Long new_funding_id = new_funding.getFunding_id();
+
+                return RegisterResponseDto.success(new_funding_id);
             } else{
                 Optional <Funding> option = fundingRepository.findById(funding_id);
                 if(option.isEmpty()) {
@@ -252,12 +275,13 @@ public class FundingInfoService {
                 funding.setStartDate(start_date);
                 funding.setEndDate(end_date);
                 funding.setTargetAmount(target_amount);
+
+                return ResponseDto.success();
             }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ResponseDto.success();
     }
 
 

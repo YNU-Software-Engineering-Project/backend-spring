@@ -18,6 +18,7 @@ public interface ResponseMessage {
     String NOT_EXISTED_NOTIFICATION = "This notification does not exist.";
     String PASSWORD_SAME_AS_CURRENT = "New password cannot be the same as the current password.";
     String EMAIL_TOKEN_NOT_FOUND = "Email token not found.";
+    String NOT_EXISTED_SCHOOLEMAIL = "School email is not existed";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "Login information mismatch.";

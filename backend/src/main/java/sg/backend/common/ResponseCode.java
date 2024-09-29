@@ -19,6 +19,7 @@ public interface ResponseCode {
     String NOT_EXISTED_NOTIFICATION = "NN";
     String PASSWORD_SAME_AS_CURRENT = "PSC";
     String EMAIL_TOKEN_NOT_FOUND = "ETNF";
+    String NOT_EXISTED_SCHOOLEMAIL = "NS";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";

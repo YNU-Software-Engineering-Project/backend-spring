@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.request.wirtefunding.MakeRewardRequestDto;
 import sg.backend.dto.request.wirtefunding.PolicyRefundRequestDto;
@@ -22,6 +23,9 @@ import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
 import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
 import sg.backend.service.FundingRewardService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/user/fundings")
 @RequiredArgsConstructor
@@ -29,6 +33,16 @@ public class FundingRewardController {
 
     private final FundingRewardService fundingRewardService;
 
+    //@Valid 글자 수 에러 메세지 -> insertReward, refundpolicy, rewardinfo
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errorMessages = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errorMessages);
+    }
 
     @Operation(summary = "리워드설계 페이지 불러오기")
     @ApiResponses(value = {
