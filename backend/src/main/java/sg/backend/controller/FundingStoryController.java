@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.wirtefunding.FundingStoryRequestDto;
@@ -18,6 +19,9 @@ import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadImageResponseDto;
 import sg.backend.service.FundingStoryService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user/fundings")
@@ -53,6 +57,15 @@ public class FundingStoryController {
     ){
         ResponseEntity<? super ModifyContentResponseDto> response = fundingStoryService.modify_project(funding_id, requestBody);
         return response;
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class) //유효성 검사 - title(20자), summary(100자)
+    public ResponseEntity<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errorMessages = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errorMessages);
     }
 
     @Operation(summary = "소개 사진 등록")

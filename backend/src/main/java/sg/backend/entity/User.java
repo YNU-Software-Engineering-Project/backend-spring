@@ -59,11 +59,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notificationList;
 
-    public User(String email, String password, String phoneNumber){
+    public User(String email, String password, String phoneNumber, Role role){
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.role = Role.USER;
+        this.role = role;
         this.schoolEmailVerified = false;
         this.createdAt = LocalDateTime.now();
     }

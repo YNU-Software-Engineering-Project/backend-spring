@@ -1,9 +1,11 @@
 package sg.backend.dto.request.wirtefunding;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
@@ -13,10 +15,10 @@ public class FundingInfoRequestDto {
     private String category;
     private String organizer_name;
 
-    @Email
+    @Email(message = "대표자 이메일 형식이 맞지 않습니다.")
     private String organizer_email;
 
-    @Email
+    @Email(message = "세금계산서 발행 이메일 형식이 맞지 않습니다.")
     private String tax_email;
 
     private String start_date;

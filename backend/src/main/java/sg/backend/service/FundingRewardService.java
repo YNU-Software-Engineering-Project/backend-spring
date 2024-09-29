@@ -10,13 +10,14 @@ import sg.backend.dto.request.wirtefunding.PolicyRewardRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
 import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
 import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
-import sg.backend.entity.Funding;
-import sg.backend.entity.Reward;
-import sg.backend.entity.State;
+import sg.backend.entity.*;
+import sg.backend.repository.DocumentRepository;
 import sg.backend.repository.FundingRepository;
+import sg.backend.repository.IntroImageRepository;
 import sg.backend.repository.RewardRepository;
 
 import java.util.ArrayList;
@@ -29,7 +30,10 @@ public class FundingRewardService {
 
     private final FundingRepository fundingRepository;
     private final RewardRepository rewardRepository;
+    private final DocumentRepository documentRepository;
+    private final IntroImageRepository introImageRepository;
 
+    private final FundingFileService fileService;
     private Optional<Funding> option;
 
     @Transactional
@@ -192,19 +196,55 @@ public class FundingRewardService {
     }
 
     @Transactional
-    public ResponseEntity<? super ModifyContentResponseDto> giveup_funding(Long funding_id){
+    public ResponseEntity<? super DeleteFileResponseDto> giveup_funding(Long funding_id){
         try{
             option = fundingRepository.findById(funding_id);
             if(option.isEmpty()) {
-                return ModifyContentResponseDto.not_existed_post();
+                return DeleteFileResponseDto.not_existed_post();
             }
             Funding funding = option.get();
+            //id_card 삭제
+            if(funding.getOrganizerIdCard() == null || funding.getOrganizerIdCard().isEmpty()){
+                return DeleteFileResponseDto.not_existed_file();
+            }
+            if(!fileService.file_delete(funding.getOrganizerIdCard())){
+                return ResponseDto.databaseError();
+            }
+            //main image 삭제
+            if(funding.getMainImage() == null || funding.getMainImage().isEmpty()){
+                return DeleteFileResponseDto.not_existed_file();
+            }
+            if(!fileService.file_delete(funding.getMainImage())){
+                return ResponseDto.databaseError();
+            }
+
+            // 파일 다 삭제(documentlist, introimagelist, storyfilelist)
+            List<Document> documentList = documentRepository.findAllByFunding(funding);
+            for(Document docu : documentList){
+                if(docu == null || docu.getFpath() == null || docu.getFpath().isEmpty()){
+                    return DeleteFileResponseDto.not_existed_file();
+                }
+                if(!fileService.file_delete(docu.getFpath())){
+                    return ResponseDto.databaseError();
+                }
+            }
+            List<IntroImage> imageList = introImageRepository.findAllByFunding(funding);
+            for(IntroImage image : imageList){
+                if(image == null || image.getFpath() == null || image.getFpath().isEmpty()){
+                    return DeleteFileResponseDto.not_existed_file();
+                }
+                if(!fileService.file_delete(image.getFpath())){
+                    return ResponseDto.databaseError();
+                }
+            }
+            //storyfileList
+
 
             fundingRepository.delete(funding);
         } catch(Exception e){
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ModifyContentResponseDto.success();
+        return DeleteFileResponseDto.success();
     }
 }
