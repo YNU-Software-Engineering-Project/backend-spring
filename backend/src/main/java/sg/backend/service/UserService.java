@@ -66,7 +66,7 @@ public class UserService {
     @Value("${profile.url}")
     private String profileFileUrl;
 
-    @Value("${invite.adminCode}")
+    @Value("${spring.invite.adminCode}")
     private String adminInviteCode;
 
     public ResponseEntity<ResponseDto> signup(SignUpRequestDto signupRequestDto) {
@@ -371,6 +371,8 @@ public class UserService {
 
             if(!admin.getRole().equals(Role.ADMIN))
                 return ResponseDto.noPermission();
+
+            filterBuilder.and(user.role.ne(Role.ADMIN));
 
             if(id != null) {
                 StringTemplate userId = Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email);

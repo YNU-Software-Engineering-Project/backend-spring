@@ -17,6 +17,8 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
+  invite:
+    adminCode: XJ7dH9kL3tZ2
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -42,8 +44,7 @@ jwt:
   issuer: "SpeedSpark"
   secretKey: ${SECRETKEY}
 
-profile.path: /app/data/profile_images/
-profile.url: http://localhost:8080/file/
+profile:
+  path: /app/data/profile_images/
+  url: http://localhost:8080/file/
 
-invite:
-  adminCode: ${ADMIN_INVITE_CODE}

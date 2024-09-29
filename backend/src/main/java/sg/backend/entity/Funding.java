@@ -80,6 +80,8 @@ public class Funding {
 
     private Integer rewardAmount;
 
+    private boolean isTargetAmountAchieved;
+
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY) //not blank
