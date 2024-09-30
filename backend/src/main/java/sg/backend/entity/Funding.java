@@ -112,6 +112,13 @@ public class Funding {
         this.taxEmail = taxEmail;
         this.current = State.DRAFT;
         this.user = user;
+
+        this.totalLikes = 0;
+        this.todayLikes=0;
+        this.totalVisitors = 0;
+        this.todayVisitors = 0;
+        this.todayAmount = 0;
+        this.currentAmount = 0;
     }
 }
 

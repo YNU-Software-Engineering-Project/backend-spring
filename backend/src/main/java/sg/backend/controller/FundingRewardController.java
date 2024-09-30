@@ -140,15 +140,15 @@ public class FundingRewardController {
     @Operation(summary = "게시물 제출하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게시물 상태변화 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "제출할 funding_id가 존재하지 않을 때",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/submit")
-    public ResponseEntity<? super ModifyContentResponseDto> submit_funding(
+    public ResponseEntity<ResponseDto> submit_funding(
             @PathVariable Long funding_id
     ){
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingRewardService.submit_funding(funding_id);
+        ResponseEntity<ResponseDto> response = fundingRewardService.submit_funding(funding_id);
         return response;
     }
 

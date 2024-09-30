@@ -177,11 +177,11 @@ public class FundingRewardService {
     }
 
     @Transactional
-    public ResponseEntity<? super ModifyContentResponseDto> submit_funding(Long funding_id){
+    public ResponseEntity<ResponseDto> submit_funding(Long funding_id){
         try{
             option = fundingRepository.findById(funding_id);
             if(option.isEmpty()) {
-                return ModifyContentResponseDto.not_existed_post();
+                return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
 
@@ -192,7 +192,7 @@ public class FundingRewardService {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ModifyContentResponseDto.success();
+        return ResponseDto.success();
     }
 
     @Transactional
@@ -203,19 +203,18 @@ public class FundingRewardService {
                 return DeleteFileResponseDto.not_existed_post();
             }
             Funding funding = option.get();
-            //id_card 삭제
-            if(funding.getOrganizerIdCard() == null || funding.getOrganizerIdCard().isEmpty()){
-                return DeleteFileResponseDto.not_existed_file();
-            }
-            if(!fileService.file_delete(funding.getOrganizerIdCard())){
-                return ResponseDto.databaseError();
+
+            //id_card가 안 비워져 있으면 삭제
+            if(funding.getOrganizerIdCard() != null){
+                if(!fileService.file_delete(funding.getOrganizerIdCard())){
+                    return ResponseDto.databaseError();
+                }
             }
             //main image 삭제
-            if(funding.getMainImage() == null || funding.getMainImage().isEmpty()){
-                return DeleteFileResponseDto.not_existed_file();
-            }
-            if(!fileService.file_delete(funding.getMainImage())){
-                return ResponseDto.databaseError();
+            if(funding.getMainImage() != null){
+                if(!fileService.file_delete(funding.getMainImage())){
+                    return ResponseDto.databaseError();
+                }
             }
 
             // 파일 다 삭제(documentlist, introimagelist, storyfilelist)
