@@ -63,7 +63,7 @@ public class FundingController {
             @Parameter(description = "좋아요한 펀딩 여부 (true: 좋아요한 펀딩도 포함)")
             @RequestParam(required = false, defaultValue = "false") Boolean isLiked,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "6") int size
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication != null ? authentication.getName() : null;

@@ -127,7 +127,7 @@ public class UserController {
     public ResponseEntity<GetFundingListResponseDto> getWishList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
         return userService.getWishList(email, page, size);
     }
@@ -146,7 +146,7 @@ public class UserController {
     public ResponseEntity<GetFundingListResponseDto> getPledgeList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
         return userService.getPledgeList(email, page, size);
     }
@@ -165,7 +165,7 @@ public class UserController {
     public ResponseEntity<GetMyFundingListResponseDto> getMyFundingList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
         return userService.getMyFundingList(email, page, size);
     }
