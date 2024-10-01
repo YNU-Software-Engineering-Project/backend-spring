@@ -1,11 +1,13 @@
 package sg.backend.dto.object;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import sg.backend.entity.User;
 
+@Schema
 @Getter
-@Setter
+@Builder
 public class UserProfileDataDto {
 
     private String profileImage;
@@ -25,4 +27,21 @@ public class UserProfileDataDto {
 
     @Schema(description = "상세 주소")
     private String detailAddress;
+
+    public static UserProfileDataDto of(User user) {
+        String email = user.getEmail();
+        int index = email.indexOf("@");
+
+        return UserProfileDataDto.builder()
+                .profileImage(user.getProfileImage())
+                .nickname(user.getNickname())
+                .id(email.substring(0, index))
+                .phoneNumber(user.getPhoneNumber())
+                .schoolEmail(user.getSchoolEmail())
+                .postalCode(user.getPostalCode())
+                .roadAddress(user.getRoadAddress())
+                .landLotAddress(user.getLandLotAddress())
+                .detailAddress(user.getDetailAddress())
+                .build();
+    }
 }

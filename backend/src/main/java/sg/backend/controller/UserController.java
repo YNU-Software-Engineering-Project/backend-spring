@@ -41,11 +41,10 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("")
-    public ResponseEntity<? super GetUserProfileResponseDto> getUserProfile(
+    public ResponseEntity<GetUserProfileResponseDto> getUserProfile(
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super GetUserProfileResponseDto> response = userService.getUserProfile(email);
-        return response;
+        return userService.getUserProfile(email);
     }
 
     @Operation(
@@ -59,12 +58,11 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/modify-phone-number")
-    public ResponseEntity<? super ResponseDto> modifyPhoneNumber(
+    public ResponseEntity<ResponseDto> modifyPhoneNumber(
             @RequestBody @Valid PatchPhoneNumberRequestDto requestBody,
             @AuthenticationPrincipal(expression = "username") String email
     ){
-        ResponseEntity<? super ResponseDto> response = userService.modifyPhoneNumber(requestBody, email);
-        return response;
+        return userService.modifyPhoneNumber(requestBody, email);
     }
 
     @Operation(
@@ -82,12 +80,11 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @PostMapping("/email-verification")
-    public ResponseEntity<? super ResponseDto> sendEmailToken(
+    public ResponseEntity<ResponseDto> sendEmailToken(
             @RequestBody @Valid EmailSendTokenRequestDto requestBody,
             @AuthenticationPrincipal(expression = "username") String email
             ) {
-        ResponseEntity<? super ResponseDto> response = emailService.createEmailToken(requestBody, email);
-        return response;
+        return emailService.createEmailToken(requestBody, email);
     }
 
     @Operation(
@@ -102,19 +99,18 @@ public class UserController {
                     - 존재하지 않는 사용자
                     - 중복된 닉네임
                     - 비밀번호 불일치
-                    - 새 비밀번호가 현재 비밀번호와 같음 
+                    - 새 비밀번호가 현재 비밀번호와 같음
                     - 주소란을 일부만 채운 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/modify-profile")
-    public ResponseEntity<? super ResponseDto> modifyProfile(
+    public ResponseEntity<ResponseDto> modifyProfile(
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") @Valid PatchUserProfileRequestDto userInfo,
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super ResponseDto> response = userService.modifyProfile(profileImage, userInfo, email);
-        return response;
+        return userService.modifyProfile(profileImage, userInfo, email);
     }
 
     @Operation(
@@ -128,13 +124,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/wishlist")
-    public ResponseEntity<? super GetFundingListResponseDto> getWishList(
+    public ResponseEntity<GetFundingListResponseDto> getWishList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetFundingListResponseDto> response = userService.getWishList(email, page, size);
-        return response;
+        return userService.getWishList(email, page, size);
     }
 
     @Operation(
@@ -148,14 +143,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/pledges")
-    public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(
+    public ResponseEntity<GetFundingListResponseDto> getPledgeList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetFundingListResponseDto> response = userService.getPledgeList(email, page, size);
-
-        return response;
+        return userService.getPledgeList(email, page, size);
     }
 
     @Operation(
@@ -169,13 +162,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/fundings")
-    public ResponseEntity<? super GetMyFundingListResponseDto> getMyFundingList(
+    public ResponseEntity<GetMyFundingListResponseDto> getMyFundingList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetMyFundingListResponseDto> response = userService.getMyFundingList(email, page, size);
-        return response;
+        return userService.getMyFundingList(email, page, size);
     }
 
 }

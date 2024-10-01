@@ -11,18 +11,15 @@ import sg.backend.dto.response.ResponseDto;
 @Getter
 public class GetFundingStateCountResponseDto extends ResponseDto {
 
-    private FundingStateDto data;
+    private final FundingStateDto data;
 
-    private GetFundingStateCountResponseDto(long review, long reviewCompleted, long onGoing) {
+    private GetFundingStateCountResponseDto(FundingStateDto data) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-        this.data = new FundingStateDto();
-        this.data.setReview(review);
-        this.data.setReviewCompleted(reviewCompleted);
-        this.data.setOnGoing(onGoing);
+        this.data = data;
     }
 
-    public static ResponseEntity<GetFundingStateCountResponseDto> success(long review, long reviewCompleted, long onGoing) {
-        GetFundingStateCountResponseDto result = new GetFundingStateCountResponseDto(review, reviewCompleted, onGoing);
+    public static ResponseEntity<GetFundingStateCountResponseDto> success(FundingStateDto data) {
+        GetFundingStateCountResponseDto result = new GetFundingStateCountResponseDto(data);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

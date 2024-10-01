@@ -15,24 +15,23 @@ import java.util.List;
 @Getter
 public class GetUserListResponseDto extends ResponseDto {
 
-    private List<UserDataDto> data;
-    private int page;
-    private int size;
-    private int totalPages;
-    private long totalElements;
+    private final List<UserDataDto> data;
+    private final int page;
+    private final int size;
+    private final int totalPages;
+    private final long totalElements;
 
     private GetUserListResponseDto(Page<User> userList, List<UserDataDto> data, String sort) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         int page = userList.getNumber();
         int size = userList.getSize();
-        int index = 1;
-        for(UserDataDto dto : data) {
-            if(sort.equals("noDesc"))
-                dto.setNo((page * size) + (data.size() - index + 1));
-            else
-                dto.setNo((page * size) + index);
-            index++;
+
+        for(int i=1; i<=data.size(); i++) {
+            UserDataDto dto = data.get(i-1);
+            int no = sort.equals("noDesc") ? (page * size) + (data.size() - i + 1) : (page * size) + i;
+            dto.setNo(no);
         }
+
         this.data = data;
         this.page = page;
         this.size = size;

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +37,7 @@ public class FundingController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("")
-    public ResponseEntity<? super GetFundingListResponseDto> searchFunding(
+    public ResponseEntity<GetFundingListResponseDto> searchFunding(
             @Parameter(description = "검색어") @RequestParam(required = false) String keyword,
             @Parameter(description = """
                     latest: 최신순, oldest: 오래된 순,
@@ -49,11 +48,11 @@ public class FundingController {
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
             @Parameter(description = """
-                            A0010 -> 캐릭터·굿즈, A0020  -> 홈·리빙, A0030 -> 사진, 
+                            A0010 -> 캐릭터·굿즈, A0020  -> 홈·리빙, A0030 -> 사진,
                             A0040 -> 게임, A0050 -> 키즈, A0060 -> 도서·전자책,
-                            A0070 -> 여행, A0080 -> 만화·웹툰, A0090 -> 스포츠·아웃도어, 
-                            A0100 -> 테크·가전, A0110 -> 자동차, A0120 -> 패션, 
-                            A0130 -> 아트, A0140 -> 소셜, A0150 -> 영화·음악, 
+                            A0070 -> 여행, A0080 -> 만화·웹툰, A0090 -> 스포츠·아웃도어,
+                            A0100 -> 테크·가전, A0110 -> 자동차, A0120 -> 패션,
+                            A0130 -> 아트, A0140 -> 소셜, A0150 -> 영화·음악,
                             A0160 -> 반려동물, A0170 -> 디자인
                     """, example = "A0010,A0020") @RequestParam(required = false) List<String> categories,
             @Parameter(description = "태그", example = "art,design") @RequestParam(required = false) List<String> tags,
@@ -69,9 +68,6 @@ public class FundingController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication != null ? authentication.getName() : null;
 
-        ResponseEntity<? super GetFundingListResponseDto> response = fundingService.searchFunding(
-                email, keyword, sort, categories, tags, minRate, maxRate, isClosed, isLiked, page, size
-        );
-        return response;
+        return fundingService.searchFunding(email, keyword, sort, categories, tags, minRate, maxRate, isClosed, isLiked, page, size);
     }
 }

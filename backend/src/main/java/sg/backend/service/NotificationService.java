@@ -6,14 +6,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import sg.backend.common.ResponseCode;
+import sg.backend.common.ResponseMessage;
+import sg.backend.dto.object.NotificationDataDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.notification.GetNotificationsResponseDto;
 import sg.backend.entity.Notification;
 import sg.backend.entity.User;
+import sg.backend.exception.CustomException;
 import sg.backend.repository.NotificationRepository;
 import sg.backend.repository.UserRepository;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static sg.backend.service.UserService.findUserByEmail;
 
 @Service
 @RequiredArgsConstructor
@@ -22,65 +29,36 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
-    public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(String email, int page, int size) {
+    public ResponseEntity<GetNotificationsResponseDto> getNotifications(String email, int page, int size) {
 
-        User user;
-        Page<Notification> notificationList;
+        User user = findUserByEmail(email, userRepository);
 
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
-            user = optionalUser.get();
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Notification> notificationList = notificationRepository.findByUser(user, pageRequest);
 
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            notificationList = notificationRepository.findByUser(user, pageRequest);
+        List<NotificationDataDto> data = notificationList.stream()
+                .map(NotificationDataDto::of)
+                .collect(Collectors.toList());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return GetNotificationsResponseDto.success(notificationList);
+        return GetNotificationsResponseDto.success(notificationList, data);
     }
 
-    public ResponseEntity<? super ResponseDto> deleteNotifications(String email) {
+    public ResponseEntity<ResponseDto> deleteNotifications(String email) {
 
-        User user;
-
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
-            user = optionalUser.get();
-
-            notificationRepository.deleteByUser(user);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
+        User user = findUserByEmail(email, userRepository);
+        notificationRepository.deleteByUser(user);
 
         return ResponseDto.success();
     }
 
-    public ResponseEntity<? super ResponseDto> deleteNotification(String email, Long notificationId) {
+    public ResponseEntity<ResponseDto> deleteNotification(String email, Long notificationId) {
 
-        User user;
+        findUserByEmail(email, userRepository);
 
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
-            user = optionalUser.get();
+        notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new CustomException(ResponseCode.NOT_EXISTED_NOTIFICATION, ResponseMessage.NOT_EXISTED_NOTIFICATION));
 
-            Optional<Notification> notification = notificationRepository.findById(notificationId);
-            if(!notification.isPresent())
-                return ResponseDto.noExistNotification();
-
-            notificationRepository.deleteById(notificationId);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
+        notificationRepository.deleteById(notificationId);
 
         return ResponseDto.success();
     }

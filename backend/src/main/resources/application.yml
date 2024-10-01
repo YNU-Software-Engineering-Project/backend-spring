@@ -18,7 +18,7 @@ spring:
           timeout: 5000
           writetimeout: 5000
   invite:
-    adminCode: XJ7dH9kL3tZ2
+    adminCode: ${ADMIN_INVITE_CODE}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

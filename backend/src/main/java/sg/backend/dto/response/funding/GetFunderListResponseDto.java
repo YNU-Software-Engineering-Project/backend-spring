@@ -15,11 +15,11 @@ import java.util.List;
 @Getter
 public class GetFunderListResponseDto extends ResponseDto {
 
-    private List<FunderDataDto> data;
-    private int page;
-    private int size;
-    private int totalPages;
-    private long totalElements;
+    private final List<FunderDataDto> data;
+    private final int page;
+    private final int size;
+    private final int totalPages;
+    private final long totalElements;
 
     private GetFunderListResponseDto(Page<Funder> funderList, List<FunderDataDto> data) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);

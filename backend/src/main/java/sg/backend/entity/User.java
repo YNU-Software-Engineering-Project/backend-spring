@@ -67,8 +67,8 @@ public class User {
         this.schoolEmailVerified = false;
         this.createdAt = LocalDateTime.now();
     }
-  
-    public void patchUserProfile(PatchUserProfileRequestDto dto, String imageUrl) {
+
+    public void toEntity(PatchUserProfileRequestDto dto, String imageUrl) {
         this.profileImage = imageUrl;
         this.nickname = dto.getNickname();
         this.password = dto.getPassword();
@@ -93,4 +93,8 @@ public class User {
     public void setPassword(String newPassword){ this.password = newPassword; }
 
     public void setRole(Role role) { this.role = role; }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }
