@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
-import sg.backend.dto.object.FundingDataDto;
-import sg.backend.dto.object.ShortFundingDataDto;
-import sg.backend.dto.object.UserDataDto;
-import sg.backend.dto.object.UserProfileDataDto;
+import sg.backend.dto.object.*;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
@@ -28,6 +25,7 @@ import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
+import sg.backend.dto.response.user.GetUserInfoResponseDto;
 import sg.backend.dto.response.user.GetUserListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
 import sg.backend.entity.*;
@@ -294,6 +292,17 @@ public class UserService {
             case "latest" -> user.createdAt.desc();
             default -> user.createdAt.asc();
         };
+    }
+
+    public ResponseEntity<GetUserInfoResponseDto> getUserInfo(String email, Long userId) {
+
+        User admin = findUserByEmail(email, userRepository);
+        checkAdminAccess(admin);
+        User user = findUserById(userId, userRepository);
+
+        UserInfoDataDto data = UserInfoDataDto.of(user);
+
+        return GetUserInfoResponseDto.success(data);
     }
 
     public ResponseEntity<ResponseDto> changeUserState(String email, Long userId, String role) {

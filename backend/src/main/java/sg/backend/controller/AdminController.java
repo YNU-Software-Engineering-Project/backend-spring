@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
 import sg.backend.dto.response.funding.GetFundingStateCountResponseDto;
+import sg.backend.dto.response.user.GetUserInfoResponseDto;
 import sg.backend.dto.response.user.GetUserListResponseDto;
 import sg.backend.service.FundingService;
 import sg.backend.service.UserService;
@@ -113,6 +114,24 @@ public class AdminController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         return userService.getUserList(email, sort, id, page, size);
+    }
+
+    @Operation(
+            summary = "특정 회원 조회",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "특정 회원 조회 성공",
+                    content = @Content(schema = @Schema(implementation = GetUserInfoResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<GetUserInfoResponseDto> getUserList(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long userId
+    ) {
+        return userService.getUserInfo(email, userId);
     }
 
     @Operation(
