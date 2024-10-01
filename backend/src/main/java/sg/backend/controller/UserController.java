@@ -100,7 +100,7 @@ public class UserController {
                     - 중복된 닉네임
                     - 비밀번호 불일치
                     - 새 비밀번호가 현재 비밀번호와 같음
-                    - 주소란을 일부만 채운 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
+                    - 주소란을 일부만 채운 경우 (주소란을 모두 비워두거나, 도로명 주소와 지번 주소 중 하나만 제외하고 모두 입력한 경우는 허용된다)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
