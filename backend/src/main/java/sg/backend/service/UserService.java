@@ -273,8 +273,10 @@ public class UserService {
         return switch (sort) {
             case "noAsc" -> user.userId.asc();
             case "noDesc" -> user.userId.desc();
-            case "idAsc" -> user.email.asc();
-            case "isDesc" -> user.email.desc();
+            case "idAsc" ->
+                    Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).asc();
+            case "isDesc" ->
+                    Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).desc();
             case "nicknameAsc" -> user.nickname.asc();
             case "nicknameDesc" -> user.nickname.desc();
             case "emailAsc" -> user.schoolEmail.asc();
