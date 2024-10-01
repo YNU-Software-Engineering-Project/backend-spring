@@ -21,6 +21,11 @@ public interface ResponseCode {
     String EMAIL_TOKEN_NOT_FOUND = "ETNF";
     String NOT_EXISTED_SCHOOLEMAIL = "NS";
 
+    String NOT_EXISTED_INFO = "NEI";
+    String NOT_EXISTED_STORY = "NES";
+    String NOT_EXISTED_REWARD = "NER";
+    String NOT_EXISTED_POLICY = "NEP";
+
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";
     String AUTHORIZATION_FAIL = "AF";

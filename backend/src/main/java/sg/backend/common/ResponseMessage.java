@@ -20,6 +20,11 @@ public interface ResponseMessage {
     String EMAIL_TOKEN_NOT_FOUND = "Email token not found.";
     String NOT_EXISTED_SCHOOLEMAIL = "School email is not existed";
 
+    String NOT_EXISTED_INFO = "Please add funding information.";
+    String NOT_EXISTED_STORY = "Please add funding story.";
+    String NOT_EXISTED_REWARD = "Please add funding reward.";
+    String NOT_EXISTED_POLICY = "Please add funding policy.";
+
     // HTTP Status 401
     String SIGN_IN_FAIL = "Login information mismatch.";
     String AUTHORIZATION_FAIL = "Authorization Failed.";
