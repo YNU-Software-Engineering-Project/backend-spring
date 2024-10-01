@@ -112,9 +112,11 @@ public class UserService {
 
         String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
 
-        Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
-        notification.setStartMessage();
-        notificationRepository.save(notification);
+        if(user.getRole() != Role.ADMIN) {
+            Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
+            notification.setStartMessage();
+            notificationRepository.save(notification);
+        }
 
         return SignUpResponseDto.success(accessToken, role);
     }

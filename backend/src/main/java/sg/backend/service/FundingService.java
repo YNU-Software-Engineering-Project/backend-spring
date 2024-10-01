@@ -134,8 +134,11 @@ public class FundingService {
 
         filterBuilder.and(funding.current.eq(State.valueOf(state)));
 
+        OrderSpecifier<?> orderByCreatedAt = funding.createdAt.desc();
+
         List<Funding> results = queryFactory.selectFrom(funding)
                 .where(filterBuilder)
+                .orderBy(orderByCreatedAt)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

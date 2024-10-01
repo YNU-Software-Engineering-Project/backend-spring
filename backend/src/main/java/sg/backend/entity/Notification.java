@@ -95,4 +95,9 @@ public class Notification {
             setMessage("회원님의 계정이 정지되었습니다. 자세한 내용은 관리자에게 문의해 주세요.");
         }
     }
+
+    // 관리자에게 심사 요청 알림 메시지
+    public void setFundingReviewRequestMessage() {
+        setMessage("새로운 프로젝트가 등록되었습니다. 검토하신 후 처리해 주세요.");
+    }
 }

@@ -15,14 +15,15 @@ import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
 import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
 import sg.backend.entity.*;
-import sg.backend.repository.DocumentRepository;
-import sg.backend.repository.FundingRepository;
-import sg.backend.repository.IntroImageRepository;
-import sg.backend.repository.RewardRepository;
+import sg.backend.repository.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static sg.backend.service.UserService.formatter;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,8 @@ public class FundingRewardService {
     private final RewardRepository rewardRepository;
     private final DocumentRepository documentRepository;
     private final IntroImageRepository introImageRepository;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     private final FundingFileService fileService;
     private Optional<Funding> option;
@@ -235,6 +238,7 @@ public class FundingRewardService {
 
             State current = State.REVIEW;
             funding.setCurrent(current);
+            sendFundingReviewRequestMessage();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -293,5 +297,20 @@ public class FundingRewardService {
             return ResponseDto.databaseError();
         }
         return DeleteFileResponseDto.success();
+    }
+
+    private void sendFundingReviewRequestMessage() {
+        List<User> adminUsers = userRepository.findByRole(Role.ADMIN);
+        String now = LocalDateTime.now().format(formatter);
+
+        List<Notification> notifications = adminUsers.stream()
+                .map(admin -> {
+                    Notification notification = new Notification(admin, now);
+                    notification.setFundingReviewRequestMessage();
+                    return notification;
+                })
+                .collect(Collectors.toList());
+
+        notificationRepository.saveAll(notifications);
     }
 }
