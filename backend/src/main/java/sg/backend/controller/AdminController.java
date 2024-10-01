@@ -37,11 +37,10 @@ public class AdminController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/fundings/state")
-    public ResponseEntity<? super GetFundingStateCountResponseDto> getFundingStateCount(
+    public ResponseEntity<GetFundingStateCountResponseDto> getFundingStateCount(
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super GetFundingStateCountResponseDto> response = fundingService.getFundingStateCount(email);
-        return response;
+        return fundingService.getFundingStateCount(email);
     }
 
     @Operation(
@@ -55,15 +54,14 @@ public class AdminController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/fundings")
-    public ResponseEntity<? super GetFundingByStateResponseDto> getFundingByState(
+    public ResponseEntity<GetFundingByStateResponseDto> getFundingByState(
             @AuthenticationPrincipal(expression = "username") String email,
             @Parameter(description = "검색어") @RequestParam(required = false) String keyword,
             @Parameter(description = "펀딩 상태 (REVIEW: 심사 대기, REVIEW_COMPLETED: 심사 완료, ONGOING: 진행 중)") @RequestParam String state,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "6") int size
     ) {
-        ResponseEntity<? super GetFundingByStateResponseDto> response = fundingService.getFundingByState(email, state, keyword, page, size);
-        return response;
+        return fundingService.getFundingByState(email, state, keyword, page, size);
     }
 
     @Operation(
@@ -77,14 +75,13 @@ public class AdminController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/funding/{fundingId}")
-    public ResponseEntity<? super ResponseDto> changeFundingState(
+    public ResponseEntity<ResponseDto> changeFundingState(
             @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long fundingId,
             @Parameter(description = "펀딩 상태 (DRAFT: 작성 중, REVIEW: 심사 대기, REVIEW_COMPLETED: 심사 완료, ONGOING: 진행 중, CLOSED: 종료)")
             @RequestParam String state
     ) {
-        ResponseEntity<? super ResponseDto> response = fundingService.changeFundingState(email, fundingId, state);
-        return response;
+        return fundingService.changeFundingState(email, fundingId, state);
     }
 
     @Operation(
@@ -98,7 +95,7 @@ public class AdminController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/users")
-    public ResponseEntity<? super GetUserListResponseDto> getUserList(
+    public ResponseEntity<GetUserListResponseDto> getUserList(
             @AuthenticationPrincipal(expression = "username") String email,
             @Parameter(description = """
                     noAsc: 번호 오름차순, noDesc: 번호 내림차순,
@@ -115,8 +112,7 @@ public class AdminController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetUserListResponseDto> response = userService.getUserList(email, sort, id, page, size);
-        return response;
+        return userService.getUserList(email, sort, id, page, size);
     }
 
     @Operation(
@@ -130,13 +126,12 @@ public class AdminController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/user/{userId}")
-    public ResponseEntity<? super ResponseDto> changeUserState(
+    public ResponseEntity<ResponseDto> changeUserState(
             @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long userId,
             @Parameter(description = "회원 상태 (USER: 일반 회원, SUSPENDED: 정지 회원)")
             @RequestParam String role
     ) {
-        ResponseEntity<? super ResponseDto> response = userService.changeUserState(email, userId, role);
-        return response;
+        return userService.changeUserState(email, userId, role);
     }
 }

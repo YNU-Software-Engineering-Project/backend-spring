@@ -1,12 +1,17 @@
 package sg.backend.dto.object;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import sg.backend.entity.Funder;
+import sg.backend.entity.User;
 
 import java.util.List;
+import java.util.Optional;
+
+import static sg.backend.service.UserService.formatter;
 
 @Getter
-@Setter
+@Builder
 public class FunderDataDto {
 
     private String createdAt;
@@ -16,4 +21,5 @@ public class FunderDataDto {
     private String address;
     private String phoneNumber;
     private List<String> rewards;
+
 }

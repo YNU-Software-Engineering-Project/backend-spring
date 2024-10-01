@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
-import sg.backend.dto.response.funding.AdminSummaryDto;
 import sg.backend.dto.response.funding.FundingDashboardResponseDto;
 import sg.backend.dto.response.funding.GetFunderListResponseDto;
 import sg.backend.dto.response.funding.GetRewardListResponseDto;
@@ -49,7 +48,7 @@ public class FundingBoardController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/{fundingId}/funders")
-    public ResponseEntity<? super GetFunderListResponseDto> getFunderList(
+    public ResponseEntity<GetFunderListResponseDto> getFunderList(
             @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long fundingId,
             @Parameter(description = """
@@ -68,8 +67,7 @@ public class FundingBoardController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetFunderListResponseDto> response = fundingBoardService.getFunderList(email, fundingId, sort, id, rewardNo, page, size);
-        return response;
+        return fundingBoardService.getFunderList(email, fundingId, sort, id, rewardNo, page, size);
     }
 
     @Operation(
@@ -82,10 +80,9 @@ public class FundingBoardController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("{fundingId}/rewards")
-    public ResponseEntity<? super GetRewardListResponseDto> getRewardList(
+    public ResponseEntity<GetRewardListResponseDto> getRewardList(
             @PathVariable Long fundingId
     ) {
-        ResponseEntity<? super GetRewardListResponseDto> response = fundingBoardService.getRewardList(fundingId);
-        return response;
+        return fundingBoardService.getRewardList(fundingId);
     }
 }

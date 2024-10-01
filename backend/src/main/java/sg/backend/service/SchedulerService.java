@@ -11,8 +11,6 @@ import sg.backend.repository.NotificationRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static sg.backend.service.UserService.formatter;
-
 @Service
 @RequiredArgsConstructor
 public class SchedulerService {
@@ -24,9 +22,8 @@ public class SchedulerService {
     @Transactional
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
     public void checkStartedFunding() {
-        QFunding funding = QFunding.funding;
-
         LocalDateTime now = LocalDateTime.now();
+        QFunding funding = QFunding.funding;
 
         List<Funding> fundingList = queryFactory.selectFrom(funding)
                 .where(funding.startDate.after(now)
@@ -35,9 +32,7 @@ public class SchedulerService {
 
         for(Funding f : fundingList) {
             f.setCurrent(State.ONGOING);
-            Notification notification = new Notification(f.getUser(), LocalDateTime.now().format(formatter));
-            notification.setFundingStartMessage(f.getTitle());
-            notificationRepository.save(notification);
+            sendNotification(f.getUser(), f.getTitle(), NotificationType.START);
         }
     }
 
@@ -45,10 +40,9 @@ public class SchedulerService {
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void checkClosedFunding() {
+        LocalDateTime now = LocalDateTime.now();
         QFunding funding = QFunding.funding;
         QFunder funder = QFunder.funder;
-
-        LocalDateTime now = LocalDateTime.now();
 
         List<Funding> fundingList = queryFactory.selectFrom(funding)
                 .where(funding.endDate.before(now)
@@ -56,9 +50,8 @@ public class SchedulerService {
                 .fetch();
 
         for(Funding f : fundingList) {
-            Notification notification = new Notification(f.getUser(), LocalDateTime.now().format(formatter));
-            notification.setFundingCloseMessage(f.getTitle());
-            notificationRepository.save(notification);
+            sendNotification(f.getUser(), f.getTitle(), NotificationType.CLOSE);
+            f.setCurrent(State.CLOSED);
 
             List<Funder> funders = queryFactory.selectFrom(funder)
                     .where(funder.funding.eq(f))
@@ -66,19 +59,32 @@ public class SchedulerService {
 
             for (Funder fd : funders) {
                 User user = fd.getUser();
-
-                if (f.getCurrentAmount() >= f.getTargetAmount()) {
-                    notification = new Notification(user, LocalDateTime.now().format(formatter));
-                    notification.setRewardShippedMessage(f.getTitle());
-                } else {
-                    notification = new Notification(user, LocalDateTime.now().format(formatter));
-                    notification.setFundingFailureMessage(f.getTitle());
-                }
-                notificationRepository.save(notification);
+                NotificationType notificationType = (f.getCurrentAmount() >= f.getTargetAmount())
+                        ? NotificationType.REWARD_SHIPPED
+                        : NotificationType.FUNDING_FAILURE;
+                sendNotification(user, f.getTitle(), notificationType);
             }
-
-            f.setCurrent(State.CLOSED);
         }
+    }
+
+    private void sendNotification(User user, String fundingTitle, NotificationType type) {
+        Notification notification = new Notification(user, LocalDateTime.now().format(UserService.formatter));
+
+        switch (type) {
+            case START -> notification.setFundingStartMessage(fundingTitle);
+            case CLOSE -> notification.setFundingCloseMessage(fundingTitle);
+            case REWARD_SHIPPED -> notification.setRewardShippedMessage(fundingTitle);
+            case FUNDING_FAILURE -> notification.setFundingFailureMessage(fundingTitle);
+        }
+
+        notificationRepository.save(notification);
+    }
+
+    private enum NotificationType {
+        START,
+        CLOSE,
+        REWARD_SHIPPED,
+        FUNDING_FAILURE
     }
 
 }

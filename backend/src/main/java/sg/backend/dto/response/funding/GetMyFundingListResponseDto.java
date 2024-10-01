@@ -15,13 +15,13 @@ import java.util.List;
 @Getter
 public class GetMyFundingListResponseDto extends ResponseDto {
 
-    private List<ShortFundingDataDto> data;
-    private int page;
-    private int size;
-    private int totalPages;
-    private long totalElements;
-    private int todayAmount;
-    private int todayLikes;
+    private final List<ShortFundingDataDto> data;
+    private final int page;
+    private final int size;
+    private final int totalPages;
+    private final long totalElements;
+    private final int todayAmount;
+    private final int todayLikes;
 
     private GetMyFundingListResponseDto(Page<Funding> fundingList, List<ShortFundingDataDto> data, int todayAmount, int todayLikes) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);

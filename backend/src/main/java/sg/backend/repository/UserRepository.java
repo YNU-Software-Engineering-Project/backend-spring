@@ -7,13 +7,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-   
     Optional<User> findByEmail(String email);
     Optional<User> findByEmailAndPhoneNumber(String email,String phoneNumber);
   
     boolean existsByEmail(String email);
     boolean existsByNickname(String nickname);
-    User findByUserId(Long userId);
+    Optional<User> findByUserId(Long userId);
 
     long countByCreatedAtAfter(LocalDateTime dateTime);
 }
