@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import sg.backend.dto.request.wirtefunding.FundingStoryRequestDto;
 import sg.backend.dto.response.writefunding.project.GetProjectResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadImageResponseDto;
 import sg.backend.entity.Funding;
@@ -90,14 +89,14 @@ public class FundingStoryService {
     }
 
     @Transactional
-    public ResponseEntity<? super ModifyContentResponseDto> modify_project(Long funding_id, FundingStoryRequestDto dto){
+    public ResponseEntity<ResponseDto> modify_project(Long funding_id, FundingStoryRequestDto dto){
         try{
             String title = dto.getTitle();
             String summary = dto.getSummary();
 
             Optional<Funding> option = fundingRepository.findById(funding_id);
             if(option.isEmpty()){
-                return ModifyContentResponseDto.not_existed_post();
+                return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
 
@@ -108,7 +107,7 @@ public class FundingStoryService {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ModifyContentResponseDto.success();
+        return ResponseDto.success();
     }
 
     @Transactional//이미지 업로드

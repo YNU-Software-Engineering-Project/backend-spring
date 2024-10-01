@@ -16,7 +16,6 @@ import sg.backend.dto.request.wirtefunding.FundingStoryRequestDto;
 import sg.backend.dto.response.writefunding.project.GetProjectResponseDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.writefunding.file.UploadImageResponseDto;
 import sg.backend.service.FundingStoryService;
 
@@ -46,16 +45,16 @@ public class FundingStoryController {
     @Operation(summary = "프로젝트 제목, 요약 작성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "작성 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않을 때",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/story/modify")
-    public ResponseEntity<? super ModifyContentResponseDto> modify_project(
+    public ResponseEntity<ResponseDto> modify_project(
             @RequestBody @Valid FundingStoryRequestDto requestBody,
             @PathVariable("funding_id") Long funding_id
     ){
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingStoryService.modify_project(funding_id, requestBody);
+        ResponseEntity<ResponseDto> response = fundingStoryService.modify_project(funding_id, requestBody);
         return response;
     }
     @ExceptionHandler(MethodArgumentNotValidException.class) //유효성 검사 - title(20자), summary(100자)

@@ -16,7 +16,7 @@ import sg.backend.dto.request.wirtefunding.PolicyRefundRequestDto;
 import sg.backend.dto.request.wirtefunding.PolicyRewardRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.SubmitFundingResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
@@ -108,54 +108,54 @@ public class FundingRewardController {
     @Operation(summary = "환불정책 작성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "환불정책 작성 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않을 때",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/policy/refund")
-    public ResponseEntity<? super ModifyContentResponseDto> insertRefundPolicy(
+    public ResponseEntity<ResponseDto> insertRefundPolicy(
             @PathVariable Long funding_id,
             @RequestBody @Valid PolicyRefundRequestDto requestBody
     ){
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingRewardService.insertRefundPolicy(funding_id, requestBody);
+        ResponseEntity<ResponseDto> response = fundingRewardService.insertRefundPolicy(funding_id, requestBody);
         return response;
     }
 
     @Operation(summary = "리워드정보 작성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "리워드정보 작성 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "funding_id가 존재하지 않을 때",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/policy/reward")
-    public ResponseEntity<? super ModifyContentResponseDto> insertRewardIInfo(
+    public ResponseEntity<ResponseDto> insertRewardIInfo(
             @PathVariable Long funding_id,
             @RequestBody @Valid PolicyRewardRequestDto requestBody
     ){
-        ResponseEntity<? super ModifyContentResponseDto> response = fundingRewardService.insertRewardInfo(funding_id, requestBody);
+        ResponseEntity<ResponseDto> response = fundingRewardService.insertRewardInfo(funding_id, requestBody);
         return response;
     }
 
     @Operation(summary = "게시물 제출하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게시물 상태변화 성공",
-                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = SubmitFundingResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "제출할 funding_id가 존재하지 않을 때",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping("/{funding_id}/submit")
-    public ResponseEntity<ResponseDto> submit_funding(
+    public ResponseEntity<? super SubmitFundingResponseDto> submit_funding(
             @PathVariable Long funding_id
     ){
-        ResponseEntity<ResponseDto> response = fundingRewardService.submit_funding(funding_id);
+        ResponseEntity<? super SubmitFundingResponseDto> response = fundingRewardService.submit_funding(funding_id);
         return response;
     }
 
     @Operation(summary = "게시물 포기하기")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "포기할 게시물 삭제 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = DeleteFileResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "삭제할 funding_id가 존재하지 않을 때",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })

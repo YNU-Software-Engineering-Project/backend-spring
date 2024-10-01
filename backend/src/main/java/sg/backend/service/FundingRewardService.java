@@ -9,7 +9,7 @@ import sg.backend.dto.request.wirtefunding.PolicyRefundRequestDto;
 import sg.backend.dto.request.wirtefunding.PolicyRewardRequestDto;
 import sg.backend.dto.response.*;
 import sg.backend.dto.response.writefunding.DeleteDataResponseDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
+import sg.backend.dto.response.writefunding.SubmitFundingResponseDto;
 import sg.backend.dto.response.writefunding.file.DeleteFileResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetMRewardResponseDto;
 import sg.backend.dto.response.writefunding.reward.GetPolicyResponseDto;
@@ -143,11 +143,11 @@ public class FundingRewardService {
     }
 
     @Transactional
-    public ResponseEntity<? super ModifyContentResponseDto> insertRewardInfo(Long funding_id, PolicyRewardRequestDto dto){
+    public ResponseEntity<ResponseDto> insertRewardInfo(Long funding_id, PolicyRewardRequestDto dto){
         try{
             option = fundingRepository.findById(funding_id);
             if(option.isEmpty()) {
-                return ModifyContentResponseDto.not_existed_post();
+                return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
 
@@ -156,15 +156,15 @@ public class FundingRewardService {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ModifyContentResponseDto.success();
+        return ResponseDto.success();
     }
 
     @Transactional
-    public ResponseEntity<? super ModifyContentResponseDto> insertRefundPolicy(Long funding_id, PolicyRefundRequestDto dto){
+    public ResponseEntity<ResponseDto> insertRefundPolicy(Long funding_id, PolicyRefundRequestDto dto){
         try{
             option = fundingRepository.findById(funding_id);
             if(option.isEmpty()) {
-                return ModifyContentResponseDto.not_existed_post();
+                return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
 
@@ -173,17 +173,65 @@ public class FundingRewardService {
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return ModifyContentResponseDto.success();
+        return ResponseDto.success();
     }
 
     @Transactional
-    public ResponseEntity<ResponseDto> submit_funding(Long funding_id){
+    public ResponseEntity<? super SubmitFundingResponseDto> submit_funding(Long funding_id){
         try{
             option = fundingRepository.findById(funding_id);
             if(option.isEmpty()) {
                 return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
+
+            //프로젝트 정보 작성에서 빠진 내용
+            if(funding.getCategory() == Category.NONE){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+            if(funding.getOrganizerIdCard() == null || funding.getOrganizerIdCard().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+            if(funding.getOrganizerEmail() == null || funding.getOrganizerEmail().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+            if(funding.getTaxEmail() == null || funding.getTaxEmail().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+            if(funding.getStartDate() == null){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+            if(funding.getEndDate() == null){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+            if(funding.getTargetAmount() == null){
+                return SubmitFundingResponseDto.not_existed_info();
+            }
+
+            //프로젝트 스토리에서 빠진 내용
+            if(funding.getMainImage() == null || funding.getMainImage().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_story();
+            }
+            if(funding.getTitle() == null || funding.getTitle().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_story();
+            }
+            //if(funding.getStory() == null || funding.getStory().isEmpty()){
+            //    return SubmitFundingResponseDto.not_existed_story();
+            //}
+
+            //리워드가 적어도 하나
+            List<Reward> rewardList = rewardRepository.findAllByFunding(funding);
+            if(rewardList.isEmpty()){
+                return SubmitFundingResponseDto.not_existed_reward();
+            }
+
+            //정책 정보가 없는 경우
+            if(funding.getRefundPolicy() == null || funding.getRefundPolicy().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_policy();
+            }
+            if(funding.getRewardInfo() == null || funding.getRewardInfo().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_policy();
+            }
 
             State current = State.REVIEW;
             funding.setCurrent(current);

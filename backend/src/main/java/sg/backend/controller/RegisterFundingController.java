@@ -13,7 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
-import sg.backend.dto.response.writefunding.ModifyContentResponseDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.writefunding.RegisterResponseDto;
 import sg.backend.service.FundingInfoService;
@@ -50,7 +49,7 @@ public class RegisterFundingController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "펀딩 게시물 생성 성공",
-                    content = @Content(schema = @Schema(implementation = ModifyContentResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = RegisterResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "name, email, taxemail을 작성하지 않은 경우",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
