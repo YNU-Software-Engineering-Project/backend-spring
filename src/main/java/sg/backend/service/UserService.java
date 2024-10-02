@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import sg.backend.common.InviteProperties;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 import sg.backend.dto.object.*;
@@ -57,6 +58,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final JPAQueryFactory queryFactory;
+    private final InviteProperties inviteProperties;
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -65,9 +67,6 @@ public class UserService {
 
     @Value("${profile.url}")
     private String profileFileUrl;
-
-    @Value("${spring.invite.adminCode}")
-    private String adminInviteCode;
 
     public User findById(Long id){
         return userRepository.findById(id)
@@ -100,7 +99,7 @@ public class UserService {
         }
 
         Role role = Role.USER;
-        if(signupRequestDto.getInviteCode() != null && signupRequestDto.getInviteCode().equals(adminInviteCode)){
+        if(signupRequestDto.getInviteCode() != null && signupRequestDto.getInviteCode().equals(inviteProperties.getAdminCode())){
             role = Role.ADMIN;
         }
 

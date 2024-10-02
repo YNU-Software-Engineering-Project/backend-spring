@@ -17,8 +17,6 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-  invite:
-    adminCode: ${ADMIN_INVITE_CODE}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -48,3 +46,5 @@ profile:
   path: /app/data/profile_images/
   url: http://localhost:8080/file/
 
+invite:
+  adminCode: ${ADMIN_INVITE_CODE}
