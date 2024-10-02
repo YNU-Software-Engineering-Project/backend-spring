@@ -4,25 +4,25 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Table(name = "tag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tagId;
+    private Long tag_id;
 
-    private String tagName;
+    private String tag_name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
 
+    public Tag(String tag_name, Funding funding){
+        this.funding = funding;
+        this.tag_name = tag_name;
+    }
 }

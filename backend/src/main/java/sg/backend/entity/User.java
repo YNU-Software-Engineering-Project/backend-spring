@@ -59,16 +59,16 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notificationList;
 
-    public User(String email, String password, String phoneNumber){
+    public User(String email, String password, String phoneNumber, Role role){
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.role = Role.USER;
+        this.role = role;
         this.schoolEmailVerified = false;
         this.createdAt = LocalDateTime.now();
     }
-  
-    public void patchUserProfile(PatchUserProfileRequestDto dto, String imageUrl) {
+
+    public void toEntity(PatchUserProfileRequestDto dto, String imageUrl) {
         this.profileImage = imageUrl;
         this.nickname = dto.getNickname();
         this.password = dto.getPassword();
@@ -91,4 +91,10 @@ public class User {
     }
 
     public void setPassword(String newPassword){ this.password = newPassword; }
+
+    public void setRole(Role role) { this.role = role; }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }

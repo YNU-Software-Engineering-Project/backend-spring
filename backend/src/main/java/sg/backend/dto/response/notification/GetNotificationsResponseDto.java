@@ -10,27 +10,19 @@ import sg.backend.dto.object.NotificationDataDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.entity.Notification;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class GetNotificationsResponseDto extends ResponseDto {
 
-    private List<NotificationDataDto> data;
-    private int page;
-    private int size;
-    private int totalPages;
-    private long totalElements;
+    private final List<NotificationDataDto> data;
+    private final int page;
+    private final int size;
+    private final int totalPages;
+    private final long totalElements;
 
-    private GetNotificationsResponseDto(Page<Notification> notificationList) {
+    private GetNotificationsResponseDto(Page<Notification> notificationList, List<NotificationDataDto> data) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-
-        List<NotificationDataDto> data = new ArrayList<>();
-
-        for(Notification n : notificationList) {
-            data.add(new NotificationDataDto(n.getMessage(), n.getCreatedAt()));
-        }
-
         this.data = data;
         this.page = notificationList.getNumber();
         this.size = notificationList.getSize();
@@ -38,8 +30,8 @@ public class GetNotificationsResponseDto extends ResponseDto {
         this.totalElements = notificationList.getTotalElements();
     }
 
-    public static ResponseEntity<GetNotificationsResponseDto> success(Page<Notification> notificationList) {
-        GetNotificationsResponseDto result = new GetNotificationsResponseDto(notificationList);
+    public static ResponseEntity<GetNotificationsResponseDto> success(Page<Notification> notificationList, List<NotificationDataDto> data) {
+        GetNotificationsResponseDto result = new GetNotificationsResponseDto(notificationList, data);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

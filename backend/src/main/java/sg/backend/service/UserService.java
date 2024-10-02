@@ -1,10 +1,13 @@
 package sg.backend.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
-import sg.backend.dto.object.FundingDataDto;
-import sg.backend.dto.object.ShortFundingDataDto;
+import sg.backend.dto.object.*;
 import sg.backend.dto.request.auth.LoginRequestDto;
 import sg.backend.dto.request.auth.SignUpRequestDto;
 import sg.backend.dto.request.user.PatchPhoneNumberRequestDto;
@@ -23,12 +25,12 @@ import sg.backend.dto.response.auth.LoginResponseDto;
 import sg.backend.dto.response.auth.SignUpResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
+import sg.backend.dto.response.user.GetUserInfoResponseDto;
+import sg.backend.dto.response.user.GetUserListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
-import sg.backend.entity.Funding;
-import sg.backend.entity.Notification;
-import sg.backend.entity.User;
+import sg.backend.entity.*;
+import sg.backend.exception.CustomException;
+import sg.backend.exception.UnauthorizedAccessException;
 import sg.backend.jwt.TokenProvider;
 import sg.backend.repository.*;
 
@@ -36,13 +38,12 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static sg.backend.service.FundingService.convertToDto;
+import static sg.backend.service.FileService.deleteCurrentProfileImage;
 
 @Service
 @RequiredArgsConstructor
@@ -55,14 +56,38 @@ public class UserService {
     private final NotificationRepository notificationRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final JPAQueryFactory queryFactory;
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Value("${file.path}")
-    private String filePath;
+    @Value("${profile.path}")
+    private String profileFilePath;
 
-    @Value("${file.url}")
-    private String fileUrl;
+    @Value("${profile.url}")
+    private String profileFileUrl;
+
+    @Value("${spring.invite.adminCode}")
+    private String adminInviteCode;
+
+    public User findById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+    }
+
+    public static User findUserByEmail(String email, UserRepository userRepository) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER));
+    }
+
+    public static User findUserById(Long userId, UserRepository userRepository) {
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER));
+    }
+
+    public static void checkAdminAccess(User user) {
+        if(!user.getRole().equals(Role.ADMIN))
+            throw new UnauthorizedAccessException();
+    }
 
     public ResponseEntity<ResponseDto> signup(SignUpRequestDto signupRequestDto) {
         if (userRepository.findByEmail(signupRequestDto.getEmail()).isPresent()) {
@@ -74,17 +99,24 @@ public class UserService {
                     .body(new ResponseDto(ResponseCode.VALIDATION_FAILED, ResponseMessage.VALIDATION_FAILED));
         }
 
+        Role role = Role.USER;
+        if(signupRequestDto.getInviteCode() != null && signupRequestDto.getInviteCode().equals(adminInviteCode)){
+            role = Role.ADMIN;
+        }
+
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
-        User user = new User(signupRequestDto.getEmail(), encodedPassword, signupRequestDto.getPhoneNumber());
+        User user = new User(signupRequestDto.getEmail(), encodedPassword, signupRequestDto.getPhoneNumber(),role);
         userRepository.save(user);
 
         String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
 
-        Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
-        notification.setStartMessage();
-        notificationRepository.save(notification);
+        if(user.getRole() != Role.ADMIN) {
+            Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
+            notification.setStartMessage();
+            notificationRepository.save(notification);
+        }
 
-        return SignUpResponseDto.success(accessToken);
+        return SignUpResponseDto.success(accessToken, role);
     }
   
     public ResponseEntity<?> login(LoginRequestDto loginRequestDto){
@@ -98,249 +130,270 @@ public class UserService {
             return LoginResponseDto.failure();
         }
 
+        Role role = user.getRole();
+
         String accessToken = tokenProvider.generateToken(user, Duration.ofHours(2));
-        return LoginResponseDto.success(accessToken);
+        return LoginResponseDto.success(accessToken, role);
     }
 
-    public User findById(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-    }
-    
-    public ResponseEntity<? super GetUserProfileResponseDto> getUserProfile(String email) {
+    public ResponseEntity<GetUserProfileResponseDto> getUserProfile(String email) {
+        User user = findUserByEmail(email, userRepository);
 
-        User user;
+        UserProfileDataDto data = UserProfileDataDto.of(user);
 
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
-            user = optionalUser.get();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return GetUserProfileResponseDto.success(user);
-    }
-
-    public ResponseEntity<? super PatchPhoneNumberResponseDto> modifyPhoneNumber(PatchPhoneNumberRequestDto dto, String email) {
-
-        User user;
-
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return PatchPhoneNumberResponseDto.noExistUser();
-            user = optionalUser.get();
-
-            String phoneNumber = dto.getPhoneNumber();
-            user.setPhoneNumber(phoneNumber);
-            userRepository.save(user);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return PatchPhoneNumberResponseDto.success();
-    }
-    public ResponseEntity<? super PatchUserProfileResponseDto> modifyProfile(MultipartFile profileImage, PatchUserProfileRequestDto dto, String email) {
-
-        User user;
-
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return PatchUserProfileResponseDto.noExistUser();
-            user = optionalUser.get();
-
-            String nickname = dto.getNickname();
-            String password = dto.getPassword();
-            String confirmPassword = dto.getConfirmPassword();
-            String postalCode = dto.getPostalCode();
-            String roadAddress = dto.getRoadAddress();
-            String landLotAddress = dto.getLandLotAddress();
-            String detailAddress = dto.getDetailAddress();
-            String imageUrl = null;
-
-            if(profileImage != null && !profileImage.isEmpty()) {
-                if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
-                    String fileUrl = user.getProfileImage();
-                    int index = fileUrl.lastIndexOf("/");
-                    String fileName = fileUrl.substring(index+1);
-                    String path = filePath + fileName;
-                    File file = new File(path);
-
-                    if (file.exists()) {
-                        try {
-                            if (!file.delete()) {
-                                return ResponseDto.databaseError();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return ResponseDto.databaseError();
-                        }
-                    }
-                }
-
-                File directory = new File("/app/files/");
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-
-                String originalFileName = profileImage.getOriginalFilename();
-                String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                String uuid = UUID.randomUUID().toString();
-                String saveFileName = uuid + extension;
-                String savePath = filePath + saveFileName;
-
-                profileImage.transferTo(new File(savePath));
-
-                imageUrl = fileUrl + saveFileName;
-            }
-
-            if(nickname != null && !nickname.isEmpty() && !nickname.equals(user.getNickname())) {
-                boolean existedNickname = userRepository.existsByNickname(nickname);
-                if(existedNickname) return PatchUserProfileResponseDto.duplicateNickname();
-            }
-
-            if(password == null || password.isEmpty()) {
-                dto.setPassword(user.getPassword());
-            } else {
-                if(!password.equals(confirmPassword))
-                    return PatchUserProfileResponseDto.validationFailed();
-
-                String regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\\$%\\^&\\*])(?=\\S+$).{8,20}$";
-                Pattern pattern = Pattern.compile(regexp);
-
-                if(!pattern.matcher(password).matches())
-                    return PatchUserProfileResponseDto.validationFailed();
-                if(passwordEncoder.matches(password, user.getPassword()))
-                    return PatchUserProfileResponseDto.PWSameAsCurrent();
-                else {
-                    String encodedPassword = passwordEncoder.encode(password);
-                    dto.setPassword(encodedPassword);
-                }
-            }
-
-            if(isRequiredAddressValidation(postalCode, roadAddress, landLotAddress, detailAddress)) {
-                boolean case1 = !isEmpty(postalCode) && !isEmpty(roadAddress) && !isEmpty(detailAddress);
-                boolean case2 = !isEmpty(postalCode) && !isEmpty(landLotAddress) && !isEmpty(detailAddress);
-                boolean case3 = !isEmpty(postalCode) && !isEmpty(roadAddress) && !isEmpty(landLotAddress) && !isEmpty(detailAddress);
-
-                if (!(case1 || case2 || case3)) {
-                    return PatchUserProfileResponseDto.validationFailed();
-                }
-            }
-
-            user.patchUserProfile(dto, imageUrl);
-            userRepository.save(user);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
-
-        return PatchUserProfileResponseDto.success();
-    }
-
-    private boolean isRequiredAddressValidation(String postalCode, String roadAddress, String landLotAddress, String detailAddress) {
-        if(isEmpty(postalCode) && isEmpty(roadAddress) && isEmpty(landLotAddress) && isEmpty(detailAddress))
-            return false;
-        else
-            return true;
-    }
-
-    private boolean isEmpty(String value) {
-        return value == null || value.isBlank();
+        return GetUserProfileResponseDto.success(data);
     }
 
     @Transactional
-    public ResponseEntity<? super GetFundingListResponseDto> getWishList(String email, int page, int size) {
+    public ResponseEntity<ResponseDto> modifyPhoneNumber(PatchPhoneNumberRequestDto dto, String email) {
+        User user = findUserByEmail(email, userRepository);
 
-        User user;
-        Page<Funding> fundingList;
-        List<FundingDataDto> data = new ArrayList<>();
+        String phoneNumber = dto.getPhoneNumber();
+        user.setPhoneNumber(phoneNumber);
+        userRepository.save(user);
 
+        return ResponseDto.success();
+    }
 
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetUserProfileResponseDto.noExistUser();
-            user = optionalUser.get();
+    @Transactional
+    public ResponseEntity<ResponseDto> modifyProfile(MultipartFile profileImage, PatchUserProfileRequestDto dto, String email) {
 
-            PageRequest pageRequest = PageRequest.of(page, size);
-            fundingList = fundingLikeRepository.findFundingLikedByUserIdOrderByLikeCreatedAt(user.getUserId(), pageRequest);
+        User user = findUserByEmail(email, userRepository);
 
-            for(Funding f : fundingList) {
-                data.add(convertToDto(f, fundingLikeRepository, true, user));
-            }
+        String imageUrl = processProfileImage(profileImage, user.getProfileImage(), user);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
+        if(dto.getNickname() != null) {
+            validateNickname(dto.getNickname());
+        } else {
+            dto.setNickname(user.getNickname());
         }
+
+        if(dto.getPassword() != null) {
+            validatePassword(dto.getPassword(), dto.getConfirmPassword(), user.getPassword());
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        } else {
+            dto.setPassword(user.getPassword());
+        }
+
+        if(dto.getPostalCode() != null || dto.getRoadAddress() != null || dto.getLandLotAddress() != null || dto.getDetailAddress() != null) {
+            validateAddress(dto);
+        }
+
+        user.toEntity(dto, imageUrl);
+        userRepository.save(user);
+        return ResponseDto.success();
+    }
+
+    @Transactional
+    public ResponseEntity<GetFundingListResponseDto> getWishList(String email, int page, int size) {
+
+        User user = findUserByEmail(email, userRepository);
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Funding> fundingList = fundingLikeRepository.findFundingLikedByUserIdOrderByLikeCreatedAt(user.getUserId(), pageRequest);
+
+        List<FundingDataDto> data = fundingList.stream()
+                .map(f -> FundingDataDto.of(f, fundingLikeRepository, true, user))
+                .collect(Collectors.toList());
 
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
     @Transactional
-    public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(String email, int page, int size) {
+    public ResponseEntity<GetFundingListResponseDto> getPledgeList(String email, int page, int size) {
 
-        User user;
-        Page<Funding> fundingList;
-        List<FundingDataDto> data = new ArrayList<>();
+        User user = findUserByEmail(email, userRepository);
 
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if (optionalUser.isEmpty()) return GetFundingListResponseDto.noExistUser();
-            user = optionalUser.get();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Funding> fundingList = funderRepository.findFundingByUserIdOrderByFunderCreatedAt(user.getUserId(), pageRequest);
 
-            PageRequest pageRequest = PageRequest.of(page, size);
-            fundingList = funderRepository.findFundingByUserIdOrderByFunderCreatedAt(user.getUserId(), pageRequest);
-
-            for (Funding f : fundingList) {
-                data.add(convertToDto(f, fundingLikeRepository, true, user));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
+        List<FundingDataDto> data = fundingList.stream()
+                .map(f -> FundingDataDto.of(f, fundingLikeRepository, true, user))
+                .collect(Collectors.toList());
 
         return GetFundingListResponseDto.success(fundingList, data);
     }
 
-    public ResponseEntity<? super GetMyFundingListResponseDto> getMyFundingList(String email, int page, int size) {
+    public ResponseEntity<GetMyFundingListResponseDto> getMyFundingList(String email, int page, int size) {
 
-        User user;
-        Page<Funding> fundingList;
-        List<ShortFundingDataDto> data = new ArrayList<>();
-        int todayAmount = 0;
-        int todayLikes = 0;
+        User user = findUserByEmail(email, userRepository);
 
-        try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return GetMyFundingListResponseDto.noExistUser();
-            user = optionalUser.get();
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Funding> fundingList = fundingRepository.findByUser(user, pageRequest);
 
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            fundingList = fundingRepository.findByUser(user, pageRequest);
+        List<ShortFundingDataDto> data = fundingList.stream()
+                .map(ShortFundingDataDto::of)
+                .collect(Collectors.toList());
 
-            for(Funding f : fundingList) {
-                ShortFundingDataDto dto = new ShortFundingDataDto();
-                dto.setTitle(f.getTitle());
-                dto.setMainImage(f.getMainImage());
-                dto.setState(String.valueOf(f.getCurrent()));
-
-                todayAmount += f.getTodayAmount();
-                todayLikes += f.getTodayLikes();
-                data.add(dto);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
+        int todayAmount = fundingList.stream().mapToInt(Funding::getTodayAmount).sum();
+        int todayLikes = fundingList.stream().mapToInt(Funding::getTodayLikes).sum();
 
         return GetMyFundingListResponseDto.success(fundingList, data, todayAmount, todayLikes);
+    }
+
+    public ResponseEntity<GetUserListResponseDto> getUserList(String email, String sort, String id, int page, int size) {
+
+        User admin = findUserByEmail(email, userRepository);
+        checkAdminAccess(admin);
+
+        QUser user = QUser.user;
+        BooleanBuilder filterBuilder = new BooleanBuilder()
+                .and(user.role.ne(Role.ADMIN));
+
+        if(id != null) {
+            StringTemplate userId = Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email);
+            filterBuilder.and(userId.contains(id));
+        }
+
+        OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sort, user);
+
+        Pageable pageable = PageRequest.of(page, size);
+        List<User> results = queryFactory.selectFrom(user)
+                .where(filterBuilder)
+                .orderBy(orderSpecifier)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory.selectFrom(user)
+                .where(filterBuilder)
+                .fetch()
+                .size();
+
+        Page<User> userList = new PageImpl<>(results, pageable, total);
+
+        List<UserDataDto> data = userList.stream()
+                .map(UserDataDto::of)
+                .collect(Collectors.toList());
+
+        return GetUserListResponseDto.success(userList, data, sort);
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sort, QUser user) {
+        return switch (sort) {
+            case "noAsc" -> user.userId.asc();
+            case "noDesc" -> user.userId.desc();
+            case "idAsc" ->
+                    Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).asc();
+            case "isDesc" ->
+                    Expressions.stringTemplate("SUBSTRING({0}, 1, LOCATE('@', {0}) - 1)", user.email).desc();
+            case "nicknameAsc" -> user.nickname.asc();
+            case "nicknameDesc" -> user.nickname.desc();
+            case "emailAsc" -> user.schoolEmail.asc();
+            case "emailDesc" -> user.schoolEmail.desc();
+            case "phoneNumAsc" -> user.phoneNumber.asc();
+            case "phoneNumDesc" -> user.phoneNumber.desc();
+            case "adAsc" ->
+                    Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN CONCAT({0}, ' ', {1}) ELSE CONCAT({2}, ' ', {1}) END",
+                            user.roadAddress, user.detailAddress, user.landLotAddress).asc();
+            case "adDesc" ->
+                    Expressions.stringTemplate("CASE WHEN {0} IS NOT NULL AND {0} != '' THEN CONCAT({0}, ' ', {1}) ELSE CONCAT({2}, ' ', {1}) END",
+                            user.roadAddress, user.detailAddress, user.landLotAddress).desc();
+            case "latest" -> user.createdAt.desc();
+            default -> user.createdAt.asc();
+        };
+    }
+
+    public ResponseEntity<GetUserInfoResponseDto> getUserInfo(String email, Long userId) {
+
+        User admin = findUserByEmail(email, userRepository);
+        checkAdminAccess(admin);
+        User user = findUserById(userId, userRepository);
+
+        UserInfoDataDto data = UserInfoDataDto.of(user);
+
+        return GetUserInfoResponseDto.success(data);
+    }
+
+    public ResponseEntity<ResponseDto> changeUserState(String email, Long userId, String role) {
+
+        User admin = findUserByEmail(email, userRepository);
+        checkAdminAccess(admin);
+        User user = findUserById(userId, userRepository);
+
+        Role existedRole = user.getRole();
+        Role newRole = Role.valueOf(role);
+
+        user.setRole(Role.valueOf(role));
+        userRepository.save(user);
+
+        if(existedRole != user.getRole()) {
+            sendRoleChangeNotification(user, newRole);
+        }
+
+        return ResponseDto.success();
+    }
+
+    private void validateNickname(String nickname) {
+        boolean existedNickname = userRepository.existsByNickname(nickname);
+        if(existedNickname)
+            throw new CustomException(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
+    }
+
+    private void validatePassword(String newPassword, String confirmPassword, String userPassword) {
+        if(!newPassword.equals(confirmPassword))
+            throw new CustomException("PM", "The passwords do not match.");
+
+        String regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=\\S+$).{8,20}$";
+        Pattern pattern = Pattern.compile(regexp);
+        if(!pattern.matcher(newPassword).matches())
+            throw new CustomException(ResponseCode.VALIDATION_FAILED, "비밀번호는 8~20자이며, 숫자, 대문자, 소문자, 특수문자를 포함해야 합니다.");
+
+        if(passwordEncoder.matches(newPassword, userPassword))
+            throw new CustomException(ResponseCode.PASSWORD_SAME_AS_CURRENT, ResponseMessage.PASSWORD_SAME_AS_CURRENT);
+    }
+
+    @Transactional
+    public String processProfileImage(MultipartFile profileImage, String currentImageUrl, User user) {
+        if(profileImage == null)
+            return currentImageUrl;
+
+        if(currentImageUrl != null) {
+            user.setProfileImage(null);
+            deleteCurrentProfileImage(currentImageUrl, profileFilePath);
+        }
+
+        return saveProfileImage(profileImage);
+    }
+
+    private String saveProfileImage(MultipartFile profileImage) {
+        String originalFileName = profileImage.getOriginalFilename();
+        if (originalFileName == null) {
+            throw new CustomException("OM", "Original file name is missing.");
+        }
+
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String uuid = UUID.randomUUID().toString();
+        String saveFileName = uuid + extension;
+        String savePath = profileFilePath + saveFileName;
+
+        try {
+            profileImage.transferTo(new File(savePath));
+        } catch (Exception e) {
+            throw new CustomException("FF", "Failed to save file: " + e.getMessage());
+        }
+
+        return profileFileUrl + saveFileName;
+    }
+
+    private void validateAddress(PatchUserProfileRequestDto dto) {
+
+        boolean hasPostalCode = dto.getPostalCode() != null && !dto.getPostalCode().isEmpty();
+        boolean hasRoadAddress = dto.getRoadAddress() != null && !dto.getRoadAddress().isEmpty();
+        boolean hasLandLotAddress = dto.getLandLotAddress() != null && !dto.getLandLotAddress().isEmpty();
+        boolean hasDetailAddress = dto.getDetailAddress() != null && !dto.getDetailAddress().isEmpty();
+
+        if(!hasPostalCode)
+            throw new CustomException(ResponseCode.VALIDATION_FAILED, "우편번호를 입력해주세요.");
+        if(!hasRoadAddress && !hasLandLotAddress)
+            throw new CustomException(ResponseCode.VALIDATION_FAILED, "도로명 주소 또는 지번 주소를 입력해주세요");
+        if(!hasDetailAddress)
+            throw new CustomException(ResponseCode.VALIDATION_FAILED, "상세 주소를 입력해주세요.");
+    }
+
+    private void sendRoleChangeNotification(User user, Role role) {
+        Notification notification = new Notification(user, LocalDateTime.now().format(formatter));
+        notification.setAccountMessage(role);
+        notificationRepository.save(notification);
     }
 }

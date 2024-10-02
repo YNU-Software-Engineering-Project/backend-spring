@@ -19,8 +19,6 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
-import sg.backend.dto.response.user.PatchPhoneNumberResponseDto;
-import sg.backend.dto.response.user.PatchUserProfileResponseDto;
 import sg.backend.service.EmailService;
 import sg.backend.service.UserService;
 
@@ -43,11 +41,10 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("")
-    public ResponseEntity<? super GetUserProfileResponseDto> getUserProfile(
+    public ResponseEntity<GetUserProfileResponseDto> getUserProfile(
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super GetUserProfileResponseDto> response = userService.getUserProfile(email);
-        return response;
+        return userService.getUserProfile(email);
     }
 
     @Operation(
@@ -56,17 +53,16 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전화번호 수정 성공",
-                    content = @Content(schema = @Schema(implementation = PatchPhoneNumberResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자 또는 잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/modify-phone-number")
-    public ResponseEntity<? super PatchPhoneNumberResponseDto> modifyPhoneNumber(
+    public ResponseEntity<ResponseDto> modifyPhoneNumber(
             @RequestBody @Valid PatchPhoneNumberRequestDto requestBody,
             @AuthenticationPrincipal(expression = "username") String email
     ){
-        ResponseEntity<? super PatchPhoneNumberResponseDto> response = userService.modifyPhoneNumber(requestBody, email);
-        return response;
+        return userService.modifyPhoneNumber(requestBody, email);
     }
 
     @Operation(
@@ -84,12 +80,11 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @PostMapping("/email-verification")
-    public ResponseEntity<? super ResponseDto> sendEmailToken(
+    public ResponseEntity<ResponseDto> sendEmailToken(
             @RequestBody @Valid EmailSendTokenRequestDto requestBody,
             @AuthenticationPrincipal(expression = "username") String email
             ) {
-        ResponseEntity<? super ResponseDto> response = emailService.createEmailToken(requestBody, email);
-        return response;
+        return emailService.createEmailToken(requestBody, email);
     }
 
     @Operation(
@@ -98,25 +93,24 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 프로필 수정 성공",
-                    content = @Content(schema = @Schema(implementation = PatchUserProfileResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = """
                     잘못된 요청
                     - 존재하지 않는 사용자
                     - 중복된 닉네임
                     - 비밀번호 불일치
-                    - 새 비밀번호가 현재 비밀번호와 같음 
-                    - 주소란을 일부만 채운 경우(도로명 주소와 지번 주소는 하나만 입력해도 통과)
+                    - 새 비밀번호가 현재 비밀번호와 같음
+                    - 주소란을 일부만 채운 경우 (주소란을 모두 비워두거나, 도로명 주소와 지번 주소 중 하나만 제외하고 모두 입력한 경우는 허용된다)
                     """,
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @PatchMapping("/modify-profile")
-    public ResponseEntity<? super PatchUserProfileResponseDto> modifyProfile(
+    public ResponseEntity<ResponseDto> modifyProfile(
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") @Valid PatchUserProfileRequestDto userInfo,
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super PatchUserProfileResponseDto> response = userService.modifyProfile(profileImage, userInfo, email);
-        return response;
+        return userService.modifyProfile(profileImage, userInfo, email);
     }
 
     @Operation(
@@ -130,13 +124,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/wishlist")
-    public ResponseEntity<? super GetFundingListResponseDto> getWishList(
+    public ResponseEntity<GetFundingListResponseDto> getWishList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
-        ResponseEntity<? super GetFundingListResponseDto> response = userService.getWishList(email, page, size);
-        return response;
+        return userService.getWishList(email, page, size);
     }
 
     @Operation(
@@ -150,14 +143,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/pledges")
-    public ResponseEntity<? super GetFundingListResponseDto> getPledgeList(
+    public ResponseEntity<GetFundingListResponseDto> getPledgeList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
-        ResponseEntity<? super GetFundingListResponseDto> response = userService.getPledgeList(email, page, size);
-
-        return response;
+        return userService.getPledgeList(email, page, size);
     }
 
     @Operation(
@@ -171,13 +162,12 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/fundings")
-    public ResponseEntity<? super GetMyFundingListResponseDto> getMyFundingList(
+    public ResponseEntity<GetMyFundingListResponseDto> getMyFundingList(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
-        ResponseEntity<? super GetMyFundingListResponseDto> response = userService.getMyFundingList(email, page, size);
-        return response;
+        return userService.getMyFundingList(email, page, size);
     }
 
 }

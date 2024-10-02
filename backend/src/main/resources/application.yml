@@ -17,10 +17,12 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
+  invite:
+    adminCode: ${ADMIN_INVITE_CODE}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://db:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8
     username: root
     password: password
 
@@ -35,10 +37,14 @@ logging:
   level:
     org.hibernate.sql: debug
 
+file:
+  path: /app/data/
+
 jwt:
   issuer: "SpeedSpark"
   secretKey: ${SECRETKEY}
 
-file.path: /app/files/
-file.url: http://localhost:8080/file/
+profile:
+  path: /app/data/profile_images/
+  url: http://localhost:8080/file/
 

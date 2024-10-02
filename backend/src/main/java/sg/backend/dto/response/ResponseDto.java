@@ -1,18 +1,20 @@
 package sg.backend.dto.response;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 
 @Getter
-@AllArgsConstructor
+@Builder
+@RequiredArgsConstructor
 public class ResponseDto {
 
-    private String code;
-    private String message;
+    private final String code;
+    private final String message;
 
     public static ResponseEntity<ResponseDto> success() {
         ResponseDto responseBody = new ResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
@@ -21,6 +23,11 @@ public class ResponseDto {
 
     public static ResponseEntity<ResponseDto> noExistUser() {
         ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_USER, ResponseMessage.NOT_EXISTED_USER);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    public static ResponseEntity<ResponseDto> duplicateNickname() {
+        ResponseDto result = new ResponseDto(ResponseCode.DUPLICATE_NICKNAME, ResponseMessage.DUPLICATE_NICKNAME);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
@@ -41,6 +48,11 @@ public class ResponseDto {
 
     public static ResponseEntity<ResponseDto> validationFailed() {
         ResponseDto result = new ResponseDto(ResponseCode.VALIDATION_FAILED, ResponseMessage.VALIDATION_FAILED);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
+    public static ResponseEntity<ResponseDto> PWSameAsCurrent() {
+        ResponseDto result = new ResponseDto(ResponseCode.PASSWORD_SAME_AS_CURRENT, ResponseMessage.PASSWORD_SAME_AS_CURRENT);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 

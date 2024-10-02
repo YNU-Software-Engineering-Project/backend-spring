@@ -37,30 +37,37 @@ public class FundingController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("")
-    public ResponseEntity<? super GetFundingListResponseDto> searchFunding(
+    public ResponseEntity<GetFundingListResponseDto> searchFunding(
             @Parameter(description = "검색어") @RequestParam(required = false) String keyword,
             @Parameter(description = """
                     latest: 최신순, oldest: 오래된 순,
                     priceAsc: 가격 높은 순, priceDesc: 가격 낮은 순,
+                    achievementRateDesc: 달성률 높은 순, achievementRateAsc: 달성률 낮은 순,
+                    deadlineDesc: 마감임박순,
                     likes: 추천순(좋아요 순)
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
-            @Parameter(description = "카테고리", example = "category=A0010") @RequestParam(required = false) String category,
-            @Parameter(description = "태그", example = "tags=art,design") @RequestParam(required = false) List<String> tags,
-            @Parameter(description = "최소 후원 금액") @RequestParam(required = false) Long minAmount,
+            @Parameter(description = """
+                            A0010 -> 캐릭터·굿즈, A0020  -> 홈·리빙, A0030 -> 사진,
+                            A0040 -> 게임, A0050 -> 키즈, A0060 -> 도서·전자책,
+                            A0070 -> 여행, A0080 -> 만화·웹툰, A0090 -> 스포츠·아웃도어,
+                            A0100 -> 테크·가전, A0110 -> 자동차, A0120 -> 패션,
+                            A0130 -> 아트, A0140 -> 소셜, A0150 -> 영화·음악,
+                            A0160 -> 반려동물, A0170 -> 디자인
+                    """, example = "A0010,A0020") @RequestParam(required = false) List<String> categories,
+            @Parameter(description = "태그", example = "art,design") @RequestParam(required = false) List<String> tags,
+            @Parameter(description = "최소 달성률") @RequestParam(required = false, defaultValue = "0") int minRate,
+            @Parameter(description = "최대 달성률") @RequestParam(required = false, defaultValue = "100") int maxRate,
             @Parameter(description = "종료된 펀딩 여부 (true: 종료된 펀딩도 포함)")
             @RequestParam(required = false, defaultValue = "false") Boolean isClosed,
             @Parameter(description = "좋아요한 펀딩 여부 (true: 좋아요한 펀딩도 포함)")
             @RequestParam(required = false, defaultValue = "false") Boolean isLiked,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "6") int size
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication != null ? authentication.getName() : null;
 
-        ResponseEntity<? super GetFundingListResponseDto> response = fundingService.searchFunding(
-                email, keyword, sort, category, tags, minAmount, isClosed, isLiked, page, size
-        );
-        return response;
+        return fundingService.searchFunding(email, keyword, sort, categories, tags, minRate, maxRate, isClosed, isLiked, page, size);
     }
 }

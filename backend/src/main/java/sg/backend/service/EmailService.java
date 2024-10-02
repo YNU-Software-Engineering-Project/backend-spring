@@ -1,5 +1,6 @@
 package sg.backend.service;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -8,16 +9,21 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sg.backend.common.ResponseCode;
+import sg.backend.common.ResponseMessage;
 import sg.backend.dto.request.email.EmailSendTokenRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.user.EmailVerificationResponseDto;
 import sg.backend.entity.EmailToken;
 import sg.backend.entity.User;
+import sg.backend.exception.CustomException;
 import sg.backend.repository.EmailTokenRepository;
 import sg.backend.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+
+import static sg.backend.service.UserService.findUserByEmail;
+import static sg.backend.service.UserService.findUserById;
 
 @Service
 @RequiredArgsConstructor
@@ -28,81 +34,68 @@ public class EmailService {
     private final EmailTokenRepository emailTokenRepository;
 
     @Async
-    public void sendEmail(MimeMessage email) {
-        javaMailSender.send(email);
+    public void sendEmail(String receiverEmail, EmailToken emailToken) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(receiverEmail);
+        helper.setSubject("SparkSeed 대학교 메일 인증");
+
+        String body = "<div>"
+                + "<h1> 안녕하세요. SparkSeed 입니다</h1>"
+                + "<br>"
+                + "<p>아래 링크를 클릭하면 대학교 메일 인증이 완료됩니다.<p>"
+                + "<a href='http://localhost:8080/api/confirm-email?token=" + emailToken.getEmailTokenId() + "'>인증 링크</a>"
+                + "</div>";
+
+        helper.setText(body, true);
+
+        javaMailSender.send(message);
     }
 
-    public ResponseEntity<? super ResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String email) {
+    public ResponseEntity<ResponseDto> createEmailToken(EmailSendTokenRequestDto dto, String email) {
 
-        User user;
+        User user = findUserByEmail(email, userRepository);
+        String receiverEmail = dto.getEmail();
+
+        if(!isValidUniversityEmail(receiverEmail))
+            throw new CustomException(ResponseCode.VALIDATION_FAILED, "This is not a valid university email address.");
+
+        EmailToken emailToken = EmailToken.createEmailToken(user.getUserId());
+        emailToken.setEmail(receiverEmail);
+        emailTokenRepository.save(emailToken);
 
         try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isEmpty()) return ResponseDto.noExistUser();
-            user = optionalUser.get();
-
-            String receiverEmail = dto.getEmail();
-            int index = receiverEmail.indexOf("@");
-            String domain = receiverEmail.substring(index+1);
-            if(!domain.contains("ac.kr")) return ResponseDto.validationFailed();
-
-            EmailToken emailToken = EmailToken.createEmailToken(user.getUserId());
-            emailToken.setEmail(receiverEmail);
-            emailTokenRepository.save(emailToken);
-
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(receiverEmail);
-            helper.setSubject("SparkSeed 대학교 메일 인증");
-
-            String body = "<div>"
-                    + "<h1> 안녕하세요. SparkSeed 입니다</h1>"
-                    + "<br>"
-                    + "<p>아래 링크를 클릭하면 대학교 메일 인증이 완료됩니다.<p>"
-                    + "<a href='http://localhost:8080/api/confirm-email?token=" + emailToken.getEmailTokenId() + "'>인증 링크</a>"
-                    + "</div>";
-
-            helper.setText(body, true);
-
-            javaMailSender.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
+            sendEmail(receiverEmail, emailToken);
+        } catch (MessagingException e) {
+            throw new CustomException("EMAIL_SENDING_FAILED", e.getMessage());
         }
 
         return ResponseDto.success();
     }
 
-    public EmailToken findByEmailTokenIdAndExpirationDateAfterAndExpired(String emailTokenId) {
-        Optional<EmailToken> emailToken = emailTokenRepository
-                .findByEmailTokenIdAndExpirationDateAfterAndExpired(emailTokenId, LocalDateTime.now(), false);
+    private boolean isValidUniversityEmail(String receiverEmail) {
+        int index = receiverEmail.indexOf("@");
+        String domain = receiverEmail.substring(index+1);
+        return domain.endsWith("ac.kr");
+    }
 
-        return emailToken.orElse(null);
+    public EmailToken findByEmailTokenIdAndExpirationDateAfterAndExpired(String emailTokenId) {
+        return emailTokenRepository
+                .findByEmailTokenIdAndExpirationDateAfterAndExpired(emailTokenId, LocalDateTime.now(), false)
+                .orElseThrow(() -> new CustomException(ResponseCode.EMAIL_TOKEN_NOT_FOUND, ResponseMessage.EMAIL_TOKEN_NOT_FOUND));
     }
 
     @Transactional
     public ResponseEntity<? super EmailVerificationResponseDto> verifyEmail(String token) {
 
-        User user;
+        EmailToken emailToken = findByEmailTokenIdAndExpirationDateAfterAndExpired(token);
 
-        try {
-            EmailToken emailToken = findByEmailTokenIdAndExpirationDateAfterAndExpired(token);
-            if(emailToken == null) return EmailVerificationResponseDto.invalidToken();
+        User user = findUserById(emailToken.getUserId(), userRepository);
+        emailToken.setTokenToUsed();
 
-            user = userRepository.findByUserId(emailToken.getUserId());
-            emailToken.setTokenToUsed();
-
-            if(user == null) return EmailVerificationResponseDto.noExistUser();
-
-            user.setSchoolEmail(emailToken.getEmail());
-            user.setSchoolEmailVerified(true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseDto.databaseError();
-        }
+        user.setSchoolEmail(emailToken.getEmail());
+        user.setSchoolEmailVerified(true);
 
         return EmailVerificationResponseDto.success();
     }

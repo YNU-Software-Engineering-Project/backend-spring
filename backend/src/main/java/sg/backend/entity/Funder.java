@@ -22,14 +22,13 @@ public class Funder {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")  //닉네임, 전화번호, 주소,
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id")
     private Funding funding;
-
 
     @OneToMany(mappedBy = "funder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectedReward> selrewardList;

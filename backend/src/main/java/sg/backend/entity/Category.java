@@ -29,4 +29,12 @@ public enum Category {
         this.message = message;
     }
 
+    public static Category getCategory(String message) {
+        for (Category category : Category.values()) {
+            if (category.getMessage().equals(message)) {
+                return category;
+            }
+        }
+        return null;
+    }
 }

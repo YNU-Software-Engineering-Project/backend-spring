@@ -32,13 +32,12 @@ public class NotificationController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("")
-    public ResponseEntity<? super GetNotificationsResponseDto> getNotifications(
+    public ResponseEntity<GetNotificationsResponseDto> getNotifications(
             @AuthenticationPrincipal(expression = "username") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        ResponseEntity<? super GetNotificationsResponseDto> response = notificationService.getNotifications(email, page, size);
-        return response;
+        return notificationService.getNotifications(email, page, size);
     }
 
     @Operation(
@@ -52,11 +51,10 @@ public class NotificationController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @DeleteMapping("")
-    public ResponseEntity<? super ResponseDto> deleteNotifications(
+    public ResponseEntity<ResponseDto> deleteNotifications(
             @AuthenticationPrincipal(expression = "username") String email
     ) {
-        ResponseEntity<? super ResponseDto> response = notificationService.deleteNotifications(email);
-        return response;
+        return notificationService.deleteNotifications(email);
     }
 
     @Operation(
@@ -74,11 +72,10 @@ public class NotificationController {
                     content = @Content(schema = @Schema(implementation = ResponseDto.class))),
     })
     @DeleteMapping("/{notificationId}")
-    public ResponseEntity<? super ResponseDto> deleteNotification(
+    public ResponseEntity<ResponseDto> deleteNotification(
             @AuthenticationPrincipal(expression = "username") String email,
             @PathVariable Long notificationId
     ) {
-        ResponseEntity<? super ResponseDto> response = notificationService.deleteNotification(email, notificationId);
-        return response;
+        return notificationService.deleteNotification(email, notificationId);
     }
 }

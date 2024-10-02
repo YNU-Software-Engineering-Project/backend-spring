@@ -1,25 +1,27 @@
 package sg.backend.dto.response.auth;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import sg.backend.common.ResponseCode;
 import sg.backend.common.ResponseMessage;
 import sg.backend.dto.response.ResponseDto;
+import sg.backend.entity.Role;
 
 @Getter
 public class SignUpResponseDto extends ResponseDto {
 
-    private String accessToken;
+    private final String accessToken;
+    private final Role role;
 
-    private SignUpResponseDto(String accessToken){
+    private SignUpResponseDto(String accessToken, Role role){
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.accessToken = accessToken;
+        this.role = role;
     }
 
-    public static ResponseEntity<ResponseDto> success(String accessToken){
-        SignUpResponseDto result = new SignUpResponseDto(accessToken);
+    public static ResponseEntity<ResponseDto> success(String accessToken, Role role){
+        SignUpResponseDto result = new SignUpResponseDto(accessToken,role);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

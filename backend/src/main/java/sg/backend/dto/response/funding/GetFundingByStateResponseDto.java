@@ -14,11 +14,11 @@ import java.util.List;
 
 @Getter
 public class GetFundingByStateResponseDto extends ResponseDto {
-    private List<ShortFundingDataDto> data;
-    private int page;
-    private int size;
-    private int totalPages;
-    private long totalElements;
+    private final List<ShortFundingDataDto> data;
+    private final int page;
+    private final int size;
+    private final int totalPages;
+    private final long totalElements;
 
     private GetFundingByStateResponseDto(Page<Funding> fundingList, List<ShortFundingDataDto> data) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
