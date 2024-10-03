@@ -37,7 +37,7 @@ public class FundingBoardController {
     @GetMapping("/{fundingId}/dashboard")
     public ResponseEntity<FundingDashboardResponseDto> getFundingDashboard(
             @AuthenticationPrincipal(expression = "username") String email,
-            @PathVariable("funding_id") Long fundingId){
+            @PathVariable("fundingId") Long fundingId){
         FundingDashboardResponseDto dashboard = fundingBoardService.getFundingDashboard(email, fundingId);
         return ResponseEntity.ok(dashboard);
     }

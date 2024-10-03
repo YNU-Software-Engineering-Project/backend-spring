@@ -43,6 +43,7 @@ public class FundingBoardService {
     private final JPAQueryFactory queryFactory;
 
 
+    @Transactional
     public FundingDashboardResponseDto getFundingDashboard(String email, Long fundingId){
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 펀딩이 존재하지 않습니다."));
