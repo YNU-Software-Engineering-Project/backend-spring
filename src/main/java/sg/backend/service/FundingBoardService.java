@@ -42,9 +42,13 @@ public class FundingBoardService {
     private final UserRepository userRepository;
     private final JPAQueryFactory queryFactory;
 
-    public FundingDashboardResponseDto getFundingDashboard(Long fundingId){
+
+    public FundingDashboardResponseDto getFundingDashboard(String email, Long fundingId){
         Funding funding = fundingRepository.findById(fundingId)
                 .orElseThrow(()-> new IllegalArgumentException("해당 펀딩이 존재하지 않습니다."));
+        User user = findUserByEmail(email, userRepository);
+        checkFundingOwner(funding, user);
+
         return new FundingDashboardResponseDto(funding);
     }
 
