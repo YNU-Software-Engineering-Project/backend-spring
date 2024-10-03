@@ -25,15 +25,20 @@ public class FundingBoardController {
     private final FundingBoardService fundingBoardService;
 
     @Operation(
-            summary = "펀딩 상황판 불러오기"
+            summary = "펀딩 상황판 불러오기",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "상황판 불러오기 성공",
-                    content = @Content(schema = @Schema(implementation = FundingDashboardResponseDto.class)))
+                    content = @Content(schema = @Schema(implementation = FundingDashboardResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
     })
     @GetMapping("/{fundingId}/dashboard")
-    public ResponseEntity<FundingDashboardResponseDto> getFundingDashboard(@PathVariable Long fundingId){
-        FundingDashboardResponseDto dashboard = fundingBoardService.getFundingDashboard(fundingId);
+    public ResponseEntity<FundingDashboardResponseDto> getFundingDashboard(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable("fundingId") Long fundingId){
+        FundingDashboardResponseDto dashboard = fundingBoardService.getFundingDashboard(email, fundingId);
         return ResponseEntity.ok(dashboard);
     }
 
