@@ -21,7 +21,7 @@ public interface FundingRepository extends JpaRepository<Funding, Long> {
     List<Funding> findTop3ByCurrentOrderByTargetAmountAsc(State current);
 
     @Query("SELECT f FROM Funding f WHERE f.current = :current ORDER BY (f.currentAmount / f.targetAmount) DESC")
-    List<Funding> findTop3ByCurrentOrderByAchievementRateDesc(@Param("current") State current);
+    List<Funding> findTop3ByCurrentOrderByAchievementRateDesc(@Param("current")State current, Pageable pageable);
 
     Page<Funding> findByUser(User user, PageRequest pageRequest);
 

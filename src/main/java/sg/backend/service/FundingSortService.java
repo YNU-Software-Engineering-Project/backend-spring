@@ -3,6 +3,8 @@ package sg.backend.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.response.funding.FundingSortResponseDto;
 import sg.backend.entity.Funding;
@@ -101,7 +103,7 @@ public class FundingSortService {
     }
 
     @Transactional
-    public List<FundingSortResponseDto> getHighAchievementFundings(String email){
+    public List<FundingSortResponseDto> getHighAchievementFundings(String email) {
         User user = null;
         boolean isAuthenticated;
         if (!email.equals("anonymousUser")) isAuthenticated = true;
@@ -113,11 +115,12 @@ public class FundingSortService {
             if (optionalUser.isEmpty()) return Collections.emptyList();
         }
 
-        return fundingRepository.findTop3ByCurrentOrderByAchievementRateDesc(State.ONGOING)
+        Pageable pageable = PageRequest.of(0, 3);
+        return fundingRepository.findTop3ByCurrentOrderByAchievementRateDesc(State.ONGOING, pageable)
                 .stream()
                 .map(funding -> {
                     boolean likedByCurrentUser = false;
-                    if(isAuthenticated) {
+                    if (isAuthenticated) {
                         likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
                     }
                     return new FundingSortResponseDto(funding, likedByCurrentUser);
