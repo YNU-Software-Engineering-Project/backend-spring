@@ -3,8 +3,6 @@ package sg.backend.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sg.backend.dto.response.funding.FundingSortResponseDto;
 import sg.backend.entity.Funding;
@@ -28,31 +26,28 @@ public class FundingSortService {
     private final FundingLikeRepository fundingLikeRepository;
 
     @Transactional
-    public Page<FundingSortResponseDto> getNewFundings(int page, String email){
-        if(page < 0){
-            throw new IllegalArgumentException("Page number error");
-        } else{
-            User user = null;
-            boolean isAuthenticated;
-            if(!email.equals("anonymousUser")) isAuthenticated = true;
-            else {
-                isAuthenticated = false;
-            }
-            if(isAuthenticated) {
-                Optional<User> optionalUser = userRepository.findByEmail(email);
-                if(optionalUser.isEmpty()) return Page.empty();
-            }
-
-            Pageable pageable = PageRequest.of(page, 3);
-            return fundingRepository.findAllByCurrentOrderByCreatedAtDesc(State.ONGOING, pageable)
-                    .map(funding -> {
-                        boolean likedByCurrentUser = false;
-                        if(isAuthenticated) {
-                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
-                        }
-                        return new FundingSortResponseDto(funding, likedByCurrentUser);
-                    });
+    public List<FundingSortResponseDto> getNewFundings(String email){
+        User user = null;
+        boolean isAuthenticated;
+        if (!email.equals("anonymousUser")) isAuthenticated = true;
+        else {
+            isAuthenticated = false;
         }
+        if (isAuthenticated) {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return Collections.emptyList();
+        }
+
+        return fundingRepository.findTop3ByCurrentOrderByCreatedAtDesc(State.ONGOING)
+                .stream()
+                .map(funding -> {
+                    boolean likedByCurrentUser = false;
+                    if(isAuthenticated) {
+                        likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
+                    }
+                    return new FundingSortResponseDto(funding, likedByCurrentUser);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -81,58 +76,52 @@ public class FundingSortService {
     }
 
     @Transactional
-    public Page<FundingSortResponseDto> getSmallFundings(int page, String email){
-        if(page < 0){
-            throw new IllegalArgumentException("Page number error");
-        } else{
-            User user = null;
-            boolean isAuthenticated;
-            if(!email.equals("anonymousUser")) isAuthenticated = true;
-            else {
-                isAuthenticated = false;
-            }
-            if(isAuthenticated) {
-                Optional<User> optionalUser = userRepository.findByEmail(email);
-                if(optionalUser.isEmpty()) return Page.empty();
-            }
-
-            Pageable pageable = PageRequest.of(page, 3);
-            return fundingRepository.findAllByCurrentOrderByTargetAmountAsc(State.ONGOING, pageable)
-                    .map(funding -> {
-                        boolean likedByCurrentUser = false;
-                        if(isAuthenticated) {
-                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
-                        }
-                        return new FundingSortResponseDto(funding, likedByCurrentUser);
-                    });
+    public List<FundingSortResponseDto> getSmallFundings(String email){
+        User user = null;
+        boolean isAuthenticated;
+        if (!email.equals("anonymousUser")) isAuthenticated = true;
+        else {
+            isAuthenticated = false;
         }
+        if (isAuthenticated) {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return Collections.emptyList();
+        }
+
+        return fundingRepository.findTop3ByCurrentOrderByTargetAmountAsc(State.ONGOING)
+                .stream()
+                .map(funding -> {
+                    boolean likedByCurrentUser = false;
+                    if(isAuthenticated) {
+                        likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
+                    }
+                    return new FundingSortResponseDto(funding, likedByCurrentUser);
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public Page<FundingSortResponseDto> getHighAchievementFundings(int page,String email){
-        if(page < 0){
-            throw new IllegalArgumentException("Page number error");
-        } else{
-            User user = null;
-            boolean isAuthenticated;
-            if(!email.equals("anonymousUser")) isAuthenticated = true;
-            else {
-                isAuthenticated = false;
-            }
-            if(isAuthenticated) {
-                Optional<User> optionalUser = userRepository.findByEmail(email);
-                if(optionalUser.isEmpty()) return Page.empty();
-            }
-
-            Pageable pageable = PageRequest.of(page, 3);
-            return fundingRepository.findAllByCurrentOrderByAchievementRateDesc(State.ONGOING, pageable)
-                    .map(funding -> {
-                        boolean likedByCurrentUser = false;
-                        if(isAuthenticated) {
-                            likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
-                        }
-                        return new FundingSortResponseDto(funding, likedByCurrentUser);
-                    });
+    public List<FundingSortResponseDto> getHighAchievementFundings(String email){
+        User user = null;
+        boolean isAuthenticated;
+        if (!email.equals("anonymousUser")) isAuthenticated = true;
+        else {
+            isAuthenticated = false;
         }
+        if (isAuthenticated) {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) return Collections.emptyList();
+        }
+
+        return fundingRepository.findTop3ByCurrentOrderByAchievementRateDesc(State.ONGOING)
+                .stream()
+                .map(funding -> {
+                    boolean likedByCurrentUser = false;
+                    if(isAuthenticated) {
+                        likedByCurrentUser = fundingLikeRepository.findByUserAndFunding(user, new Funding(funding.getFunding_id())).isPresent();
+                    }
+                    return new FundingSortResponseDto(funding, likedByCurrentUser);
+                })
+                .collect(Collectors.toList());
     }
 }

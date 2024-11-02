@@ -35,11 +35,11 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/new")
-    public ResponseEntity<Page<FundingSortResponseDto>> getNewFundings(@RequestParam(name = "page") int page){
+    public ResponseEntity<List<FundingSortResponseDto>> getNewFundings(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication != null ? authentication.getName() : null;
 
-        return ResponseEntity.ok(fundingSortService.getNewFundings(page, email));
+        return ResponseEntity.ok(fundingSortService.getNewFundings(email));
     }
 
     @Operation(
@@ -65,11 +65,11 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/small")
-    public ResponseEntity<Page<FundingSortResponseDto>> getSmallFundings(@RequestParam(name = "page") int page){
+    public ResponseEntity<List<FundingSortResponseDto>> getSmallFundings(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication != null ? authentication.getName() : null;
 
-        return ResponseEntity.ok(fundingSortService.getSmallFundings(page, email));
+        return ResponseEntity.ok(fundingSortService.getSmallFundings(email));
     }
 
     @Operation(
@@ -80,10 +80,10 @@ public class FundingSortController {
                     content = @Content(schema = @Schema(implementation = FundingSortResponseDto.class)))
     })
     @GetMapping("/achievement")
-    public ResponseEntity<Page<FundingSortResponseDto>> getHighAchievementFundings(@RequestParam(name = "page") int page){
+    public ResponseEntity<List<FundingSortResponseDto>> getHighAchievementFundings(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication != null ? authentication.getName() : null;
 
-        return ResponseEntity.ok(fundingSortService.getHighAchievementFundings(page, email));
+        return ResponseEntity.ok(fundingSortService.getHighAchievementFundings(email));
     }
 }

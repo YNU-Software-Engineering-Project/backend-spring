@@ -14,14 +14,14 @@ import sg.backend.entity.User;
 
 public interface FundingRepository extends JpaRepository<Funding, Long> {
 
-    Page<Funding> findAllByCurrentOrderByCreatedAtDesc(State current, Pageable pageable);
+    List<Funding> findTop3ByCurrentOrderByCreatedAtDesc(State current);
 
     List<Funding> findTop3ByCurrentOrderByTotalLikesDesc(State current);
 
-    Page<Funding> findAllByCurrentOrderByTargetAmountAsc(State current, Pageable pageable);
+    List<Funding> findTop3ByCurrentOrderByTargetAmountAsc(State current);
 
     @Query("SELECT f FROM Funding f WHERE f.current = :current ORDER BY (f.currentAmount / f.targetAmount) DESC")
-    Page<Funding> findAllByCurrentOrderByAchievementRateDesc(@Param("current") State current, Pageable pageable);
+    List<Funding> findTop3ByCurrentOrderByAchievementRateDesc(@Param("current") State current);
 
     Page<Funding> findByUser(User user, PageRequest pageRequest);
 
