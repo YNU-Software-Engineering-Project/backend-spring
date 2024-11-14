@@ -59,6 +59,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notificationList;
 
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
     public User(String email, String password, String phoneNumber, Role role){
         this.email = email;
         this.password = password;

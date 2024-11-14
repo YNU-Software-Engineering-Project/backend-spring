@@ -25,6 +25,24 @@ public class FundingBoardController {
     private final FundingBoardService fundingBoardService;
 
     @Operation(
+            summary = "게시물 권한 확인",
+            security = @SecurityRequirement(name = "Bearer 토큰 값")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "권한 확인 성공",
+                    content = @Content(schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한 없음 또는 잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ResponseDto.class)))
+    })
+    @GetMapping("/{fundingId}/check-permission")
+    public ResponseEntity<Boolean> checkPermission(
+            @AuthenticationPrincipal(expression = "username") String email,
+            @PathVariable Long fundingId){
+        boolean hasPermission = fundingBoardService.checkPermission(email, fundingId);
+        return ResponseEntity.ok(hasPermission);
+    }
+
+    @Operation(
             summary = "펀딩 상황판 불러오기",
             security = @SecurityRequirement(name = "Bearer 토큰 값")
     )
@@ -65,7 +83,7 @@ public class FundingBoardController {
                     phoneNumAsc: 전화번호 오름차순, phoneNumDesc: 전화번호 내림차순,
             """)
             @RequestParam(required = false, defaultValue = "latest") String sort,
-            @Parameter(description = "아이디로 검색")
+             @Parameter(description = "아이디로 검색")
             @RequestParam(required = false) String id,
             @Parameter(description = "리워드 옵션 번호", example = "0")
             @RequestParam(required = false) Integer rewardNo,

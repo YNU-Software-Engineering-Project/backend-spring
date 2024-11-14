@@ -26,8 +26,8 @@ public class FundingLikeService {
     private final FundingRepository fundingRepository;
 
     @Transactional
-    public ResponseEntity<ResponseDto> toggleFundingLike(FundingLikeRequestDto requestDto){
-        User user = userRepository.findById(requestDto.getUserId())
+    public ResponseEntity<ResponseDto> toggleFundingLike(FundingLikeRequestDto requestDto, Long userId){
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid User ID"));
         Funding funding = fundingRepository.findById(requestDto.getFundingId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Funding ID"));
@@ -46,7 +46,7 @@ public class FundingLikeService {
             return ResponseDto.success();
         } else{
             FundingLike fundingLike = new FundingLike();
-            fundingLike.setUser(new User(requestDto.getUserId()));
+            fundingLike.setUser(new User(userId));
             fundingLike.setFunding(new Funding(requestDto.getFundingId()));
             fundingLike.setCreatedAt(LocalDateTime.now());
             fundingLikeRepository.save(fundingLike);
