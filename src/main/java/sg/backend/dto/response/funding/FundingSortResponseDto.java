@@ -21,7 +21,7 @@ public class FundingSortResponseDto {
     private LocalDateTime createdAt;
     private State current;
     private String details;
-    private List<String> tags;
+    private List<String> tag;
     private boolean likedByCurrentUser;
 
     public FundingSortResponseDto(Funding funding, boolean likedByCurrentUser){
@@ -33,10 +33,10 @@ public class FundingSortResponseDto {
         this.createdAt = funding.getCreatedAt();
         this.current = funding.getCurrent();
         this.details = funding.getProjectSummary();
-        List<String> tags = funding.getTagList().stream()
+        List<String> tag = funding.getTagList().stream()
                 .map(Tag::getTag_name)
                 .collect(Collectors.toList());
-        this.tags = tags;
+        this.tag = tag;
         this.likedByCurrentUser = likedByCurrentUser;
     }
 

@@ -15,6 +15,7 @@ public class QuestionResponseDto {
     private Long questionId;
     private String content;
     private String nickname;
+    private String profileImage;
     private LocalDateTime createdAt;
     private int commentCount;
 
@@ -24,6 +25,7 @@ public class QuestionResponseDto {
         dto.setContent(question.getContent());
         dto.setCreatedAt(question.getCreatedAt());
         dto.setNickname(question.getUser().getNickname());
+        dto.setProfileImage(question.getUser().getProfileImage());
         return dto;
     }
 

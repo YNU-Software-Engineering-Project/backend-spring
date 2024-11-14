@@ -14,8 +14,9 @@ import sg.backend.entity.User;
 public class CommentRequestDto {
 
     private String content;
+    private String title;
 
     public Comment toEntity(Question question, User user){
-        return new Comment(question, user, content);
+        return new Comment(question, user, title, content);
     }
 }

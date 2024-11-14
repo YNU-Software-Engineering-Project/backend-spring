@@ -42,6 +42,20 @@ public class FundingBoardService {
     private final UserRepository userRepository;
     private final JPAQueryFactory queryFactory;
 
+    @Transactional
+    public boolean checkPermission(String email, Long fundingId) {
+        Funding funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 펀딩이 존재하지 않습니다."));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        if (funding.getUser().getUserId().equals(user.getUserId())) {
+            return true;
+        }
+
+        return user.isAdmin();
+    }
 
     @Transactional
     public FundingDashboardResponseDto getFundingDashboard(String email, Long fundingId){
