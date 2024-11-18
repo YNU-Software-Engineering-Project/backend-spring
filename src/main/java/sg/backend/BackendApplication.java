@@ -6,15 +6,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 //
 // api_test / hyeon
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sg.backend.config.OAuthProperties;
 //
 //
 
 @EnableScheduling
 @EnableJpaAuditing
+@EnableConfigurationProperties(OAuthProperties.class)
 @SpringBootApplication
 public class BackendApplication {
 
