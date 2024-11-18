@@ -25,6 +25,7 @@ public interface ResponseCode {
     String NOT_EXISTED_STORY = "NES";
     String NOT_EXISTED_REWARD = "NER";
     String NOT_EXISTED_POLICY = "NEP";
+    String ALREADY_EXISTED = "AL";
 
     // HTTP Status 401
     String SIGN_IN_FAIL = "SF";
