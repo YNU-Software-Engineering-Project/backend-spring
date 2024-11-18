@@ -19,8 +19,9 @@ public class GetProjectResponseDto extends ResponseDto {
     private String[] image_uuid; //파일 이름
 
     private String summary;
+    private String story;
 
-    private GetProjectResponseDto(String title, String main_url,String main_uuid, String[] image_url, String[] image_uuid,String summary){
+    private GetProjectResponseDto(String title, String main_url,String main_uuid, String[] image_url, String[] image_uuid,String summary, String story){
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.title = title;
         this.main_url = main_url;
@@ -28,10 +29,11 @@ public class GetProjectResponseDto extends ResponseDto {
         this.image_url = image_url;
         this.image_uuid = image_uuid;
         this.summary = summary;
+        this.story = story;
     }
 
-    public static ResponseEntity<GetProjectResponseDto> success(String title, String main_url,String main_uuid, String[] image_url, String[] image_uuid,String summary) {
-        GetProjectResponseDto result = new GetProjectResponseDto(title, main_url, main_uuid, image_url, image_uuid, summary);
+    public static ResponseEntity<GetProjectResponseDto> success(String title, String main_url,String main_uuid, String[] image_url, String[] image_uuid,String summary, String story) {
+        GetProjectResponseDto result = new GetProjectResponseDto(title, main_url, main_uuid, image_url, image_uuid, summary, story);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

@@ -46,6 +46,7 @@ public class FundingStoryService {
         String[] images_url;
         String[] images_uuid;
         String summary;
+        String story;
         try{
             Optional<Funding> option = fundingRepository.findById(funding_id);
             if(option.isEmpty()){
@@ -80,12 +81,16 @@ public class FundingStoryService {
             }
 
             summary = funding.getProjectSummary();
+            story = funding.getStory();
+            if(story == null || story.isEmpty()){
+                story = "";
+            }
 
         } catch(Exception e){
             e.printStackTrace();
             return ResponseDto.databaseError();
         }
-        return GetProjectResponseDto.success(title, main_url, main_uuid,images_url, images_uuid,summary);
+        return GetProjectResponseDto.success(title, main_url, main_uuid,images_url, images_uuid,summary,story);
     }
 
     @Transactional
