@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import sg.backend.dto.request.user.PatchUserProfileRequestDto;
 
 import java.time.LocalDateTime;
@@ -50,6 +51,13 @@ public class User {
 
     private LocalDateTime createdAt;
 
+    @Setter
+    private boolean isSocialUser;
+    @Setter
+    private String socialProvider;
+    @Setter
+    private String socialId;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Funding> fundingList;
 
@@ -64,6 +72,18 @@ public class User {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.schoolEmailVerified = false;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public User(String socialId, String socialProvider, Role role) {
+        this.email = null;
+        this.password = null;
+        this.phoneNumber = null;
+        this.socialId = socialId;
+        this.socialProvider = socialProvider;
+        this.role = role;
+        this.isSocialUser = true;
         this.schoolEmailVerified = false;
         this.createdAt = LocalDateTime.now();
     }

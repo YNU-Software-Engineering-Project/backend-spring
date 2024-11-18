@@ -14,7 +14,7 @@ public class LoginResponseDto extends ResponseDto {
     private final String accessToken;
     private final Role role;
 
-    private LoginResponseDto(String accessToken, Role role) {
+    public LoginResponseDto(String accessToken, Role role) {
         super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
         this.accessToken = accessToken;
         this.role = role;
