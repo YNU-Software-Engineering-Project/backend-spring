@@ -29,12 +29,14 @@ public class Comment {
     private User user;
 
     private String content;
+    private String title;
     private LocalDateTime createdAt;
 
-    public Comment(Question question, User user, String content) {
+    public Comment(Question question, User user, String title, String content) {
         this.question = question;
         this.user = user;
         this.content = content;
+        this.title = title;
         this.createdAt = LocalDateTime.now();
     }
 }
