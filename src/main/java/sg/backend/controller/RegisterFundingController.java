@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.request.wirtefunding.FundingInfoRequestDto;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.writefunding.RegisterResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.FundingInfoService;
 
 import java.util.List;
@@ -56,9 +57,9 @@ public class RegisterFundingController {
     @PostMapping("api/register/info")
     public ResponseEntity<? super RegisterResponseDto> register_funding(
             @RequestBody @Valid FundingInfoRequestDto requestBody,
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ){
-        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.modifyInfo(null,requestBody, email,true);
+        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.modifyInfo(null,requestBody, principal.getEmail(),true);
         return response;
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)  //이메일 유효성 검사 처리

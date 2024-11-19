@@ -45,6 +45,7 @@ public class TokenProvider {
                 .setExpiration(expiry)
                 .setSubject(user.getEmail())
                 .claim("id", user.getUserId())
+                .claim("provider", user.getSocialProvider())
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -63,13 +64,14 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token){
         Claims claims = getClaims(token);
+        String email = claims.getSubject();
+        String provider = claims.get("provider", String.class);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-        return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities),
-                token,
-                authorities
-        );
+
+        CustomPrincipal principal = new CustomPrincipal(email, provider);
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
 
     private Claims getClaims(String token){
         return Jwts.parserBuilder()
