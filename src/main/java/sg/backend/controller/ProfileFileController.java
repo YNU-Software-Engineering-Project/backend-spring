@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.exception.CustomException;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.FileService;
 
 @RestController
@@ -52,8 +53,9 @@ public class ProfileFileController {
     @DeleteMapping(value = "/{fileName}")
     public ResponseEntity<ResponseDto> deleteImage(
             @PathVariable("fileName") String fileName,
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ) {
+        String email = principal.getEmail();
         return fileService.deleteProfileImage(fileName, email);
     }
 }
