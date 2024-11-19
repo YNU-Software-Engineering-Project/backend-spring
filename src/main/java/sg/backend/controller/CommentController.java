@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.request.community.CommentRequestDto;
 import sg.backend.dto.response.community.CommentResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.CommentService;
 
 import java.util.List;
@@ -29,7 +30,8 @@ public class CommentController {
     public ResponseEntity<String> createComment(
             @PathVariable("questionId") Long questionId,
             @RequestBody CommentRequestDto requestDto,
-            @AuthenticationPrincipal(expression = "username") String email){
+            @AuthenticationPrincipal CustomPrincipal principal){
+        String email = principal.getEmail();
         return commentService.createComment(questionId, requestDto, email);
     }
 
@@ -53,7 +55,8 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(
             @PathVariable("commentId") Long commentId,
-            @AuthenticationPrincipal(expression = "username")String email){
+            @AuthenticationPrincipal CustomPrincipal principal){
+        String email = principal.getEmail();
         return commentService.deleteComment(commentId, email);
     }
 }

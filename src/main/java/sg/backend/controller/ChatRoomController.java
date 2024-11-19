@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sg.backend.dto.response.chat.GetChatRoomListDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.ChatRoomService;
 
 @RestController
@@ -39,11 +40,12 @@ public class ChatRoomController {
     })
     @GetMapping
     public ResponseEntity<GetChatRoomListDto> getChatRoomList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+        String email = principal.getEmail();
         return chatRoomService.getChatRoomList(email, pageable);
     }
 }

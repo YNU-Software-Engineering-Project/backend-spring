@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.request.community.QuestionRequestDto;
 import sg.backend.dto.response.community.QuestionResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.QuestionService;
 
 import java.util.List;
@@ -29,7 +30,8 @@ public class QuestionController {
     public ResponseEntity<String> createQuestion(
             @PathVariable("fundingId") Long fundingId,
             @RequestBody QuestionRequestDto requestDto,
-            @AuthenticationPrincipal(expression = "username") String email){
+            @AuthenticationPrincipal CustomPrincipal principal){
+        String email = principal.getEmail();
         return questionService.createQuestion(fundingId, requestDto, email);
     }
 
@@ -53,7 +55,8 @@ public class QuestionController {
     @DeleteMapping("/{questionId}")
     public ResponseEntity<String> deleteQuestion(
             @PathVariable("questionId") Long questionId,
-            @AuthenticationPrincipal(expression = "username") String email){
+            @AuthenticationPrincipal CustomPrincipal principal){
+        String email = principal.getEmail();
         return questionService.deleteQuestion(questionId, email);
     }
 }

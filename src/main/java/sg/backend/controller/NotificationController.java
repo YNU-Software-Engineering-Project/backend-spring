@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.notification.GetNotificationsResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.NotificationService;
 
 @RestController
@@ -33,10 +34,11 @@ public class NotificationController {
     })
     @GetMapping("")
     public ResponseEntity<GetNotificationsResponseDto> getNotifications(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
+        String email = principal.getEmail();
         return notificationService.getNotifications(email, page, size);
     }
 
@@ -52,8 +54,9 @@ public class NotificationController {
     })
     @DeleteMapping("")
     public ResponseEntity<ResponseDto> deleteNotifications(
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ) {
+        String email = principal.getEmail();
         return notificationService.deleteNotifications(email);
     }
 
@@ -73,9 +76,10 @@ public class NotificationController {
     })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<ResponseDto> deleteNotification(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long notificationId
     ) {
+        String email = principal.getEmail();
         return notificationService.deleteNotification(email, notificationId);
     }
 }

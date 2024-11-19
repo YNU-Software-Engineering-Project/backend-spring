@@ -38,8 +38,9 @@ public class RegisterFundingController {
     })
     @GetMapping("api/register")
     public ResponseEntity<? super RegisterResponseDto> register(
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ){
+        String email = principal.getEmail();
         ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.register(email);
         return response;
     }

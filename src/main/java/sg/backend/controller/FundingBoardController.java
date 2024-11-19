@@ -15,6 +15,7 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.FundingDashboardResponseDto;
 import sg.backend.dto.response.funding.GetFunderListResponseDto;
 import sg.backend.dto.response.funding.GetRewardListResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.FundingBoardService;
 
 @RestController
@@ -36,8 +37,9 @@ public class FundingBoardController {
     })
     @GetMapping("/{fundingId}/check-permission")
     public ResponseEntity<Boolean> checkPermission(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long fundingId){
+        String email = principal.getEmail();
         boolean hasPermission = fundingBoardService.checkPermission(email, fundingId);
         return ResponseEntity.ok(hasPermission);
     }
@@ -54,8 +56,9 @@ public class FundingBoardController {
     })
     @GetMapping("/{fundingId}/dashboard")
     public ResponseEntity<FundingDashboardResponseDto> getFundingDashboard(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable("fundingId") Long fundingId){
+        String email = principal.getEmail();
         FundingDashboardResponseDto dashboard = fundingBoardService.getFundingDashboard(email, fundingId);
         return ResponseEntity.ok(dashboard);
     }
@@ -72,7 +75,7 @@ public class FundingBoardController {
     })
     @GetMapping("/{fundingId}/funders")
     public ResponseEntity<GetFunderListResponseDto> getFunderList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long fundingId,
             @Parameter(description = """
                     latest: 최근 후원 순, oldest: 가입 오래된 순,
@@ -90,6 +93,7 @@ public class FundingBoardController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
+        String email = principal.getEmail();
         return fundingBoardService.getFunderList(email, fundingId, sort, id, rewardNo, page, size);
     }
 

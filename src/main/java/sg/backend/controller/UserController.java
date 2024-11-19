@@ -19,6 +19,7 @@ import sg.backend.dto.response.ResponseDto;
 import sg.backend.dto.response.funding.GetFundingListResponseDto;
 import sg.backend.dto.response.funding.GetMyFundingListResponseDto;
 import sg.backend.dto.response.user.GetUserProfileResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.EmailService;
 import sg.backend.service.UserService;
 
@@ -42,8 +43,9 @@ public class UserController {
     })
     @GetMapping("")
     public ResponseEntity<GetUserProfileResponseDto> getUserProfile(
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ) {
+        String email = principal.getEmail();
         return userService.getUserProfile(email);
     }
 
@@ -60,8 +62,9 @@ public class UserController {
     @PatchMapping("/modify-phone-number")
     public ResponseEntity<ResponseDto> modifyPhoneNumber(
             @RequestBody @Valid PatchPhoneNumberRequestDto requestBody,
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ){
+        String email = principal.getEmail();
         return userService.modifyPhoneNumber(requestBody, email);
     }
 
@@ -82,8 +85,9 @@ public class UserController {
     @PostMapping("/email-verification")
     public ResponseEntity<ResponseDto> sendEmailToken(
             @RequestBody @Valid EmailSendTokenRequestDto requestBody,
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
             ) {
+        String email = principal.getEmail();
         return emailService.createEmailToken(requestBody, email);
     }
 
@@ -108,8 +112,9 @@ public class UserController {
     public ResponseEntity<ResponseDto> modifyProfile(
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") @Valid PatchUserProfileRequestDto userInfo,
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ) {
+        String email = principal.getEmail();
         return userService.modifyProfile(profileImage, userInfo, email);
     }
 
@@ -125,10 +130,11 @@ public class UserController {
     })
     @GetMapping("/wishlist")
     public ResponseEntity<GetFundingListResponseDto> getWishList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
+        String email = principal.getEmail();
         return userService.getWishList(email, page, size);
     }
 
@@ -144,10 +150,11 @@ public class UserController {
     })
     @GetMapping("/pledges")
     public ResponseEntity<GetFundingListResponseDto> getPledgeList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
+        String email = principal.getEmail();
         return userService.getPledgeList(email, page, size);
     }
 
@@ -163,10 +170,11 @@ public class UserController {
     })
     @GetMapping("/fundings")
     public ResponseEntity<GetMyFundingListResponseDto> getMyFundingList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
+        String email = principal.getEmail();
         return userService.getMyFundingList(email, page, size);
     }
 

@@ -16,6 +16,7 @@ import sg.backend.dto.response.funding.GetFundingByStateResponseDto;
 import sg.backend.dto.response.funding.GetFundingStateCountResponseDto;
 import sg.backend.dto.response.user.GetUserInfoResponseDto;
 import sg.backend.dto.response.user.GetUserListResponseDto;
+import sg.backend.jwt.CustomPrincipal;
 import sg.backend.service.FundingService;
 import sg.backend.service.UserService;
 
@@ -39,8 +40,9 @@ public class AdminController {
     })
     @GetMapping("/fundings/state")
     public ResponseEntity<GetFundingStateCountResponseDto> getFundingStateCount(
-            @AuthenticationPrincipal(expression = "username") String email
+            @AuthenticationPrincipal CustomPrincipal principal
     ) {
+        String email = principal.getEmail();
         return fundingService.getFundingStateCount(email);
     }
 
@@ -56,12 +58,13 @@ public class AdminController {
     })
     @GetMapping("/fundings")
     public ResponseEntity<GetFundingByStateResponseDto> getFundingByState(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @Parameter(description = "검색어") @RequestParam(required = false) String keyword,
             @Parameter(description = "펀딩 상태 (REVIEW: 심사 대기, REVIEW_COMPLETED: 심사 완료, ONGOING: 진행 중)") @RequestParam String state,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "6") int size
     ) {
+        String email = principal.getEmail();
         return fundingService.getFundingByState(email, state, keyword, page, size);
     }
 
@@ -77,11 +80,12 @@ public class AdminController {
     })
     @PatchMapping("/funding/{fundingId}")
     public ResponseEntity<ResponseDto> changeFundingState(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long fundingId,
             @Parameter(description = "펀딩 상태 (DRAFT: 작성 중, REVIEW: 심사 대기, REVIEW_COMPLETED: 심사 완료, ONGOING: 진행 중, CLOSED: 종료)")
             @RequestParam String state
     ) {
+        String email = principal.getEmail();
         return fundingService.changeFundingState(email, fundingId, state);
     }
 
@@ -97,7 +101,7 @@ public class AdminController {
     })
     @GetMapping("/users")
     public ResponseEntity<GetUserListResponseDto> getUserList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @Parameter(description = """
                     noAsc: 번호 오름차순, noDesc: 번호 내림차순,
                     idAsc: 아이디 오름차순, idDesc: 아이디 내림차순,
@@ -113,6 +117,7 @@ public class AdminController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
+        String email = principal.getEmail();
         return userService.getUserList(email, sort, id, page, size);
     }
 
@@ -128,9 +133,10 @@ public class AdminController {
     })
     @GetMapping("/user/{userId}")
     public ResponseEntity<GetUserInfoResponseDto> getUserList(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long userId
     ) {
+        String email = principal.getEmail();
         return userService.getUserInfo(email, userId);
     }
 
@@ -146,11 +152,12 @@ public class AdminController {
     })
     @PatchMapping("/user/{userId}")
     public ResponseEntity<ResponseDto> changeUserState(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long userId,
             @Parameter(description = "회원 상태 (USER: 일반 회원, SUSPENDED: 정지 회원)")
             @RequestParam String role
     ) {
+        String email = principal.getEmail();
         return userService.changeUserState(email, userId, role);
     }
 }
