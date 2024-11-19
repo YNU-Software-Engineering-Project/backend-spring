@@ -64,11 +64,12 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token){
         Claims claims = getClaims(token);
+        Long userId = claims.get("id", Long.class);
         String email = claims.getSubject();
         String provider = claims.get("provider", String.class);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        CustomPrincipal principal = new CustomPrincipal(email, provider);
+        CustomPrincipal principal = new CustomPrincipal(email, provider, userId);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
