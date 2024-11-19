@@ -34,6 +34,8 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
+    org.springframework.messaging: debug
+    org.springframework.web.socket: debug
 
 file:
   path: /app/data/
@@ -48,3 +50,5 @@ profile:
 
 invite:
   adminCode: ${ADMIN_INVITE_CODE}
+
+
