@@ -19,6 +19,7 @@ public interface ResponseMessage {
     String PASSWORD_SAME_AS_CURRENT = "New password cannot be the same as the current password.";
     String EMAIL_TOKEN_NOT_FOUND = "Email token not found.";
     String NOT_EXISTED_SCHOOLEMAIL = "School email is not existed";
+    String ALREADY_EXISTS = "Already exists";
 
     String NOT_EXISTED_INFO = "Please add funding information.";
     String NOT_EXISTED_STORY = "Please add funding story.";

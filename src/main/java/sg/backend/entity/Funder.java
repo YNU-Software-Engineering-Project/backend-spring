@@ -32,4 +32,9 @@ public class Funder {
 
     @OneToMany(mappedBy = "funder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectedReward> selrewardList;
+
+    public Funder(User user,Funding funding){
+        this.user = user;
+        this.funding = funding;
+    }
 }

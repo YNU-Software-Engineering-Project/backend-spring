@@ -30,4 +30,10 @@ public class SelectedReward {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reward_id")
     private Reward reward;
+
+    public SelectedReward(Funder funder, Reward reward, int quantity){
+        this.funder = funder;
+        this.reward = reward;
+        this.selQuantity = quantity;
+    }
 }
