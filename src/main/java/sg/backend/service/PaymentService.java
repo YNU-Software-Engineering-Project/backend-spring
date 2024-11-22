@@ -106,7 +106,7 @@ public class PaymentService {
     }
 
     // 결제 승인 요청
-    public ResponseEntity<? super PaySuccessResponseDto> paySuccess(String email, Long funding_id, PaySuccessRequestDto paySuccessRequestDto) {
+    public ResponseEntity<? super PaySuccessResponseDto> paySuccess(Long user_id, Long funding_id, PaySuccessRequestDto paySuccessRequestDto) {
         System.out.println("Received paymentKey: " + paySuccessRequestDto.getPaymentKey());
         System.out.println("Received orderId: " + paySuccessRequestDto.getOrderId());
 
@@ -183,7 +183,7 @@ public class PaymentService {
                 return ResponseDto.noExistFunding();
             }
             Funding funding = option.get();
-            Optional<User> option1 = userRepository.findByEmail(email);
+            Optional<User> option1 = userRepository.findById(user_id);
             if (option1.isEmpty()) {
                 return ResponseDto.noExistFunding();
             }

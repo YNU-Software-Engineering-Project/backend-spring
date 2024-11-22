@@ -51,10 +51,10 @@ public class PaymentController {
     })
     @PostMapping("/{funding_id}/pay/success")
     public ResponseEntity<? super PaySuccessResponseDto> paySuccess(
-            @AuthenticationPrincipal(expression = "username") String email,
+            @AuthenticationPrincipal CustomPrincipal principal,
             @PathVariable Long funding_id,
             @RequestBody @Valid PaySuccessRequestDto requestBody) {
-        return paymentService.paySuccess(email, funding_id, requestBody);
+        return paymentService.paySuccess(principal.getUserId(), funding_id, requestBody);
     }
 
 }
