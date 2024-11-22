@@ -20,6 +20,11 @@ public class PaySuccessResponseDto extends ResponseDto {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
     }
 
+    public static ResponseEntity<ResponseDto> amount_error(){
+        ResponseDto result = new ResponseDto(ResponseCode.AUTHORIZATION_FAIL, ResponseMessage.AUTHORIZATION_FAIL);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+    }
+
     public static ResponseEntity<ResponseDto> alreadyProcessed(){
         ResponseDto result = new ResponseDto(ResponseCode.ALREADY_EXISTED, ResponseMessage.ALREADY_EXISTS);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);

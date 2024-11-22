@@ -124,13 +124,14 @@ public class PaymentService {
 
         // JSON 객체를 구성
         Map<String, Object> params = new HashMap<>();
+        params.put("paymentKey", paySuccessRequestDto.getPaymentKey());
         params.put("orderId", paySuccessRequestDto.getOrderId());
         params.put("amount", paySuccessRequestDto.getAmount());
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
 
         try {
             PaymentSuccessDto result = restTemplate.postForObject(
-                    "https://api.tosspayments.com/v1/payments/" + paySuccessRequestDto.getPaymentKey(),
+                    "https://api.tosspayments.com/v1/payments/confirm",
                     request,
                     PaymentSuccessDto.class
             );
@@ -140,12 +141,6 @@ public class PaymentService {
                 return PaySuccessResponseDto.not_existed_data();
             }
 
-
-            //1. getOrderName으로 받은 reward_id와 수량 정보로 reward_id 객체 만듬
-            //2. reward객체의 금액 다 더해서 totalAmount와 같은지 확인 -> 금액이 다르면 오류
-            //3. funding_id, email 에 대한 funding, user 객체 만듬
-            //4. funding, user 객체로 funder 객체 생성
-            //5. funder객체, reward객체, 수량으로 selectedReward 객체 생성
             int amount = Integer.parseInt(result.getTotalAmount());
             String order = result.getOrderName();
             Map<Long, Integer> rewards = new HashMap<>();
@@ -176,7 +171,7 @@ public class PaymentService {
             }
             //2. reward객체의 금액 다 더해서 totalAmount와 같은지 확인 -> 금액이 다르면 오류
             if(totalAmount != amount){
-                return PaySuccessResponseDto.validation_error();
+                return PaySuccessResponseDto.amount_error();
             }
 
             //3. funding_id, email 에 대한 funding, user 객체 만듬
@@ -187,7 +182,7 @@ public class PaymentService {
             Funding funding = option.get();
             Optional<User> option1 = userRepository.findById(user_id);
             if (option1.isEmpty()) {
-                return ResponseDto.noExistFunding();
+                return ResponseDto.noExistUser();
             }
             User user = option1.get();
             //4. funding, user 객체로 funder 객체 생성
@@ -215,7 +210,7 @@ public class PaymentService {
             return PaySuccessResponseDto.validation_error();
         } catch (Exception e) {
             e.printStackTrace();
-            return PaySuccessResponseDto.validation_error();
+            return ResponseDto.noPermission();
         }
 
         return ResponseDto.success();
