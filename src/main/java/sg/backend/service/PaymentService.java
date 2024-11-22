@@ -1,5 +1,6 @@
 package sg.backend.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -106,6 +107,7 @@ public class PaymentService {
     }
 
     // 결제 승인 요청
+    @Transactional
     public ResponseEntity<? super PaySuccessResponseDto> paySuccess(Long user_id, Long funding_id, PaySuccessRequestDto paySuccessRequestDto) {
         System.out.println("Received paymentKey: " + paySuccessRequestDto.getPaymentKey());
         System.out.println("Received orderId: " + paySuccessRequestDto.getOrderId());
@@ -145,7 +147,7 @@ public class PaymentService {
             //4. funding, user 객체로 funder 객체 생성
             //5. funder객체, reward객체, 수량으로 selectedReward 객체 생성
             int amount = Integer.parseInt(result.getTotalAmount());
-            String order = result.getOrderId();
+            String order = result.getOrderName();
             Map<Long, Integer> rewards = new HashMap<>();
             //데이터 받아오기
             String[] items = order.replace(" ", "").split(",");
@@ -189,8 +191,14 @@ public class PaymentService {
             }
             User user = option1.get();
             //4. funding, user 객체로 funder 객체 생성
-            Funder funder = new Funder(user, funding);
-            funderRepository.save(funder);
+            Funder funder;
+            Optional<Funder> option2 = funderRepository.findByFundingAndUser(funding,user);
+            if (option2.isPresent()) {
+                funder = option2.get();
+            } else{
+                funder = new Funder(user, funding);
+                funderRepository.save(funder);
+            }
 
             //5. funder객체, reward객체, 수량으로 selectedReward 객체 생성
             Reward rewardItem;

@@ -40,8 +40,7 @@ public class RegisterFundingController {
     public ResponseEntity<? super RegisterResponseDto> register(
             @AuthenticationPrincipal CustomPrincipal principal
     ){
-        String email = principal.getEmail();
-        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.register(email);
+        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.register(principal.getUserId());
         return response;
     }
 
@@ -60,7 +59,7 @@ public class RegisterFundingController {
             @RequestBody @Valid FundingInfoRequestDto requestBody,
             @AuthenticationPrincipal CustomPrincipal principal
     ){
-        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.modifyInfo(null,requestBody, principal.getEmail(),true);
+        ResponseEntity<? super RegisterResponseDto> response = fundingInfoService.modifyInfo(null,requestBody, principal.getUserId(),true);
         return response;
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)  //이메일 유효성 검사 처리
