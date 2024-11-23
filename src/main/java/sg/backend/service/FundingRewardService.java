@@ -17,10 +17,13 @@ import sg.backend.dto.response.writefunding.reward.MakeRewardResponseDto;
 import sg.backend.entity.*;
 import sg.backend.repository.*;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static sg.backend.service.UserService.formatter;
@@ -34,6 +37,7 @@ public class FundingRewardService {
     private final DocumentRepository documentRepository;
     private final IntroImageRepository introImageRepository;
     private final UserRepository userRepository;
+    private final StoryImageRepository storyImageRepository;
     private final NotificationRepository notificationRepository;
 
     private final FundingFileService fileService;
@@ -179,6 +183,52 @@ public class FundingRewardService {
         return ResponseDto.success();
     }
 
+    //마크다운 내용에서 이미지 url의 파일명 추출
+    public List<String> extractImageIdentifiers(String content) {
+        List<String> imageIdentifiers = new ArrayList<>();
+
+        String baseUrl = "http://localhost:8080/api/user/fundings/editor/image-print/";
+        String regex = "!\\[.*?\\]\\(" + Pattern.quote(baseUrl) + "(.*?)\\)"; // baseUrl 이후 파일명만 추출
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            imageIdentifiers.add(matcher.group(1)); // baseUrl 이후의 고유 파일명
+        }
+        return imageIdentifiers;
+    }
+
+    public Boolean remove_unsedImage(Funding funding){
+        //프로젝트 스토리이미지를 필요한것만 빼고 다 지우기
+        List<String> imageList = extractImageIdentifiers(funding.getStory());
+
+        if(! (imageList.isEmpty()) ) {  //스토리에 url이 있다면
+            List<StoryImage> all_images = storyImageRepository.findAllByFunding(funding);
+            // 사용된 UUID와 비교하여 사용되지 않는 이미지 찾기
+            List<StoryImage> unusedImages = new ArrayList<>();
+            for (StoryImage image : all_images) {
+                String imageUUID = image.getUuid();
+                if (!imageList.contains(imageUUID)) { // UUID가 사용되지 않는 경우
+                    unusedImages.add(image); // 삭제 목록에 추가
+                }
+            }
+            if (unusedImages.size() > 0) {  //지울 파일이 한개 이상 있다면
+                // 사용되지 않는 이미지 파일과 DB 데이터 삭제
+                for (StoryImage unusedImage : unusedImages) {
+                    String filename = unusedImage.getUuid();
+                    File fileToDelete = new File("/app/data/story_image/" + filename);
+                    if (fileToDelete.exists() && fileToDelete.delete()) { // 파일이 존재하고 삭제 성공 시
+                        storyImageRepository.delete(unusedImage); // DB에서 삭제
+                    } else {  //파일 삭제 실패 또는 삭제할 파일이 존재하지 않습니다.
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
     @Transactional
     public ResponseEntity<? super SubmitFundingResponseDto> submit_funding(Long funding_id){
         try{
@@ -218,9 +268,12 @@ public class FundingRewardService {
             if(funding.getTitle() == null || funding.getTitle().isEmpty()){
                 return SubmitFundingResponseDto.not_existed_story();
             }
-            //if(funding.getStory() == null || funding.getStory().isEmpty()){
-            //    return SubmitFundingResponseDto.not_existed_story();
-            //}
+            if(funding.getStory() == null || funding.getStory().isEmpty()){
+                return SubmitFundingResponseDto.not_existed_story();
+            }
+            if(! remove_unsedImage(funding)){  //필요없는 스토리 이미지 다 지우기
+                return ResponseDto.databaseError();
+            }
 
             //리워드가 적어도 하나
             List<Reward> rewardList = rewardRepository.findAllByFunding(funding);
@@ -288,7 +341,16 @@ public class FundingRewardService {
                     return ResponseDto.databaseError();
                 }
             }
-            //storyfileList
+            List<StoryImage> storyImageList = storyImageRepository.findAllByFunding(funding);
+            String imagePath = "/app/data/story_image/";
+            for(StoryImage image : storyImageList){
+                if(image == null || image.getUuid() == null || image.getUuid().isEmpty()){
+                    return DeleteFileResponseDto.not_existed_file();
+                }
+                if(!fileService.file_delete(imagePath+ image.getUuid())){
+                    return ResponseDto.databaseError();
+                }
+            }
 
 
             fundingRepository.delete(funding);

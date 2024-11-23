@@ -52,9 +52,9 @@ public class FundingInfoService {
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Transactional
-    public ResponseEntity<? super RegisterResponseDto> register(String email){
+    public ResponseEntity<? super RegisterResponseDto> register(Long user_id){
         try{
-            Optional<User> option = userRepository.findByEmail(email);
+            Optional<User> option = userRepository.findById(user_id);
             if(option.isEmpty()) {
                 return ResponseDto.noExistUser();
             }
@@ -197,7 +197,7 @@ public class FundingInfoService {
 
 
     @Transactional  //펀딩 정보 수정 + 펀딩 등록하기
-    public ResponseEntity<? super RegisterResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, String email, Boolean type) {
+    public ResponseEntity<? super RegisterResponseDto> modifyInfo(Long funding_id, FundingInfoRequestDto dto, Long user_id, Boolean type) {
         try {
             category = dto.getCategory(); //맞는 카테고리 전달되도록하기
             Category cate;
@@ -245,7 +245,7 @@ public class FundingInfoService {
             }
 
             if(type){ //새로운 펀딩 생성후 데이터 저장하고 펀딩을 데이터베이스에 저장
-                Optional<User> option = userRepository.findByEmail(email);
+                Optional<User> option = userRepository.findById(user_id);
                 if(option.isEmpty()) {
                     return ResponseDto.noExistUser();
                 }

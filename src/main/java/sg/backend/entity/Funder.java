@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,8 @@ public class Funder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long funderId;
 
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
@@ -32,4 +35,9 @@ public class Funder {
 
     @OneToMany(mappedBy = "funder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SelectedReward> selrewardList;
+
+    public Funder(User user,Funding funding){
+        this.user = user;
+        this.funding = funding;
+    }
 }

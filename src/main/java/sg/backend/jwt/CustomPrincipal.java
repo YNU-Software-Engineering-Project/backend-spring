@@ -8,4 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class CustomPrincipal {
     private final String email;
     private final String provider;
+    private final Long userId;
 }

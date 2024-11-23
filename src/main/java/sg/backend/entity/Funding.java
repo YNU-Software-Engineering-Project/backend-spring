@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.time.LocalDateTime;
@@ -82,6 +83,8 @@ public class Funding {
 
     private boolean isTargetAmountAchieved;
 
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY) //not blank
@@ -105,6 +108,9 @@ public class Funding {
 
     @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Question> questionList;
+
+    @OneToMany(mappedBy = "funding", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<StoryImage> storyImageList;
 
     public Funding(String organizerName, String organizerEmail, String taxEmail, User user){
         this.organizerName = organizerName;
